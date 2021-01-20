@@ -383,8 +383,6 @@ def te_lo_recordare_en(cantidad, tipo):
         tipo += "s"
     return u"Te lo recordaré en " + str(cantidad) + u" " + tipo
 
-
-@run_async
 def any_message(bot, message):
     text = message.text
     if text == None:
