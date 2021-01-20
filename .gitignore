@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Python bot token file
+token
+
+# Data file
+chats.pickle
+
+# IDLEs
+.idea
