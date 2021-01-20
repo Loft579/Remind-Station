@@ -3,7 +3,6 @@
 # python-telegram-bot~=13.1
 
 from telegram.ext import Filters, MessageHandler, Updater
-from telegram.ext.dispatcher import run_async
 from telegram import Bot
 import logging
 from threading import Timer
