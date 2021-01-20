@@ -1,0 +1,166 @@
+import pickle
+import recordatorios
+from utils import seg_to_str
+from constants import *
+from telegram import Bot
+
+bot = Bot(token=TOKEN)
+
+chats = dict()  # chatid => Chat
+
+
+def save():
+    with open(CHATSFILENAME, 'wb') as handle:
+        pickle.dump(chats, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def load():
+    with open(CHATSFILENAME, 'rb') as handle:
+        dictchatsviejo = pickle.load(handle)
+        print("dictchatsviejo tenia un len de " + str(len(dictchatsviejo)))
+        chats.update(dictchatsviejo)
+
+
+
+class Chat:
+    def __init__(self, telegramchat):
+        self.telegramchat = telegramchat
+        self.recordatorios = []
+        self.actual_r = None  # El recordatorio implicitamente actual
+        self.modomolesto = (telegramchat.type == "private")
+        self.lastuid = 0
+        self.lastmessage = None
+        self.lastnewtext = ""
+        self.lastinfomessage = None
+        self.lastinfomessage_extra = ""
+
+        self.adjectives = set()
+
+        # if telegramchat.type != "private":
+        #    self.adjectives.add(MUTED)
+
+    def setadj(self, adj, value):
+        if value:
+            self.adjectives.add(adj)
+        elif adj in self.adjectives:
+            self.adjectives.remove(adj)
+
+    # Retorna la informacion de todas las cosas internas de este chat
+    def info(self, extra=""):
+        haymugre = False
+        info = ""
+        for r in self.recordatorios:
+            # Por las dudas:
+            if r.message.text == None:
+                r.message.text = ""
+
+            if extra not in r.message.text:
+                continue
+
+            if r.seg == -1:
+                info += u"❎ "
+                haymugre = True
+            else:
+                if ALARM in r.adjectives:
+                    info += u"⏰ "
+                elif PERIODIC in r.adjectives:
+                    info += u"📰 "
+                elif AUTOSET in r.adjectives:
+                    info += u"⌛️ "
+                else:
+                    info += u"📌 "
+
+            info += u"/ver" + str(r.uid)
+            if r.seg != -1:
+                info += " /ya" + str(r.uid)
+            info += "\n"
+
+            info += r.message.text + "\n"
+
+        if haymugre:
+            info += u"¿ /limpiar ?"
+
+        if info != "":
+            return info
+        else:
+            if extra != "":
+                return "No existe recordatorio con '{}'.".format(extra)
+            else:
+                return AUN_NO_HAY_RECS
+
+    def update_lastinfomessage(self):
+        if self.lastinfomessage != None:
+            bot.edit_message_text(self.info(), chat_id=self.telegramchat.id, message_id=self.lastinfomessage.message_id)
+
+    # Manda un mensaje. Es casi como bot.send_message
+    def clarify(self, text, siosi=False, rec=None, reply=None):
+        if not siosi and MUTED in self.adjectives:
+            return None
+
+        # Se fija si debe modificarse el mensaje anterior:
+        if self.lastmessage != None:
+            tempid = self.lastmessage.message_id
+            if CLEANER in self.adjectives:
+                bot.delete_message(self.telegramchat.id, tempid)
+            elif self.lastnewtext != "":
+                try:
+                    bot.edit_message_text(self.lastnewtext, chat_id=self.telegramchat.id, message_id=tempid)
+                except:
+                    print("Un mensaje no se pudo editar. No importa mucho.")
+
+        if rec != None:
+            text = text.format(*(5 * [rec.uid]))
+
+        # Si existe el & es porque
+        # el proximo last debera editar su texto interno
+        temp = ""
+        if "&" in text:
+            ws = text.split("&")
+            if len(ws) == 3:
+                temp = ws[0] + ws[2]
+
+            text = text.replace("&", "")
+
+        # Manda el mensaje:
+        m = None
+        if reply == None:
+            m = bot.send_message(self.telegramchat.id, text)
+        else:
+            m = bot.send_message(self.telegramchat.id, text, reply_to_message_id=reply.message_id)
+            # m = bot.reply_to(reply, text)
+
+        # Pone los last para la proxima
+        self.lastmessage = m
+        self.lastnewtext = temp
+
+        return m
+
+    def clarify_edit_r(self, r, showtime=True):
+        self.actual_r = r
+
+        s = ""
+        if showtime:
+            if r.seg != -1:
+                s = u"⏳ en {}\n".format(seg_to_str(r.how_much_left()))
+            else:
+                s = u"⌛️ no sonará\n"
+
+        self.clarify(s + EDITS, siosi=True, rec=r, reply=r.message)
+
+    def recordatorio_from_message(self, message_id):
+        for r in self.recordatorios:
+            if r.message.message_id == message_id:
+                return r
+        return None
+
+    def new_rec(self, message):
+        r = recordatorios.Recordatorio(message, self.lastuid + 1, self)
+        self.lastuid += 1
+        self.recordatorios.append(r)
+        return r
+
+    def rec_from_uid(self, uid):
+        for r in self.recordatorios:
+            if r.uid == uid:
+                return r
+        return None
