@@ -1,3 +1,5 @@
+import pickle
+
 from constants import *
 from time import time
 from threading import Timer
@@ -6,7 +8,8 @@ alltimers = []
 
 class Recordatorio:
     def __init__(self, message, uid, mychat):
-        self.message = message
+        self.message_id = message.message_id
+        self.text = message.text
 
         self.seg = -1  # si es -1, no esta activado. si es distinto marca en
         # cuanto tiempo se ejecutara el timer desde que se inicio con start
@@ -20,6 +23,13 @@ class Recordatorio:
         # En general, para agregarle caracteristicas a un rec.
         self.adjectives = set()
 
+        # TODO- Fixear
+        try:
+            self.nombre = self.message.from_user.first_name
+            assert (isinstance(self.nombre, str))
+        except:
+            self.nombre = "che"
+
     def setadj(self, adj, value):
         if value:
             self.adjectives.add(adj)
@@ -30,14 +40,8 @@ class Recordatorio:
         return
 
     def trigger(self):
-        try:
-            nombre = self.message.from_user.first_name
-            assert (isinstance(nombre, str))
-        except:
-            nombre = "che"
-
         # Primero recuerda:
-        self.mychat.clarify(nombre + " " + RECORDARTEXT, rec=self, reply=self.message, siosi=True)
+        self.mychat.clarify(self.nombre + " " + RECORDARTEXT, rec=self, reply_message_id=self.message_id, siosi=True)
 
         # Segundo, pone el mensaje este en actual_r
         self.mychat.actual_r = self

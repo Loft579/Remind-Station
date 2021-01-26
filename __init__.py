@@ -126,7 +126,7 @@ def any_message(bot, message):
             c.clarify("Se borraran todos los recordatorios, lo siento, puedes agregarlos de nuevo en unas horas.")
             for r in c.recordatorios:
                 if r.seg != -1:
-                    c.clarify(".", reply=r.message)
+                    c.clarify(".", reply=r.message_id)
     elif text == "/chatid":
         chat.clarify("El chat id de este chat es: " + str(message.chat.id), True)
     elif text == "/userid":

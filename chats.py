@@ -1,4 +1,7 @@
 import pickle
+
+from typing import List
+
 import recordatorios
 from utils import seg_to_str
 from constants import *
@@ -10,6 +13,9 @@ chats = dict()  # chatid => Chat
 
 
 def save():
+    for chat in chats.values():
+        chat.lastmessage = None
+        chat.lastinfomessage = None
     with open(CHATSFILENAME, 'wb') as handle:
         pickle.dump(chats, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -24,20 +30,15 @@ def load():
 
 class Chat:
     def __init__(self, telegramchat):
-        self.telegramchat = telegramchat
-        self.recordatorios = []
+        self.id = telegramchat.id
+        self.recordatorios: List[recordatorios.Recordatorio] = []
         self.actual_r = None  # El recordatorio implicitamente actual
         self.modomolesto = (telegramchat.type == "private")
         self.lastuid = 0
         self.lastmessage = None
         self.lastnewtext = ""
         self.lastinfomessage = None
-        self.lastinfomessage_extra = ""
-
         self.adjectives = set()
-
-        # if telegramchat.type != "private":
-        #    self.adjectives.add(MUTED)
 
     def setadj(self, adj, value):
         if value:
@@ -51,10 +52,10 @@ class Chat:
         info = ""
         for r in self.recordatorios:
             # Por las dudas:
-            if r.message.text == None:
-                r.message.text = ""
+            if r.text is None:
+                r.text = ""
 
-            if extra not in r.message.text:
+            if extra not in r.text:
                 continue
 
             if r.seg == -1:
@@ -75,7 +76,7 @@ class Chat:
                 info += " /ya" + str(r.uid)
             info += "\n"
 
-            info += r.message.text + "\n"
+            info += r.text + "\n"
 
         if haymugre:
             info += u"¿ /limpiar ?"
@@ -89,22 +90,22 @@ class Chat:
                 return AUN_NO_HAY_RECS
 
     def update_lastinfomessage(self):
-        if self.lastinfomessage != None:
-            bot.edit_message_text(self.info(), chat_id=self.telegramchat.id, message_id=self.lastinfomessage.message_id)
+        if self.lastinfomessage is not None:
+            bot.edit_message_text(self.info(), chat_id=self.id, message_id=self.lastinfomessage.message_id)
 
     # Manda un mensaje. Es casi como bot.send_message
-    def clarify(self, text, siosi=False, rec=None, reply=None):
+    def clarify(self, text, siosi=False, rec=None, reply_message_id=None):
         if not siosi and MUTED in self.adjectives:
             return None
 
         # Se fija si debe modificarse el mensaje anterior:
-        if self.lastmessage != None:
+        if self.lastmessage is not None:
             tempid = self.lastmessage.message_id
             if CLEANER in self.adjectives:
-                bot.delete_message(self.telegramchat.id, tempid)
+                bot.delete_message(self.id, tempid)
             elif self.lastnewtext != "":
                 try:
-                    bot.edit_message_text(self.lastnewtext, chat_id=self.telegramchat.id, message_id=tempid)
+                    bot.edit_message_text(self.lastnewtext, chat_id=self.id, message_id=tempid)
                 except:
                     print("Un mensaje no se pudo editar. No importa mucho.")
 
@@ -122,12 +123,7 @@ class Chat:
             text = text.replace("&", "")
 
         # Manda el mensaje:
-        m = None
-        if reply == None:
-            m = bot.send_message(self.telegramchat.id, text)
-        else:
-            m = bot.send_message(self.telegramchat.id, text, reply_to_message_id=reply.message_id)
-            # m = bot.reply_to(reply, text)
+        m = bot.send_message(self.id, text, reply_to_message_id=reply_message_id)
 
         # Pone los last para la proxima
         self.lastmessage = m
@@ -145,11 +141,11 @@ class Chat:
             else:
                 s = u"⌛️ no sonará\n"
 
-        self.clarify(s + EDITS, siosi=True, rec=r, reply=r.message)
+        self.clarify(s + EDITS, siosi=True, rec=r, reply_message_id=r.message_id)
 
     def recordatorio_from_message(self, message_id):
         for r in self.recordatorios:
-            if r.message.message_id == message_id:
+            if r.message_id == message_id:
                 return r
         return None
 
