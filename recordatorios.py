@@ -25,7 +25,7 @@ class Recordatorio:
 
         # TODO- Fixear
         try:
-            self.nombre = self.message.from_user.first_name
+            self.nombre = message.from_user.first_name
             assert (isinstance(self.nombre, str))
         except:
             self.nombre = "che"

@@ -123,7 +123,11 @@ class Chat:
             text = text.replace("&", "")
 
         # Manda el mensaje:
-        m = bot.send_message(self.id, text, reply_to_message_id=reply_message_id)
+        if len(text) >= 3000:
+            textcropped = text[:1000] + ' [...] ' + text[-1000:]
+        else:
+            textcropped = text
+        m = bot.send_message(self.id, textcropped, reply_to_message_id=reply_message_id)
 
         # Pone los last para la proxima
         self.lastmessage = m

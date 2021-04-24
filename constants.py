@@ -44,12 +44,12 @@ RECORDARTEXT = """¿Hiciste esto?
 """
 
 REC_AGREGADO = """/editar{} | /borrar{}&
-/min50 | /hora8 | /dia1&"""
+/hora2 | /dia1 | /dia3&"""
 
 EDITS = """/borrar{}
-&/min30 | /hora1
-/hora4 | /hora8
-/dia1 | /dia3
+&/min30 | /hora4
+/hora12 | /dia2
+/dia5 | /dia30
 /periodic{}
 /alarm{}&"""
 

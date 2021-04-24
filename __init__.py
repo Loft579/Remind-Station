@@ -31,6 +31,10 @@ def cada_dia():
 
 cada_dia_timer = Timer(DIA / PROB_DE_APAGADO, cada_dia)
 
+# Los segundos que se pospone el recordatorio la primera vez que se
+# crea.
+def get_defualt_seconds():
+    return randint(HORA * 6, HORA * 8)
 
 def any_message(bot, message):
     text = message.text
@@ -201,8 +205,8 @@ def any_message(bot, message):
             extrainfo = "Sonará: {}\n".format(str(d)[:-6])
             segs = (d - datetimenow()).total_seconds()
             if segs < 3:
-                segs = randint(HORA, HORA + 15 * MIN)
-                extrainfo = "Te lo recuerdo en un rato\n"
+                segs = get_defualt_seconds()
+                extrainfo = "Te lo recuerdo luego.\n"
 
             chat.clarify(extrainfo + REC_AGREGADO, siosi=text.endswith(".."), rec=r)
 
