@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 # Creo que funciona con 3.8
 # python-telegram-bot~=13.1
+# telegram~=0.0.1
 
 from telegram.ext import Filters, MessageHandler, Updater
 import logging
 from random import randint
 from time import sleep
 from chats import *
+from customstdout import change_original_stdout
 from recordatorios import *
 import todatetimes
 from utils import *
@@ -19,6 +21,7 @@ updater = None
 dispatcher = None
 botname = "tengo_que_bot"
 
+
 def cada_dia():
     global cada_dia_timer
 
@@ -29,12 +32,15 @@ def cada_dia():
     cada_dia_timer = Timer(DIA / PROB_DE_APAGADO, cada_dia)
     cada_dia_timer.start()
 
+
 cada_dia_timer = Timer(DIA / PROB_DE_APAGADO, cada_dia)
+
 
 # Los segundos que se pospone el recordatorio la primera vez que se
 # crea.
 def get_defualt_seconds():
     return randint(HORA * 6, HORA * 8)
+
 
 def any_message(bot, message):
     text = message.text
@@ -217,6 +223,8 @@ def any_message(bot, message):
 if __name__ == "__main__":
     print("Inicia el main")
 
+    change_original_stdout()
+
     # Intenta cargar el archivo existente asi rellena el dict chats:
     try:
         load()
@@ -224,7 +232,7 @@ if __name__ == "__main__":
     except Exception as e:
         print("No existe el archivo " + CHATSFILENAME + " o hubo un error.")
         print("El problema fue: " + str(e))
-        print("Se creara dicho archivo")
+        print("Se creará un nuevo.")
         save()
 
     updater = Updater(token=TOKEN)
@@ -235,7 +243,7 @@ if __name__ == "__main__":
 
     # Si cargo algo desde el archivo, restaura el alltimers
     if chats != dict():
-        print("recreando timers...")
+        print("Recargando timers...")
         for c in chats.values():
             for r in c.recordatorios:
                 r.recreate_timer()
@@ -251,10 +259,11 @@ if __name__ == "__main__":
                 exit()
             elif update.edited_message != None:
                 any_message(bot, update.edited_message)
-            elif update.message != None:
+            elif update.message is not None:
                 any_message(bot, update.message)
         else:
-            print("update.message es None o texto vacio")
+            # print("update.message es None o texto vacio")
+            pass
 
 
     core_handler = MessageHandler(Filters.text | Filters.command, any_update, run_async=True)
@@ -265,9 +274,8 @@ if __name__ == "__main__":
         print("Aprieta Ctrl-C para cerrar")
         while True:
             sleep(0.5)
-        # print "Salio del raw_input(). Se cerrarÃ¡."
     except KeyboardInterrupt:
-        print("Se detectÃ³ Ctrl-C. Se cerrarÃ¡.")
+        print("Se detectó Ctrl-C. Se cerrará.")
 
     print("update.stop()...")
     updater.stop()
@@ -275,9 +283,8 @@ if __name__ == "__main__":
     print("Guardamos...")
     save()
 
+    # Cancela todos los timers para que no ocurran cosas raras despues:
     print("Cancela timers")
-
-    # cancela todos los timers para que no ocurran cosas raras despues:
     for t in alltimers:
         t.cancel()
     cada_dia_timer.cancel()
