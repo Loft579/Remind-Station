@@ -1,4 +1,5 @@
 # tengoquebot
+
 Bot de Telegram para administrar recordatorios
 
 Asumamos que el token de tu bot es 725295115:AAHPBroPp21GIWE7NgLmriDfQ30hI3eAYHU
@@ -17,6 +18,9 @@ python3 -m virtualenv env
 
 source env/bin/activate
 
-pip install -r requirements.txt
+Now you are inside the enviroment. You should see a "(env)" sign.
 
+```console
+pip install -r requirements.txt
 python __init__.py
+```
