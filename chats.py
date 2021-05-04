@@ -100,7 +100,7 @@ class Chat:
             bot.edit_message_text(self.info(), chat_id=self.id, message_id=self.lastinfomessage.message_id)
 
     # Manda un mensaje. Es casi como bot.send_message
-    def clarify(self, text, siosi=False, rec=None, reply_message_id=None):
+    def clarify(self, text, siosi=False, rec=None, reply_message_id=None, reply_message_ids=None):
         if not siosi and MUTED in self.adjectives:
             return None
 
@@ -140,6 +140,14 @@ class Chat:
             print(f'Can\'t send message. Unauthorized. Probably blocked by user {self.id}.')
             m = None
 
+        # May point to each extra message_id
+        if reply_message_ids is not None:
+            i = 1
+            for message_id in reply_message_ids:
+                if message_id != reply_message_id:
+                    bot.send_message(self.id, '👆' * i, reply_to_message_id=message_id)
+                    i += 1
+
         # Pone los last para la proxima
         self.lastmessage = m
         self.lastnewtext = temp
@@ -156,7 +164,7 @@ class Chat:
             else:
                 s = u"⌛️ no sonará\n"
 
-        self.clarify(s + EDITS, siosi=True, rec=r, reply_message_id=r.message_id)
+        self.clarify(s + EDITS, siosi=True, rec=r, reply_message_id=r.message_id, reply_message_ids=r.message_ids)
 
     def recordatorio_from_message(self, message_id):
         for r in self.recordatorios:

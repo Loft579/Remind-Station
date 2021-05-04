@@ -68,7 +68,7 @@ def any_message(bot, message):
 
     # sub-index o sea, el X tal que /diaX
     subindex = -1
-    subindex_r = None
+
     i = 0
     temp = ""
     for c in text:
@@ -146,14 +146,22 @@ def any_message(bot, message):
         if r != None:
             chat.clarify_edit_r(subindex_r)
     elif text.startswith("/editar"):
-        if subindex_r != None:
+        if subindex_r is not None:
             chat.clarify_edit_r(subindex_r, showtime=False)
+        else:
+            chat.clarify("No existe eso.")
+    elif text.startswith("/merge"):
+        if subindex_r is not None:
+            chat.actual_r.merge_with(subindex_r)
+            subindex_r.cancel()
+            chat.update_lastinfomessage()
+            chat.clarify("Mergeado.")
         else:
             chat.clarify("No existe eso.")
     elif text.startswith("/ver") and subindex_r != None:
         chat.clarify_edit_r(subindex_r, showtime=True)
     elif text.startswith("/borrar"):
-        if subindex_r == None:
+        if subindex_r is None:
             chat.clarify("No existe eso")
         elif subindex_r.seg == -1:
             chat.clarify("Ya estaba borrado")
@@ -249,11 +257,12 @@ if __name__ == "__main__":
                 r.recreate_timer()
 
     # Si debe mudar algo
-    if True:
+    if False:
         print("Mudando...")
         for c in chats.values():
             for r in c.recordatorios:
-                setattr(r, 'message_ids', [r.message_id, ])
+                pass
+                # setattr(r, 'message_ids', [r.message_id, ])
 
     def any_update(update, context):
         bot = context.bot

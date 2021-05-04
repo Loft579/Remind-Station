@@ -83,8 +83,9 @@ class Recordatorio:
         yapaso = time() - self.epoch_of_start
         return self.seg - yapaso
 
+    # Pone todo lo de other dentro de lo de self.
     def merge_with(self, other: Recordatorio):
-        raise NotImplementedError()
+        self.message_ids.extend(other.message_ids)
 
     # esta funcion se debe ejecutar 1 vez por cada recordatorio
     # cada vez que se apaga el bot y se prende de vuelta, ya que
