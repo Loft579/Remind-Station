@@ -191,13 +191,16 @@ def any_message(bot, message):
         else:
             chat.actual_r.restart(randint(2 * HORA, 4 * HORA))
             chat.clarify(te_lo_recordare_en(None, "hora"))
-    elif text.startswith("/min") and chat.actual_r != None:
+    elif text.startswith("/min") and chat.actual_r is not None:
         if subindex != -1:
             chat.actual_r.restart(subindex * MIN)
             chat.clarify(te_lo_recordare_en(subindex, "minuto"))
         else:
             chat.actual_r.restart(randint(10 * MIN, 20 * MIN))
             chat.clarify(te_lo_recordare_en(None, "minuto"))
+    elif text.startswith("..." and chat.actual_r is not None):
+        chat.actual_r.append_message_id(message.message_id)
+        chat.clarify("El último recordatorio se ha expandido.")
     elif (ONLYTQ not in chat.adjectives and (message.chat.type == "private" or "tengo que" in text) or text.startswith(
             "tq")):
         datatimes = []

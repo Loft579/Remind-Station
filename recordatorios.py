@@ -87,6 +87,9 @@ class Recordatorio:
     def merge_with(self, other: Recordatorio):
         self.message_ids.extend(other.message_ids)
 
+    def append_message_id(self, message_id):
+        self.message_ids.append(message_id)
+
     # esta funcion se debe ejecutar 1 vez por cada recordatorio
     # cada vez que se apaga el bot y se prende de vuelta, ya que
     # los timers se han borrado y necesita llenar alltimers de vuelta.
