@@ -2,6 +2,8 @@ import pickle
 
 from typing import List
 
+import telegram
+
 import recordatorios
 from utils import seg_to_str
 from constants import *
@@ -131,7 +133,12 @@ class Chat:
             textcropped = text[:1000] + ' [...] ' + text[-1000:]
         else:
             textcropped = text
-        m = bot.send_message(self.id, textcropped, reply_to_message_id=reply_message_id)
+
+        try:
+            m = bot.send_message(self.id, textcropped, reply_to_message_id=reply_message_id)
+        except telegram.error.Unauthorized:
+            print(f'Can\'t send message. Unauthorized. Probably blocked by user {self.id}.')
+            m = None
 
         # Pone los last para la proxima
         self.lastmessage = m
