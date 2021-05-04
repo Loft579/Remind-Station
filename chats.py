@@ -29,7 +29,6 @@ def load():
         chats.update(dictchatsviejo)
 
 
-
 class Chat:
     def __init__(self, telegramchat):
         self.id = telegramchat.id
@@ -76,6 +75,7 @@ class Chat:
             info += u"/ver" + str(r.uid)
             if r.seg != -1:
                 info += " /ya" + str(r.uid)
+                info += " /merge" + str(r.uid)
             info += "\n"
 
             info += r.text + "\n"
@@ -115,7 +115,7 @@ class Chat:
                 except:
                     print("Un mensaje no se pudo editar. No importa mucho.")
 
-        if rec != None:
+        if rec is not None:
             text = text.format(*(5 * [rec.uid]))
 
         # Si existe el & es porque
