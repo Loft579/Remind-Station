@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pickle
 
 from constants import *
@@ -6,9 +8,14 @@ from threading import Timer
 
 alltimers = []
 
+
 class Recordatorio:
     def __init__(self, message, uid, mychat):
         self.message_id = message.message_id
+
+        # Si el mensaje es tipo "lista", la longitud de esto es > 1.
+        self.message_ids = [message.message_id, ]
+
         self.text = message.text
 
         self.seg = -1  # si es -1, no esta activado. si es distinto marca en
@@ -25,10 +32,10 @@ class Recordatorio:
 
         # TODO- Fixear
         try:
-            self.nombre = message.from_user.first_name
+            self.nombre = getattr(message, 'from', None).first_name
             assert (isinstance(self.nombre, str))
         except:
-            self.nombre = "che"
+            self.nombre = "Ey"
 
     def setadj(self, adj, value):
         if value:
@@ -75,6 +82,9 @@ class Recordatorio:
     def how_much_left(self):
         yapaso = time() - self.epoch_of_start
         return self.seg - yapaso
+
+    def merge_with(self, other: Recordatorio):
+        raise NotImplementedError()
 
     # esta funcion se debe ejecutar 1 vez por cada recordatorio
     # cada vez que se apaga el bot y se prende de vuelta, ya que

@@ -248,6 +248,12 @@ if __name__ == "__main__":
             for r in c.recordatorios:
                 r.recreate_timer()
 
+    # Si debe mudar algo
+    if True:
+        print("Mudando...")
+        for c in chats.values():
+            for r in c.recordatorios:
+                setattr(r, 'message_ids', [r.message_id, ])
 
     def any_update(update, context):
         bot = context.bot

@@ -78,6 +78,10 @@ class Chat:
 
             info += r.text + "\n"
 
+            more = len(r.message_ids) - 1
+            if more > 0:
+                info += f'* And {more} more...\n'
+
         if haymugre:
             info += u"¿ /limpiar ?"
 
