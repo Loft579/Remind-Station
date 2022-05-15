@@ -2,7 +2,7 @@ import re
 import random
 from utils import datetimenow
 from datetime import timedelta
-from datetimetools import add_one, change, next, prev, get, getfirst
+from nlp.datetimetools import add_one, change, next, prev, get, getfirst
 
 CATEGORIAS = ["sec", "min", "hora", "dia", "mes", "dsec", "dmin", "dhora", "ddia", "dmes", "dano"]
 cortapalabras = ",.;/ "

@@ -11,24 +11,34 @@ printf "725295115:AAHPBroPp21GIWE7NgLmriDfQ30hI3eAYHU" > token
 
 You can use virtualenv for install the packages, or you can use just pip.
 
-## Using virtualenv
-```console
-sudo pip3 install virtualenv
-python3 -m virtualenv env
-```
-(si alguno de los dos comandos anteriores no funciona, probá con 'pip' y 'python' en vez de 'pip3' y 'python3')
-```console
-source env/bin/activate
-```
-Now you are inside the enviroment. You should see a "(env)" sign.
+## Run it
 
-```console
+```bash
+# Open it
+cd processing/main-project
+
+# Install python 3.
+# At the moment this was written, this commands install python 3.8.10
+sudo apt-get update
+sudo apt-get install python3
+
+# Install venv
+sudo apt-get install python3-dev python3-venv
+
+# Create the .venv directory.
+# This assume that your python 3 binary is located in /usr/bin/python3
+/usr/bin/python3 -m venv .venv/
+
+# Activate the python venv environment
+source ./.venv/bin/activate
+
+# Now you should see a '(.venv)' in your terminal
+# Just in case, upgrade pip
+pip install --upgrade pip
+
+# Install the proyect python packages
 pip install -r requirements.txt
-python __init__.py
-```
 
-## Using pip3
-```console
-pip3 install -r requirements.txt
-python3 __init__.py
+# Run it
+python __init__.py
 ```

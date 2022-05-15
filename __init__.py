@@ -10,7 +10,7 @@ from time import sleep
 from chats import *
 from customstdout import change_original_stdout
 from recordatorios import *
-import todatetimes
+import nlp.todatetimes as todatetimes
 from utils import *
 from constants import *
 
@@ -52,14 +52,6 @@ def any_message(bot, message):
         if text[text.index("@") + 1:] != botname:
             return
         text = text[:text.index("@")]
-
-    # Guardas:
-    # Guarda 1: minimiza todo
-    text = text.lower()
-    # guarda 2: reemplaza tildes (solo esto por el dias)
-    text = text.replace(u"í", u"i")
-    # guarda 3: los "no tengo que" no sirven.
-    text = text.replace("no tengo que", "")
 
     # agarra el chat (si no existe lo crea):
     if message.chat.id not in chats:
@@ -203,32 +195,16 @@ def any_message(bot, message):
         chat.clarify("El último recordatorio se ha expandido.")
     elif (ONLYTQ not in chat.adjectives and (message.chat.type == "private" or "tengo que" in text) or text.startswith(
             "tq")):
-        datatimes = []
-        try:
-            datatimes, _ = todatetimes.to_list_of_datetime(text)
-        except Exception as e:
-            print(e)
-            chat.clarify("Hubo un error al interpretar tu recordatorio.")
+        # Create a new Recordatorio
+        r = chat.new_rec(message)
 
-        guarda = 8
-        for d in datatimes:
-            guarda -= 1
-            if guarda == 0:
-                chat.clarify("Muchos recordatorios, no se agregaron todos los solicitados.")
-                break
+        segs = get_defualt_seconds()
+        extrainfo = "Te lo recuerdo luego.\n"
 
-            r = chat.new_rec(message)
+        chat.clarify(extrainfo + REC_AGREGADO, siosi=text.endswith(".."), rec=r)
 
-            extrainfo = "Sonará: {}\n".format(str(d)[:-6])
-            segs = (d - datetimenow()).total_seconds()
-            if segs < 3:
-                segs = get_defualt_seconds()
-                extrainfo = "Te lo recuerdo luego.\n"
-
-            chat.clarify(extrainfo + REC_AGREGADO, siosi=text.endswith(".."), rec=r)
-
-            r.restart(segs)
-            chat.actual_r = r
+        r.restart(segs)
+        chat.actual_r = r
 
 
 if __name__ == "__main__":
