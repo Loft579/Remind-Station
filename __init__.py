@@ -58,7 +58,7 @@ def perform_next(chat):
 
 def any_message(bot, message):
     try:
-        text = message.text or '<no text>'
+        text = message.text or '[reminder with no text]'
 
         # Primero se fija si debe ignorar el comando y de paso crea el comando mas limpio
         if '@' in text:
