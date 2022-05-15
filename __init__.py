@@ -123,7 +123,7 @@ def any_message(bot, message):
             chat.clarify(DEBUGHELP, True)
         elif text == '/save':
             save()
-            chat.clarify('Guardado.')
+            chat.clarify('Save it.')
         elif text == '/proxbigchange': # TODO: Delete this
             for c in chats.values():
                 c.clarify('Se borraran todos los recordatorios, lo siento, puedes agregarlos de nuevo en unas horas.')
@@ -142,7 +142,7 @@ def any_message(bot, message):
             if subindex_r is not None:
                 chat.clarify_edit_r(subindex_r, showtime=False)
             else:
-                chat.clarify('No existe eso.')
+                chat.clarify('It does not exist.')
         elif text.startswith('/merge'):
             if subindex_r is not None:
                 chat.actual_r.merge_with(subindex_r)
@@ -235,7 +235,7 @@ if __name__ == '__main__':
 
     # Si cargo algo desde el archivo, restaura el alltimers
     if chats != dict():
-        print('Recargando timers...')
+        print('Recreating timers...')
         for c in chats.values():
             for r in c.recordatorios:
                 r.recreate_timer()
@@ -268,11 +268,11 @@ if __name__ == '__main__':
 
     updater.start_polling()
     try:
-        print('Aprieta Ctrl-C para cerrar')
+        print('Press Ctrl+C to exit.')
         while True:
             sleep(0.5)
     except KeyboardInterrupt:
-        print('Ctrl-C detected. Bye bye.')
+        print('Ctrl+C detected. Bye bye.')
 
     print('Waiting for update.stop()...')
     updater.stop()
