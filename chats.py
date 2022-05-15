@@ -25,7 +25,7 @@ def save():
 def load():
     with open(CHATSFILENAME, 'rb') as handle:
         dictchatsviejo = pickle.load(handle)
-        print("dictchatsviejo tenia un len de " + str(len(dictchatsviejo)))
+        print('dictchatsviejo tenia un len de ' + str(len(dictchatsviejo)))
         chats.update(dictchatsviejo)
 
 
@@ -34,10 +34,10 @@ class Chat:
         self.id = telegramchat.id
         self.recordatorios: List[recordatorios.Recordatorio] = []
         self.actual_r = None  # El recordatorio implicitamente actual
-        self.modomolesto = (telegramchat.type == "private")
+        self.modomolesto = (telegramchat.type == 'private')
         self.lastuid = 0
         self.lastmessage = None
-        self.lastnewtext = ""
+        self.lastnewtext = ''
         self.lastinfomessage = None
         self.adjectives = set()
 
@@ -48,50 +48,50 @@ class Chat:
             self.adjectives.remove(adj)
 
     # Retorna la informacion de todas las cosas internas de este chat
-    def info(self, extra=""):
+    def info(self, extra=''):
         haymugre = False
-        info = ""
+        info = ''
         for r in self.recordatorios:
             # Por las dudas:
             if r.text is None:
-                r.text = ""
+                r.text = ''
 
             if extra not in r.text:
                 continue
 
             if r.seg == -1:
-                info += u"❎ "
+                info += u'❎ '
                 haymugre = True
             else:
                 if ALARM in r.adjectives:
-                    info += u"⏰ "
+                    info += u'⏰ '
                 elif PERIODIC in r.adjectives:
-                    info += u"📰 "
+                    info += u'📰 '
                 elif AUTOSET in r.adjectives:
-                    info += u"⌛️ "
+                    info += u'⌛️ '
                 else:
-                    info += u"📌 "
+                    info += u'📌 '
 
-            info += u"/ver" + str(r.uid)
+            info += u'/ver' + str(r.uid)
             if r.seg != -1:
-                info += " /ya" + str(r.uid)
-                info += " /merge" + str(r.uid)
-            info += "\n"
+                info += ' /ya' + str(r.uid)
+                info += ' /merge' + str(r.uid)
+            info += '\n'
 
-            info += r.text + "\n"
+            info += r.text + '\n'
 
             more = len(r.message_ids) - 1
             if more > 0:
                 info += f'* And {more} more...\n'
 
         if haymugre:
-            info += u"¿ /limpiar ?"
+            info += u'¿ /limpiar ?'
 
-        if info != "":
+        if info != '':
             return info
         else:
-            if extra != "":
-                return "No existe recordatorio con '{}'.".format(extra)
+            if extra != '':
+                return 'No existe recordatorio con '{}'.'.format(extra)
             else:
                 return AUN_NO_HAY_RECS
 
@@ -109,24 +109,24 @@ class Chat:
             tempid = self.lastmessage.message_id
             if CLEANER in self.adjectives:
                 bot.delete_message(self.id, tempid)
-            elif self.lastnewtext != "":
+            elif self.lastnewtext != '':
                 try:
                     bot.edit_message_text(self.lastnewtext, chat_id=self.id, message_id=tempid)
                 except:
-                    print("Un mensaje no se pudo editar. No importa mucho.")
+                    print('Un mensaje no se pudo editar. No importa mucho.')
 
         if rec is not None:
             text = text.format(*(5 * [rec.uid]))
 
         # Si existe el & es porque
         # el proximo last debera editar su texto interno
-        temp = ""
-        if "&" in text:
-            ws = text.split("&")
+        temp = ''
+        if '&' in text:
+            ws = text.split('&')
             if len(ws) == 3:
                 temp = ws[0] + ws[2]
 
-            text = text.replace("&", "")
+            text = text.replace('&', '')
 
         # Manda el mensaje:
         if len(text) >= 3000:
@@ -157,12 +157,12 @@ class Chat:
     def clarify_edit_r(self, r, showtime=True):
         self.actual_r = r
 
-        s = ""
+        s = ''
         if showtime:
             if r.seg != -1:
-                s = u"⏳ en {}\n".format(seg_to_str(r.how_much_left()))
+                s = u'⏳ en {}\n'.format(seg_to_str(r.how_much_left()))
             else:
-                s = u"⌛️ no sonará\n"
+                s = u'⌛️ no sonará\n'
 
         self.clarify(s + EDITS, siosi=True, rec=r, reply_message_id=r.message_id, reply_message_ids=r.message_ids)
 

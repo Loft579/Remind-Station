@@ -13,7 +13,7 @@ class Recordatorio:
     def __init__(self, message, uid, mychat):
         self.message_id = message.message_id
 
-        # Si el mensaje es tipo "lista", la longitud de esto es > 1.
+        # Si el mensaje es tipo 'lista', la longitud de esto es > 1.
         self.message_ids = [message.message_id, ]
 
         self.text = message.text

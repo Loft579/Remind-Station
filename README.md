@@ -6,7 +6,7 @@ Let's suppose that your bot token is 725295115:AAHPBroPp21GIWE7NgLmriDfQ30hI3eAY
 ```
 git clone REPO
 cd tengoquebot
-printf "725295115:AAHPBroPp21GIWE7NgLmriDfQ30hI3eAYHU" > token
+printf '725295115:AAHPBroPp21GIWE7NgLmriDfQ30hI3eAYHU' > token
 ```
 
 You can use virtualenv for install the packages, or you can use just pip.
