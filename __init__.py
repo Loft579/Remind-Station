@@ -43,8 +43,6 @@ def get_defualt_seconds():
 
 def any_message(bot, message):
     try:
-        print('devug')
-
         text = message.text or '<no text>'
         if text == None:
             text = ''
@@ -139,7 +137,7 @@ def any_message(bot, message):
             r = chat.recordatorio_from_message(message.reply_to_message.message_id)
             if r != None:
                 chat.clarify_edit_r(subindex_r)
-        elif text.startswith('/editar'):
+        elif text.startswith('/edit'):
             if subindex_r is not None:
                 chat.clarify_edit_r(subindex_r, showtime=False)
             else:

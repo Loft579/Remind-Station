@@ -40,10 +40,10 @@ ADMIN_USER_ID = 43759228
 ADMIN_CHAT_ID = 43759228
 
 RECORDARTEXT = '''¿Hiciste esto?
-/editar{} &| /hours | /days &| /done{}
+/edit{} &| /hours | /days &| /done{}
 '''
 
-REC_AGREGADO = '''/editar{} | /done{}&
+REC_AGREGADO = '''/edit{} | /done{}&
 /hour2 | /day1 | /day3&'''
 
 EDITS = '''/done{}
