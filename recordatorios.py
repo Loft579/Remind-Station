@@ -30,13 +30,6 @@ class Recordatorio:
         # En general, para agregarle caracteristicas a un rec.
         self.adjectives = set()
 
-        # TODO- Fixear
-        try:
-            self.nombre = getattr(message, 'from', None).first_name
-            assert (isinstance(self.nombre, str))
-        except:
-            self.nombre = "Ey"
-
     def setadj(self, adj, value):
         if value:
             self.adjectives.add(adj)
@@ -48,7 +41,7 @@ class Recordatorio:
 
     def trigger(self):
         # Primero recuerda:
-        self.mychat.clarify(self.nombre + " " + RECORDARTEXT, rec=self, reply_message_id=self.message_id, siosi=True)
+        self.mychat.clarify(RECORDARTEXT, rec=self, reply_message_id=self.message_id, siosi=True)
 
         # Segundo, pone el mensaje este en actual_r
         self.mychat.actual_r = self
