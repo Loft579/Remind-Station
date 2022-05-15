@@ -59,8 +59,6 @@ def perform_next(chat):
 def any_message(bot, message):
     try:
         text = message.text or '<no text>'
-        if text == None:
-            text = ''
 
         # Primero se fija si debe ignorar el comando y de paso crea el comando mas limpio
         if '@' in text:
@@ -103,9 +101,9 @@ def any_message(bot, message):
             adj = subindex
             chat.setadj(adj, adj not in chat.adjectives)
             if adj in chat.adjectives:
-                chat.clarify('Se activo ese modo. /mode{} para des-activarlo'.format(adj), True)
+                chat.clarify('Actived. /mode{} to disable it.'.format(adj), True)
             else:
-                chat.clarify('Se desactivo ese modo. /mode{} para activarlo'.format(adj), True)
+                chat.clarify('Disabled. /mode{} to activate.'.format(adj), True)
         elif text == '/ping':
             chat.clarify('pong', True)
         elif text.startswith('/list'):
@@ -126,7 +124,7 @@ def any_message(bot, message):
         elif text == '/save':
             save()
             chat.clarify('Guardado.')
-        elif text == '/proxbigchange':
+        elif text == '/proxbigchange': # TODO: Delete this
             for c in chats.values():
                 c.clarify('Se borraran todos los recordatorios, lo siento, puedes agregarlos de nuevo en unas horas.')
                 for r in c.recordatorios:

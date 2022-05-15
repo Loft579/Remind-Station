@@ -42,20 +42,22 @@ RECORDARTEXT = '''👆
 REC_AGREGADO = '''/edit{} | /done{}&
 /hour2 | /day1 | /day3&'''
 
-EDITS = '''/done{}
-&/min30 | /hour4
-/hour12 | /day2
-/day5 | /day30&'''
+EDITS = '''👌 /done{}
+&/min5 | /min10 | /min15 | /min45
+/hour2 | /hour3 | /hour5 | /hour8
+/hour13 | /day1 | /day2  | /day3
+/day5 | /day8 | /day13 | /day21
+/day34| /day55 | /day89 | /day365&'''
 
 # Si este numero es 1, guardara 1 vez por dia.
 # Si es 48, guardara 48 veces por dia.
 PROB_DE_APAGADO = 24
 
-PERIODICHELP = '''Listo, es periodicó.& Ahours elige un período si quieres: /hour8 /day1 /day7 ... etc&'''
+PERIODICHELP = '''Done, it is periodic now& Now pick a period: /hour8 /day1 /day7 ... etc&'''
 
-ALARMHELP = '''Listo.'''
+ALARMHELP = '''Done.'''
 
-AUN_NO_HAY_RECS = '''Este chat no tiene recordatorios.
+AUN_NO_HAY_RECS = '''This chat has no reminders.
 '''
 
 MUTED = 0
@@ -68,6 +70,6 @@ PERIODIC = 1
 ALARM = 2
 
 MODOSHELP = '''
-' /mode0 ' [modo silencioso] manda pocos mensajes.
-' /mode1 ' [modo ignorador] ignora los 'tengo que'.
-' /mode2 ' [modo limpiador] borra mensajes propios.'''
+' /mode0 ' [modo silencioso] Send few messages.
+' /mode1 ' [modo ignorador] Deprecated.
+' /mode2 ' [modo limpiador] Delete own messages.'''
