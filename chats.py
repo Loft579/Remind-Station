@@ -91,7 +91,7 @@ class Chat:
             return info
         else:
             if extra != '':
-                return 'No existe recordatorio con '{}'.'.format(extra)
+                return 'No existe recordatorio con "{}".'.format(extra)
             else:
                 return AUN_NO_HAY_RECS
 
