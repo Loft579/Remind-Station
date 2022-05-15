@@ -177,21 +177,21 @@ def any_message(bot, message):
                 chat.clarify(ill_remember_text_builder(subindex, 'dia'))
             else:
                 chat.actual_r.restart(randint(DAY, 3 * DAY))
-                chat.clarify(ill_remember_text_builder(None, 'dia'))
+                chat.clarify(ill_remember_text_builder(3, 'dia'))
         elif text.startswith('/hour') and chat.actual_r != None:
             if subindex != -1:
                 chat.actual_r.restart(subindex * HOUR)
                 chat.clarify(ill_remember_text_builder(subindex, 'hours'))
             else:
                 chat.actual_r.restart(randint(2 * HOUR, 4 * HOUR))
-                chat.clarify(ill_remember_text_builder(None, 'hours'))
+                chat.clarify(ill_remember_text_builder(8, 'hours'))
         elif text.startswith('/min') and chat.actual_r is not None:
             if subindex != -1:
                 chat.actual_r.restart(subindex * MIN)
                 chat.clarify(ill_remember_text_builder(subindex, 'minute'))
             else:
                 chat.actual_r.restart(randint(10 * MIN, 20 * MIN))
-                chat.clarify(ill_remember_text_builder(None, 'minute'))
+                chat.clarify(ill_remember_text_builder(30, 'minute'))
         elif text.startswith('...') and chat.actual_r is not None:
             chat.actual_r.append_message_id(message.message_id)
             chat.clarify('Last reminder has been expanded.')
