@@ -42,8 +42,11 @@ RECORDARTEXT = '''👆
 REC_AGREGADO = '''/edit{} | /done{}&
 /hour2 | /day1 | /day3&'''
 
-EDITS = '''👌 /done{}
-&/min5 | /min10 | /min15 | /min45
+EDITS = '''
+👌 /done{}&
+
+Postpone:
+/min5 | /min10 | /min15 | /min45
 /hour2 | /hour3 | /hour5 | /hour8
 /hour13 | /day1 | /day2  | /day3
 /day5 | /day8 | /day13 | /day21
