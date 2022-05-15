@@ -10,7 +10,6 @@ from time import sleep
 from chats import *
 from customstdout import change_original_stdout
 from recordatorios import *
-import nlp.todatetimes as todatetimes
 from utils import *
 from constants import *
 
