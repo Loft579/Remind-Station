@@ -58,7 +58,7 @@ def any_message(bot, message):
         chats[message.chat.id] = Chat(message.chat)
     chat = chats[message.chat.id]
 
-    # sub-index o sea, el X tal que /diaX
+    # sub-index o sea, el X tal que /dayX
     subindex = -1
 
     i = 0
@@ -169,14 +169,14 @@ def any_message(bot, message):
     elif text.startswith("/alarm") and subindex_r != None:
         subindex_r.setadj(ALARM, True)
         chat.clarify(ALARMHELP)
-    elif text.startswith("/dia") and chat.actual_r != None:
+    elif text.startswith("/day") and chat.actual_r != None:
         if subindex != -1:
             chat.actual_r.restart(subindex * DIA)
             chat.clarify(te_lo_recordare_en(subindex, "dia"))
         else:
             chat.actual_r.restart(randint(DIA, 3 * DIA))
             chat.clarify(te_lo_recordare_en(None, "dia"))
-    elif text.startswith("/hora") and chat.actual_r != None:
+    elif text.startswith("/hour") and chat.actual_r != None:
         if subindex != -1:
             chat.actual_r.restart(subindex * HORA)
             chat.clarify(te_lo_recordare_en(subindex, "hora"))
@@ -235,7 +235,7 @@ if __name__ == "__main__":
             for r in c.recordatorios:
                 r.recreate_timer()
 
-    # Si debe mudar algo
+    # Migration code
     if False:
         print("Mudando...")
         for c in chats.values():

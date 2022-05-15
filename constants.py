@@ -40,16 +40,16 @@ ADMIN_USER_ID = 43759228
 ADMIN_CHAT_ID = 43759228
 
 RECORDARTEXT = """¿Hiciste esto?
-/editar{} &| /horas | /dias &| /borrar{}
+/editar{} &| /hours | /days &| /borrar{}
 """
 
 REC_AGREGADO = """/editar{} | /borrar{}&
-/hora2 | /dia1 | /dia3&"""
+/hour2 | /day1 | /day3&"""
 
 EDITS = """/borrar{}
-&/min30 | /hora4
-/hora12 | /dia2
-/dia5 | /dia30
+&/min30 | /hour4
+/hour12 | /day2
+/day5 | /day30
 /periodic{}
 /alarm{}&"""
 
@@ -57,7 +57,7 @@ EDITS = """/borrar{}
 # Si es 48, guardara 48 veces por dia.
 PROB_DE_APAGADO = 24
 
-PERIODICHELP = """Listo, es periodicó.& Ahora elige un período si quieres: /hora8 /dia1 /dia7 ... etc&"""
+PERIODICHELP = """Listo, es periodicó.& Ahora elige un período si quieres: /hour8 /day1 /day7 ... etc&"""
 
 ALARMHELP = """Listo."""
 
