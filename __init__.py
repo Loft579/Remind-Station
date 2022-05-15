@@ -41,6 +41,21 @@ def get_defualt_seconds():
     return randint(HOUR * 6, HOUR * 8)
 
 
+def perform_next(chat):
+    sooner = None
+    for r in chat.recordatorios:
+        if r.seg == -1:
+            continue
+
+        if sooner == None or (sooner.how_much_left() > r.how_much_left()):
+            sooner = r
+
+    if sooner != None:
+        chat.clarify_edit_r(sooner)
+    else:
+        chat.clarify('No active reminders.', True)
+
+
 def any_message(bot, message):
     try:
         text = message.text or '<no text>'
@@ -82,34 +97,22 @@ def any_message(bot, message):
                 chat.clarify(GROUPWELCOME, True)
         elif text == '/help':
             chat.clarify(HELP, True)
-        elif text == '/modo' and subindex == -1:
+        elif text == '/mode' and subindex == -1:
             chat.clarify(MODOSHELP, True)
-        elif text.startswith('/modo'):
+        elif text.startswith('/mode'):
             adj = subindex
             chat.setadj(adj, adj not in chat.adjectives)
             if adj in chat.adjectives:
-                chat.clarify('Se activo ese modo. /modo{} para des-activarlo'.format(adj), True)
+                chat.clarify('Se activo ese modo. /mode{} para des-activarlo'.format(adj), True)
             else:
-                chat.clarify('Se desactivo ese modo. /modo{} para activarlo'.format(adj), True)
+                chat.clarify('Se desactivo ese modo. /mode{} para activarlo'.format(adj), True)
         elif text == '/ping':
             chat.clarify('pong', True)
-        elif text.startswith('/info'):
+        elif text.startswith('/list'):
             textinfo = chat.info(text[6:])
             chat.lastinfomessage = chat.clarify(textinfo, siosi=True)
         elif text == '/next':
-            sooner = None
-            for r in chat.recordatorios:
-                if r.seg == -1:
-                    continue
-
-                if sooner == None or (sooner.how_much_left() > r.how_much_left()):
-                    sooner = r
-
-            if sooner != None:
-                chat.clarify_edit_r(sooner)
-            else:
-                chat.clarify('No active reminders.', True)
-
+            perform_next(chat)
         elif text == '/clean':
             new = []
             for r in chat.recordatorios:
@@ -154,12 +157,13 @@ def any_message(bot, message):
             chat.clarify_edit_r(subindex_r, showtime=True)
         elif text.startswith('/done'):
             if subindex_r is None:
-                chat.clarify('No existe eso')
+                chat.clarify('It does not exist.')
             elif subindex_r.seg == -1:
-                chat.clarify('Ya estaba borrado')
+                chat.clarify('Already done.')
             else:
-                chat.clarify('Borrado')
+                chat.clarify('Done')
                 subindex_r.cancel()
+            perform_next(chat)
         elif text.startswith('/ok') and subindex_r != None:
             subindex_r.cancel()
             chat.update_lastinfomessage()

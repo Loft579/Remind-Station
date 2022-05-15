@@ -8,22 +8,18 @@ MIN = 60
 HOUR = 60 * MIN
 DAY = HOUR * 24
 
-PRIVATEWELCOME = '''Hola. Puedes decirme todo lo que tengas que hacer, y yo te lo recordaré.
+PRIVATEWELCOME = '''Hi. You may tell me what do you want to do and I will help you.
 /help para ver comandos especiales.'''
 
-GROUPWELCOME = '''Hola. Voy a recordar cada mensaje que contenga un 'tengo que'.
-/help para ver comandos especiales.'''
+GROUPWELCOME = PRIVATEWELCOME
 
 HELP = '''
-' /info ' Para ver la lista de recordatorios.
-' /modo ' Para cambiar los modos.
-' /info ' Para ver la lista de todos los recordatorios.
-' /info X ' Para mostrar solo los recodatorios que contengan X.
-' /next ' Para ver el recordatorio mas cercano en el tiempo.
-' /periodicX ' Convierte el recordatorio X en periódico, haciendo que suene cada cierto tiempo constante, una y otra vez.
-' /alarmX ' Convierte el recordatorio X en una alarma, que sonará mucho más veces hasta que se apague.
+' /list ' Show list of reminders.
+' /mode ' Configuration.
+' /list X ' Show list of reminders that contains X.
+' /next ' The next reminder.
 
-Bot creado por @agusavior /debughelp
+Created by @agusavior /debughelp
 '''
 
 DEBUGHELP = '''
@@ -39,7 +35,7 @@ CHATSFILENAME = 'chats.pickle'
 ADMIN_USER_ID = 43759228
 ADMIN_CHAT_ID = 43759228
 
-RECORDARTEXT = '''¿Hiciste esto?
+RECORDARTEXT = '''👆
 /edit{} &| /hours | /days &| /done{}
 '''
 
@@ -49,9 +45,7 @@ REC_AGREGADO = '''/edit{} | /done{}&
 EDITS = '''/done{}
 &/min30 | /hour4
 /hour12 | /day2
-/day5 | /day30
-/periodic{}
-/alarm{}&'''
+/day5 | /day30&'''
 
 # Si este numero es 1, guardara 1 vez por dia.
 # Si es 48, guardara 48 veces por dia.
@@ -74,6 +68,6 @@ PERIODIC = 1
 ALARM = 2
 
 MODOSHELP = '''
-' /modo0 ' [modo silencioso] manda pocos mensajes.
-' /modo1 ' [modo ignorador] ignora los 'tengo que'.
-' /modo2 ' [modo limpiador] borra mensajes propios.'''
+' /mode0 ' [modo silencioso] manda pocos mensajes.
+' /mode1 ' [modo ignorador] ignora los 'tengo que'.
+' /mode2 ' [modo limpiador] borra mensajes propios.'''

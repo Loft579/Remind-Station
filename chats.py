@@ -76,7 +76,7 @@ class Chat:
             info += u'/view' + str(r.uid)
             if r.seg != -1:
                 info += ' /ok' + str(r.uid)
-                info += ' /merge' + str(r.uid)
+                # info += ' /merge' + str(r.uid)
             info += '\n'
 
             info += r.text + '\n'
@@ -86,7 +86,7 @@ class Chat:
                 info += f'* And {more} more...\n'
 
         if haymugre:
-            info += u'¿ /clean ?'
+            info += u'/clean'
 
         if info != '':
             return info
