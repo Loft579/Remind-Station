@@ -1,12 +1,12 @@
-# Esto es por si la zona horaria del server difiere de lo que vos necesitas
+# Esto es por si la zona hoursria del server difiere de lo que vos necesitas
 CURRENT_TIME_SHIFT_HOURS = -3
 
 with open('token', 'r') as f:
     TOKEN = f.readline().strip()
 
 MIN = 60
-HORA = 60 * MIN
-DIA = HORA * 24
+HOUR = 60 * MIN
+DAY = HOUR * 24
 
 PRIVATEWELCOME = '''Hola. Puedes decirme todo lo que tengas que hacer, y yo te lo recordaré.
 /help para ver comandos especiales.'''
@@ -40,13 +40,13 @@ ADMIN_USER_ID = 43759228
 ADMIN_CHAT_ID = 43759228
 
 RECORDARTEXT = '''¿Hiciste esto?
-/editar{} &| /hours | /days &| /borrar{}
+/editar{} &| /hours | /days &| /done{}
 '''
 
-REC_AGREGADO = '''/editar{} | /borrar{}&
+REC_AGREGADO = '''/editar{} | /done{}&
 /hour2 | /day1 | /day3&'''
 
-EDITS = '''/borrar{}
+EDITS = '''/done{}
 &/min30 | /hour4
 /hour12 | /day2
 /day5 | /day30
@@ -57,7 +57,7 @@ EDITS = '''/borrar{}
 # Si es 48, guardara 48 veces por dia.
 PROB_DE_APAGADO = 24
 
-PERIODICHELP = '''Listo, es periodicó.& Ahora elige un período si quieres: /hour8 /day1 /day7 ... etc&'''
+PERIODICHELP = '''Listo, es periodicó.& Ahours elige un período si quieres: /hour8 /day1 /day7 ... etc&'''
 
 ALARMHELP = '''Listo.'''
 

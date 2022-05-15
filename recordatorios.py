@@ -71,7 +71,7 @@ class Recordatorio:
         self.timerindex = -1
         self.seg = -1
 
-    # retorna cuantos segundos faltan para que suene este rec
+    # retorna cuantos seconds faltan para que suene este rec
     def how_much_left(self):
         yapaso = time() - self.epoch_of_start
         return self.seg - yapaso

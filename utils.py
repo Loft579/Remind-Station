@@ -2,32 +2,27 @@ from datetime import datetime, timedelta
 from constants import *
 
 
-def te_lo_recordare_en(cantidad, tipo):
-    if cantidad == None:
-        cantidad = 'unos'
-        tipo += 's'
-    elif cantidad > 1:
-        tipo += 's'
-    return u'Te lo recordaré en ' + str(cantidad) + u' ' + tipo
+def ill_remember_text_builder(cantidad, tipo):
+    return u'I will remember it in ' + str(cantidad) + u' ' + tipo
 
 
 def seg_to_str(seg):
     ret = ''
 
     showseg = True
-    if seg > DIA:
-        ret += '{} dias '.format(int(seg / DIA))
-        seg = seg % DIA
+    if seg > DAY:
+        ret += '{} dias '.format(int(seg / DAY))
+        seg = seg % DAY
         showseg = False
-    if seg > HORA:
-        ret += '{} horas '.format(int(seg / HORA))
-        seg = seg % HORA
+    if seg > HOUR:
+        ret += '{} hours '.format(int(seg / HOUR))
+        seg = seg % HOUR
         showseg = False
     if seg > MIN:
-        ret += '{} minutos '.format(int(seg / MIN))
+        ret += '{} minutes '.format(int(seg / MIN))
         seg = seg % MIN
     if showseg and seg != 0:
-        ret += str(int(seg)) + ' segundos'
+        ret += str(int(seg)) + ' seconds'
     return ret
 
 

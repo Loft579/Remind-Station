@@ -1,4 +1,5 @@
 import pickle
+import traceback
 
 from typing import List
 
@@ -72,9 +73,9 @@ class Chat:
                 else:
                     info += u'📌 '
 
-            info += u'/ver' + str(r.uid)
+            info += u'/view' + str(r.uid)
             if r.seg != -1:
-                info += ' /ya' + str(r.uid)
+                info += ' /ok' + str(r.uid)
                 info += ' /merge' + str(r.uid)
             info += '\n'
 
@@ -85,13 +86,13 @@ class Chat:
                 info += f'* And {more} more...\n'
 
         if haymugre:
-            info += u'¿ /limpiar ?'
+            info += u'¿ /clean ?'
 
         if info != '':
             return info
         else:
             if extra != '':
-                return 'No existe recordatorio con "{}".'.format(extra)
+                return '"{}" not found.'.format(extra)
             else:
                 return AUN_NO_HAY_RECS
 
@@ -112,8 +113,8 @@ class Chat:
             elif self.lastnewtext != '':
                 try:
                     bot.edit_message_text(self.lastnewtext, chat_id=self.id, message_id=tempid)
-                except:
-                    print('Un mensaje no se pudo editar. No importa mucho.')
+                except Exception as e:
+                    traceback.print_exc()
 
         if rec is not None:
             text = text.format(*(5 * [rec.uid]))
@@ -160,9 +161,9 @@ class Chat:
         s = ''
         if showtime:
             if r.seg != -1:
-                s = u'⏳ en {}\n'.format(seg_to_str(r.how_much_left()))
+                s = u'⏳ in {}\n'.format(seg_to_str(r.how_much_left()))
             else:
-                s = u'⌛️ no sonará\n'
+                s = u'⌛️ no ring\n'
 
         self.clarify(s + EDITS, siosi=True, rec=r, reply_message_id=r.message_id, reply_message_ids=r.message_ids)
 
