@@ -52,8 +52,8 @@ Postpone:
 /day5 | /day8 | /day13 | /day21
 /day34| /day55 | /day89 | /day365&'''
 
-# Si este numero es 1, guardara 1 vez por dia.
-# Si es 48, guardara 48 veces por dia.
+# Si este numero es 1, guardara 1 vez por day.
+# Si es 48, guardara 48 veces por day.
 PROB_DE_APAGADO = 24
 
 PERIODICHELP = '''Done, it is periodic now& Now pick a period: /hour8 /day1 /day7 ... etc&'''

@@ -11,7 +11,7 @@ def seg_to_str(seg):
 
     showseg = True
     if seg > DAY:
-        ret += '{} dias '.format(int(seg / DAY))
+        ret += '{} days '.format(int(seg / DAY))
         seg = seg % DAY
         showseg = False
     if seg > HOUR:

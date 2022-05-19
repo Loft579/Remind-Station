@@ -21,18 +21,18 @@ dispatcher = None
 botname = 'tengo_que_bot'
 
 
-def cada_dia():
-    global cada_dia_timer
+def each_day():
+    global each_day_timer
 
     # Guardado Diario.
     save()
 
-    # Vuelve a ejecutar esta funcion luego de 1 dia.
-    cada_dia_timer = Timer(DAY / PROB_DE_APAGADO, cada_dia)
-    cada_dia_timer.start()
+    # Vuelve a ejecutar esta funcion luego de 1 day.
+    each_day_timer = Timer(DAY / PROB_DE_APAGADO, each_day)
+    each_day_timer.start()
 
 
-cada_dia_timer = Timer(DAY / PROB_DE_APAGADO, cada_dia)
+each_day_timer = Timer(DAY / PROB_DE_APAGADO, each_day)
 
 
 # Los seconds que se pospone el recordatorio la primera vez que se
@@ -174,10 +174,10 @@ def any_message(bot, message):
         elif text.startswith('/day') and chat.actual_r != None:
             if subindex != -1:
                 chat.actual_r.restart(subindex * DAY)
-                chat.clarify(ill_remember_text_builder(subindex, 'dia'))
+                chat.clarify(ill_remember_text_builder(subindex, 'day'))
             else:
                 chat.actual_r.restart(randint(DAY, 3 * DAY))
-                chat.clarify(ill_remember_text_builder(3, 'dia'))
+                chat.clarify(ill_remember_text_builder(3, 'day'))
         elif text.startswith('/hour') and chat.actual_r != None:
             if subindex != -1:
                 chat.actual_r.restart(subindex * HOUR)
@@ -230,8 +230,8 @@ if __name__ == '__main__':
     updater = Updater(token=TOKEN)
     dispatcher = updater.dispatcher
 
-    # Empieza el ciclo de los dias:
-    cada_dia_timer.start()
+    # Empieza el ciclo de los days:
+    each_day_timer.start()
 
     # Si cargo algo desde el archivo, restaura el alltimers
     if chats != dict():
@@ -284,6 +284,6 @@ if __name__ == '__main__':
     print('Closing timers')
     for t in alltimers:
         t.cancel()
-    cada_dia_timer.cancel()
+    each_day_timer.cancel()
 
     print('Bye bye.')
