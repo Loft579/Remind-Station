@@ -256,7 +256,7 @@ if __name__ == '__main__':
             print('Bot killed by /exit')
             exit()
         elif update.edited_message != None:
-            any_message(bot, update.edited_message)
+            pass # Nothing. Ignore in edited messages.
         elif update.message is not None:
             any_message(bot, update.message)
         else:
