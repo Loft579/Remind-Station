@@ -54,7 +54,7 @@ Postpone:
 
 # Si este numero es 1, guardara 1 vez por day.
 # Si es 48, guardara 48 veces por day.
-PROB_DE_APAGADO = 24
+PROB_DE_APAGADO = 24 * 60
 
 PERIODICHELP = '''Done, it is periodic now& Now pick a period: /hour8 /day1 /day7 ... etc&'''
 
