@@ -19,12 +19,12 @@ def save():
     for chat in chats.values():
         chat.lastmessage = None
         chat.lastinfomessage = None
-    with open(CHATSFILENAME, 'wb') as handle:
+    with open(CHATSFILEPATH, 'wb') as handle:
         pickle.dump(chats, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 def load():
-    with open(CHATSFILENAME, 'rb') as handle:
+    with open(CHATSFILEPATH, 'rb') as handle:
         dictchatsviejo = pickle.load(handle)
         print('dictchatsviejo tenia un len de ' + str(len(dictchatsviejo)))
         chats.update(dictchatsviejo)

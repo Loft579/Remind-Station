@@ -30,7 +30,7 @@ DEBUGHELP = '''
 /start
 '''
 
-CHATSFILENAME = 'chats.pickle'
+CHATSFILEPATH = 'storage/chats.pickle'
 
 ADMIN_USER_ID = 43759228
 ADMIN_CHAT_ID = 43759228

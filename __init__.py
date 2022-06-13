@@ -221,7 +221,7 @@ if __name__ == '__main__':
         load()
         print('Chats loaded. len_chats: ' + str(len(chats)))
     except Exception as e:
-        print('There is no file' + CHATSFILENAME + ' or something went wrong.')
+        print('There is no file' + CHATSFILEPATH + ' or something went wrong.')
         traceback.print_exc()
 
         # Save again
