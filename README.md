@@ -42,3 +42,18 @@ pip install -r requirements.txt
 # Run it
 python __init__.py
 ```
+
+## With docker
+
+### With docker
+
+```bash
+# Open folder
+cd tengoquebot
+
+# Create storage folder
+mkdir storage
+
+# Launch it
+docker build . -t tengoque && docker run --restart=always -d -v $(pwd)/storage:/app/storage tengoque
+```
