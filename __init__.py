@@ -106,6 +106,8 @@ def any_message(bot, message):
                 chat.clarify('Disabled. /mode{} to activate.'.format(adj), True)
         elif text == '/ping':
             chat.clarify('pong', True)
+        elif text == '/version':
+            chat.clarify(open('version', 'r').read(), True)
         elif text.startswith('/list'):
             textinfo = chat.info(text[6:])
             chat.lastinfomessage = chat.clarify(textinfo, siosi=True)
