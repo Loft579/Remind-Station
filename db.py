@@ -57,7 +57,9 @@ class Reminder:
             reminder.db_id = row[0]
             reminder.created_at = row[1]
             all_reminders.append(reminder)
+        connection.close()
         return all_reminders
+        
 
 
 #test zone 
