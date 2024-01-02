@@ -140,6 +140,9 @@ class Chat:
         except telegram.error.Unauthorized:
             print(f'Can\'t send message. Unauthorized. Probably blocked by user {self.id}.')
             m = None
+        except telegram.error.BadRequest as e:
+            if 'Message to reply not found' in str(e):
+                m = bot.send_message(self.id, textcropped)
 
         # May point to each extra message_id
         if reply_message_ids is not None:
@@ -165,7 +168,9 @@ class Chat:
             else:
                 s = u'⌛️ no ring\n'
 
-        self.clarify(s + EDITS, siosi=True, rec=r, reply_message_id=r.message_id, reply_message_ids=r.message_ids)
+        debug_info = f'debug[{len(str(r.text))}]'
+
+        self.clarify(s + debug_info + EDITS, siosi=True, rec=r, reply_message_id=r.message_id, reply_message_ids=r.message_ids)
 
     def recordatorio_from_message(self, message_id):
         for r in self.recordatorios:
