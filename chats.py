@@ -168,7 +168,7 @@ class Chat:
             else:
                 s = u'⌛️ no ring\n'
 
-        debug_info = f'debug[{len(str(r.text))}]'
+        debug_info = f'debug[{str(r.text)}]'
 
         self.clarify(s + debug_info + EDITS, siosi=True, rec=r, reply_message_id=r.message_id, reply_message_ids=r.message_ids)
 
