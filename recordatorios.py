@@ -41,7 +41,7 @@ class Recordatorio:
 
     def trigger(self):
         # Primero recuerda:
-        self.mychat.clarify(RECORDARTEXT, rec=self, reply_message_id=self.message_id, siosi=True)
+        self.mychat.clarify(RECORDARTEXT, rec=self, reply_card_id=self.message_id, siosi=True)
 
         # Segundo, pone el mensaje este en actual_r
         self.mychat.actual_r = self
@@ -78,7 +78,8 @@ class Recordatorio:
 
     # Pone todo lo de other dentro de lo de self.
     def merge_with(self, other: Recordatorio):
-        self.message_ids.extend(other.message_ids)
+        self.mes
+        ge_ids.extend(other.message_ids)
 
     def append_message_id(self, message_id):
         self.message_ids.append(message_id)

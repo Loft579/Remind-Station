@@ -55,5 +55,5 @@ cd tengoquebot
 mkdir storage
 
 # Launch it
-docker build . -t tengoque && docker run --restart=always -d -v $(pwd)/storage:/app/storage tengoque
+docker build . -t tengoque && docker run -v $(pwd)/storage:/app/storage tengoque
 ```

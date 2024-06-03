@@ -6,12 +6,16 @@
 from telegram.ext import Filters, MessageHandler, Updater
 import logging
 from random import randint
+import time
 from time import sleep
-from chats import *
 from customstdout import change_original_stdout
-from recordatorios import *
 from utils import *
 from constants import *
+from trello import *
+import traceback
+from trello_do import *
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -21,57 +25,16 @@ dispatcher = None
 botname = 'tengo_que_bot'
 
 
-def each_day():
-    global each_day_timer
-
-    # Guardado Diario.
-    save()
-
-    # Vuelve a ejecutar esta funcion luego de 1 day.
-    each_day_timer = Timer(DAY / PROB_DE_APAGADO, each_day)
-    each_day_timer.start()
-
-
-each_day_timer = Timer(DAY / PROB_DE_APAGADO, each_day)
-
-
 # Los seconds que se pospone el recordatorio la primera vez que se
 # crea.
 def get_defualt_seconds():
     return randint(HOUR * 6, HOUR * 8)
 
-
-def perform_next(chat):
-    sooner = None
-    for r in chat.recordatorios:
-        if r.seg == -1:
-            continue
-
-        if sooner == None or (sooner.how_much_left() > r.how_much_left()):
-            sooner = r
-
-    if sooner != None:
-        chat.clarify_edit_r(sooner)
-    else:
-        chat.clarify('No active reminders.', True)
-
-
 def any_message(bot, message):
-    try:
-        text = message.text or '[reminder with no text]'
+    if True:
+        text = message.text or ''
 
-        # Primero se fija si debe ignorar el comando y de paso crea el comando mas limpio
-        if '@' in text:
-            if text[text.index('@') + 1:] != botname:
-                return
-            text = text[:text.index('@')]
-
-        # agarra el chat (si no existe lo crea):
-        if message.chat.id not in chats:
-            chats[message.chat.id] = Chat(message.chat)
-        chat = chats[message.chat.id]
-
-        # sub-index o sea, el X tal que /dayX
+        # sub-index o sea, el X tal que /dayX, pero del mensaje enviado por el usuario
         subindex = -1
 
         i = 0
@@ -83,134 +46,123 @@ def any_message(bot, message):
                 temp += c
         if temp != '':
             subindex = int(temp)
-            subindex_r = chat.rec_from_uid(subindex)
-        else:
-            subindex_r = chat.actual_r
 
         # analiza el caso...
-        if text == '/start':
-            if message.chat.type == 'private':
-                chat.clarify(PRIVATEWELCOME, True)
+        if text == '/help':
+            clarify(message.chat.id, HELP)
+        elif text == '/hardcode':
+            print("user id:", get_user_id_by_name("agusavior"))
+        elif text == '/mode' or text == '/mode ':
+            clarify(message.chat.id, MODOSHELP)
+        elif text.startswith('/mode '):
+            adj = text.split(" ")[1]
+            chats_mode[message.chat.id] = adj
+        elif text.startswith('/show_plus'):
+            the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
+            if the_pass.card_collected != None:
+                clarify(message.chat.id, str(the_pass.card_collected["name"]))
+                cmds_msg = "reminder duration: " + seg_to_str(int(the_pass.code_collected[3])) + ". time left: " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time())) + "\n/done" + str(chats_last_card[message.chat.id]) + " /sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4"
+                clarify(message.chat.id, cmds_msg)
             else:
-                chat.clarify(GROUPWELCOME, True)
-        elif text == '/help':
-            chat.clarify(HELP, True)
-        elif text == '/mode' and subindex == -1:
-            chat.clarify(MODOSHELP, True)
-        elif text.startswith('/mode'):
-            adj = subindex
-            chat.setadj(adj, adj not in chat.adjectives)
-            if adj in chat.adjectives:
-                chat.clarify('Actived. /mode{} to disable it.'.format(adj), True)
+                if the_pass.is_last_edited == False:
+                    clarify(message.chat.id, "not card found, try using a valid ID.")
+        elif text.startswith('/show'):
+            the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
+            if the_pass.card_collected != None:
+                clarify(message.chat.id, str(the_pass.card_collected["name"]))
             else:
-                chat.clarify('Disabled. /mode{} to activate.'.format(adj), True)
+                if the_pass.is_last_edited == False:
+                    clarify(message.chat.id, "not card found, try using a valid ID.")
         elif text == '/ping':
-            chat.clarify('pong', True)
+            clarify(message.chat.id, 'pong')
         elif text == '/version':
-            chat.clarify(open('version', 'r').read(), True)
+            version = open('version', 'r')
+            clarify(message.chat.id, version.read())
+            version.close()
         elif text.startswith('/list'):
-            textinfo = chat.info(text[6:])
-            chat.lastinfomessage = chat.clarify(textinfo, siosi=True)
-        elif text == '/next':
-            perform_next(chat)
+            refresh_pass(message.chat.id, clarify_list = True)
+        elif text == '/names':
+            the_pass = refresh_pass(message.chat.id, collect_names = True)
+            if the_pass.names_message != "":
+                clarify(message.chat.id, the_pass.names_message)
+            else:
+                clarify(message.chat.id, "No names to view")
         elif text == '/clean':
-            new = []
-            for r in chat.recordatorios:
-                if r.seg != -1:
-                    new.append(r)
-            chat.recordatorios = new
-
-            chat.update_lastinfomessage()
-        elif text == '/debughelp' and message.chat.id == ADMIN_CHAT_ID:
-            chat.clarify(DEBUGHELP, True)
-        elif text == '/save':
-            save()
-            chat.clarify('Save it.')
-        elif text == '/proxbigchange': # TODO: Delete this
-            for c in chats.values():
-                c.clarify('Se borraran todos los recordatorios, lo siento, puedes agregarlos de nuevo en unas horas.')
-                for r in c.recordatorios:
-                    if r.seg != -1:
-                        c.clarify('.', reply=r.message_id)
-        elif text == '/chatid':
-            chat.clarify(str(message.chat.id), True)
-        elif text == '/userid':
-            chat.clarify(str(message.from_user.id), True)
-        elif text == '.' and message.reply_to_message != None:
-            r = chat.recordatorio_from_message(message.reply_to_message.message_id)
-            if r != None:
-                chat.clarify_edit_r(subindex_r)
-        elif text.startswith('/edit'):
-            if subindex_r is not None:
-                chat.clarify_edit_r(subindex_r, showtime=False)
-            else:
-                chat.clarify('It does not exist.')
-        elif text.startswith('/merge'):
-            if subindex_r is not None:
-                chat.actual_r.merge_with(subindex_r)
-                subindex_r.cancel()
-                chat.update_lastinfomessage()
-                chat.clarify('Mergeado.')
-            else:
-                chat.clarify('No existe eso.')
-        elif text.startswith('/view') and subindex_r != None:
-            chat.clarify_edit_r(subindex_r, showtime=True)
+            pass #Trello mod
+        elif text == '/debug_help':
+            clarify(message.chat.id, DEBUGHELP)
+        elif text == '/chat_id':
+            clarify(message.chat.id, str(message.chat.id))
+        elif text == '/my_user_id':
+            clarify(message.chat.id, str(message.from_user.id))
+        elif text == '/done':
+            clarify(message.chat.id, 'did you mean /done' + str(chats_last_card[message.chat.id]) + " ?")
         elif text.startswith('/done'):
-            if subindex_r is None:
-                chat.clarify('It does not exist.')
-            elif subindex_r.seg == -1:
-                chat.clarify('Already done.')
+            the_pass = refresh_pass(message.chat.id, done_card = subindex)
+            if the_pass.is_card_done == True:
+                clarify(message.chat.id, "card done")
             else:
-                chat.clarify('Done')
-                subindex_r.cancel()
-            perform_next(chat)
-        elif text.startswith('/ok') and subindex_r != None:
-            subindex_r.cancel()
-            chat.update_lastinfomessage()
-        elif text.startswith('/periodic') and subindex_r != None:
-            subindex_r.setadj(PERIODIC, True)
-            chat.clarify(PERIODICHELP)
-        elif text.startswith('/alarm') and subindex_r != None:
-            subindex_r.setadj(ALARM, True)
-            chat.clarify(ALARMHELP)
-        elif text.startswith('/day') and chat.actual_r != None:
-            if subindex != -1:
-                chat.actual_r.restart(subindex * DAY)
-                chat.clarify(ill_remember_text_builder(subindex, 'day'))
+                pass
+        elif text.startswith('/add '):
+            urls = text.split(" ")
+            urls.pop(0)
+            the_card = get_card_from_url(urls[0])
+            if the_card != None:
+                the_pass = refresh_pass(message.chat.id, add_cmd = the_card["id"])
+                if the_pass.is_add_cmd_done == True:
+                    clarify(message.chat.id, "card imported")
+                else:
+                    clarify(message.chat.id, "error in importing the card")
             else:
-                chat.actual_r.restart(randint(DAY, 3 * DAY))
-                chat.clarify(ill_remember_text_builder(3, 'day'))
-        elif text.startswith('/hour') and chat.actual_r != None:
-            if subindex != -1:
-                chat.actual_r.restart(subindex * HOUR)
-                chat.clarify(ill_remember_text_builder(subindex, 'hours'))
+                clarify(message.chat.id, "cannot get the card from URL")
+        elif text.startswith('/sec'):
+            the_pass = refresh_pass(message.chat.id, modify_sec = subindex)
+            if the_pass.sec_set != None:
+                clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
             else:
-                chat.actual_r.restart(randint(2 * HOUR, 4 * HOUR))
-                chat.clarify(ill_remember_text_builder(8, 'hours'))
-        elif text.startswith('/min') and chat.actual_r is not None:
-            if subindex != -1:
-                chat.actual_r.restart(subindex * MIN)
-                chat.clarify(ill_remember_text_builder(subindex, 'minute'))
+                clarify(message.chat.id, "error in changing time")
+        elif text.startswith('/min'):
+            the_pass = refresh_pass(message.chat.id, modify_sec = subindex*MIN)
+            if the_pass.sec_set != None:
+                clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
             else:
-                chat.actual_r.restart(randint(10 * MIN, 20 * MIN))
-                chat.clarify(ill_remember_text_builder(30, 'minute'))
-        elif text.startswith('...') and chat.actual_r is not None:
-            chat.actual_r.append_message_id(message.message_id)
-            chat.clarify('Last reminder has been expanded.')
-        else:
-            # Create a new Recordatorio
-            r = chat.new_rec(message)
+                clarify(message.chat.id, "error in changing time")
+        elif text.startswith('/day'):
+            the_pass = refresh_pass(message.chat.id, modify_sec = subindex*DAY)
+            if the_pass.sec_set != None:
+                clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
+            else:
+                clarify(message.chat.id, "error in changing time")
+        elif text.startswith('/hour'):
+            the_pass = refresh_pass(message.chat.id, modify_sec = subindex*HOUR)
+            if the_pass.sec_set != None:
+                clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
+            else:
+                clarify(message.chat.id, "error in changing time")
+        elif not text.startswith("/"):
+            # Create a new card
+            
+            if "\n" in text[:NAME_LIMIT]:
+                parts_text = text.split('\n', 1)
+            else:
+                parts_text = [text[:NAME_LIMIT], text[NAME_LIMIT:]]
 
-            segs = get_defualt_seconds()
-            extrainfo = 'Ok.\n'
+            new_card = create_card(tengoque_lists[0], parts_text[0])
 
-            chat.clarify(extrainfo + REC_AGREGADO, siosi=text.endswith('..'), rec=r)
-
-            r.restart(segs)
-            chat.actual_r = r
-        
-    except Exception as e:
-        traceback.print_exc()
+            if parts_text[1] != "":
+                add_to_desc(new_card, parts_text[1])
+            
+            if message.photo != []:
+                file = message.photo[-1].get_file()
+                file.download(str(message.chat.id) + '_received_image.jpg') #mod
+                logging.info("Image downloaded")
+                add_image_to_card(new_card["id"], str(message.chat.id) + '_received_image.jpg')
+            
+            the_pass = refresh_pass(message.chat.id, add_cmd = new_card["id"])
+            if the_pass.is_add_cmd_done == True:
+                clarify(message.chat.id, new_card['url'] + " added")
+    #except Exception as e:
+        #traceback.print_exc()
 
 
 if __name__ == '__main__':
@@ -218,39 +170,11 @@ if __name__ == '__main__':
 
     change_original_stdout()
 
-    # Intenta cargar el archivo existente asi rellena el dict chats:
-    try:
-        load()
-        print('Chats loaded. len_chats: ' + str(len(chats)))
-    except Exception as e:
-        print('There is no file' + CHATSFILEPATH + ' or something went wrong.')
-        traceback.print_exc()
-
-        # Save again
-        save()
-
     updater = Updater(token=TOKEN)
     dispatcher = updater.dispatcher
+    
 
-    # Empieza el ciclo de los days:
-    each_day_timer.start()
-
-    # Si cargo algo desde el archivo, restaura el alltimers
-    if chats != dict():
-        print('Recreating timers...')
-        for c in chats.values():
-            for r in c.recordatorios:
-                r.recreate_timer()
-
-    # Migration code
-    if False:
-        print('Mudando...')
-        for c in chats.values():
-            for r in c.recordatorios:
-                pass
-                # setattr(r, 'message_ids', [r.message_id, ])
-
-    def any_update(update, context):
+    def any_update(update, context): #lo ejecuta Telegram en cada update.
         bot = context.bot
         if update.message and update.message.text and update.message.text == '/exit' and update.message.from_user.id == ADMIN_USER_ID:
             bot.send_message(update.message.chat.id, 'bye bye')
@@ -264,28 +188,26 @@ if __name__ == '__main__':
         else:
             any_message(bot, None)
 
+    refresh_pass(None, first_pass = True)
 
+    #dispatcher.add_handler(MessageHandler(Filters.photo, image_handler))
     core_handler = MessageHandler(Filters.all, any_update, run_async=True)
     dispatcher.add_handler(core_handler)
-
+    
+    
     updater.start_polling()
+
     try:
         print('Press Ctrl+C to exit.')
         while True:
-            sleep(0.5)
+            sleep(10)
+            refresh_pass(None)
+            print("---")
+            print(chats_last_card)
     except KeyboardInterrupt:
-        print('Ctrl+C detected. Bye bye.')
+        print('\nCtrl+C detected. Bye bye.')
 
     print('Waiting for update.stop()...')
     updater.stop()
 
-    print('Saving...')
-    save()
 
-    # Cancela todos los timers para que no ocurran cosas raras despues:
-    print('Closing timers')
-    for t in alltimers:
-        t.cancel()
-    each_day_timer.cancel()
-
-    print('Bye bye.')

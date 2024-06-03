@@ -13,24 +13,26 @@ PRIVATEWELCOME = '''Hi. You may tell me what do you want to do and I will help y
 
 GROUPWELCOME = PRIVATEWELCOME
 
-HELP = '''
-' /list ' Show list of reminders.
-' /mode ' Configuration.
-' /list X ' Show list of reminders that contains X.
-' /next ' The next reminder.
 
-Created by @agusavior /debughelp
+HELP = ''' 
+' /show ' show the X card
+' /add <URL> ' import card from Trello by URL
+' /done<X> ' stop the X card
+' /list ' Show list of reminders.
+' /names' show list of card names
+' /sec<secs> ' set seconds to the selected card
+' /min<mins> ' set minutes to the selected card
+' /hour<hours> ' set hours to the selected card
+' /day<days> ' set days to the selected card 
+' /debug_help ' debug help.
 '''
 
 DEBUGHELP = '''
-/save
 /ping
-/chatid
-/userid
-/start
+/chat_id
+/my_user_id
+/version
 '''
-
-CHATSFILEPATH = 'storage/chats.pickle'
 
 ADMIN_USER_ID = 43759228
 ADMIN_CHAT_ID = 43759228
@@ -76,3 +78,9 @@ MODOSHELP = '''
 ' /mode0 ' [modo silencioso] Send few messages.
 ' /mode1 ' [modo ignorador] Deprecated.
 ' /mode2 ' [modo limpiador] Delete own messages.'''
+
+TRELLO_CALL_CMD = "/tengoquebot"
+
+NAME_LIMIT = 50
+
+DEFAULT_TIME = 4*HOUR
