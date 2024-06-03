@@ -10,7 +10,7 @@ from utils import seg_to_str
 from constants import *
 from telegram import Bot
 
-bot = Bot(token=TOKEN)
+bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
 chats = dict()  # chatid => Chat
 

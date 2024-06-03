@@ -1,8 +1,11 @@
+import os
+import dotenv
+dotenv.load_dotenv()
+
 # Esto es por si la zona hoursria del server difiere de lo que vos necesitas
 CURRENT_TIME_SHIFT_HOURS = -3
 
-with open('token', 'r') as f:
-    TOKEN = f.readline().strip()
+TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
 
 MIN = 60
 HOUR = 60 * MIN
