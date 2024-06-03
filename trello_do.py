@@ -11,7 +11,6 @@ from telegram import Bot
 import time
 
 bot = Bot(token=TOKEN)
-trello_map = dict()
 chats_last_card = dict()
 chats_mode = dict()
 tengoque_lists = [None, None]
@@ -79,7 +78,9 @@ add_cmd = False):
     chats_ids = dict()
     
     #check list
-    tengoque_lists = [None, None]
+
+    tengoque_lists[0] = None
+    tengoque_lists[1] = None
     
     lists = get_all_lists_from_board(board_id)
     for list_ in lists:
@@ -87,12 +88,8 @@ add_cmd = False):
             tengoque_lists[0] = list_['id']
         if '[' + TRELLO_CALL_CMD + ' done]' in list_['name']:
             tengoque_lists[1] = list_['id']
-
     
     for card in update_cards():
-
-        
-
         card_chats = []
         for command_set in get_commands_set(card["desc"]): 
             try:
