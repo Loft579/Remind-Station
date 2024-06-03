@@ -170,7 +170,7 @@ if __name__ == '__main__':
 
     change_original_stdout()
 
-    updater = Updater(token=TOKEN)
+    updater = Updater(token=TELEGRAM_BOT_TOKEN)
     dispatcher = updater.dispatcher
     
 

@@ -9,8 +9,7 @@ dotenv.load_dotenv()
 
 api_key = os.environ['TRELLO_API_KEY']
 token = os.environ['TRELLO_TOKEN']
-board_id = '5c570fc28e70088847f1a688'
-board_id = '65d89daac569dfd259dd61a8' # TESTING
+board_id = os.environ['TRELLO_BOARD_ID']
 boards = None
 
 def get_boards():

@@ -10,7 +10,7 @@ from trello import *
 from telegram import Bot
 import time
 
-bot = Bot(token=TOKEN)
+bot = Bot(token=TELEGRAM_BOT_TOKEN)
 chats_last_card = dict()
 chats_mode = dict()
 tengoque_lists = [None, None]
