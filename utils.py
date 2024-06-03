@@ -23,7 +23,7 @@ def seg_to_str(seg):
         seg = seg % MIN
     if showseg and seg != 0:
         ret += str(int(seg)) + ' seconds'
-    if ret[-1] == " ":
+    if ret and ret[-1] == " ":
         ret = ret[:-1]
     return ret
 
