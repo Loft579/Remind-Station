@@ -136,3 +136,6 @@ chats.pickle
 
 # IDLEs
 .idea
+
+#old code
+old/**
