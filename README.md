@@ -51,9 +51,6 @@ python __init__.py
 # Open folder
 cd tengoquebot
 
-# Create storage folder
-mkdir storage
-
 # Launch it
-docker build . -t tengoque && docker run -v $(pwd)/storage:/app/storage tengoque
+docker build . -t tengoque && docker run tengoque
 ```
