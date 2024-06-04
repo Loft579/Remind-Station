@@ -21,7 +21,7 @@ def seg_to_str(seg):
     if seg > MIN:
         ret += '{} minutes '.format(int(seg / MIN))
         seg = seg % MIN
-    if showseg and seg != 0:
+    if showseg != False:
         ret += str(int(seg)) + ' seconds'
     if ret and ret[-1] == " ":
         ret = ret[:-1]
