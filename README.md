@@ -39,6 +39,13 @@ pip install --upgrade pip
 # Install the proyect python packages
 pip install -r requirements.txt
 
+#Create ".env" file with this innit
+TRELLO_API_KEY=
+TRELLO_TOKEN=
+TELEGRAM_BOT_TOKEN=
+TRELLO_BOARD_ID=
+#and fill all
+
 # Run it
 python __init__.py
 ```

@@ -57,11 +57,11 @@ def any_message(bot, message):
         elif text.startswith('/mode '):
             adj = text.split(" ")[1]
             chats_mode[message.chat.id] = adj
-        elif text.startswith('/show_plus'):
+        elif text.startswith('/shw'):
             the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
             if the_pass.card_collected != None:
                 clarify(message.chat.id, str(the_pass.card_collected["name"]))
-                cmds_msg = "reminder duration: " + seg_to_str(int(the_pass.code_collected[3])) + ". time left: " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time())) + "\n/done" + str(chats_last_card[message.chat.id]) + " /sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4"
+                cmds_msg = "reminder duration: " + seg_to_str(int(the_pass.code_collected[3])) + ". time left: " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time())) + ". \n/done" + str(chats_last_card[message.chat.id]) + " /sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4"
                 clarify(message.chat.id, cmds_msg)
             else:
                 if the_pass.is_last_edited == False:

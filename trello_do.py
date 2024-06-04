@@ -26,21 +26,13 @@ class pass_return:
         self.is_add_cmd_done = False
 
 def clarify(chat_id, text):
-    # Manda el mensaje:
-    if len(text) >= 3000:
-        textcropped = text[:1000] + ' [...] ' + text[-1000:] #possible trello mod
-    else:
-        textcropped = text
-
     try:
-        m = bot.send_message(chat_id, textcropped)
+        bot.send_message(chat_id, text)
     except telegram.error.Unauthorized:
-        print(f'Can\'t send message. Unauthorized. Probably blocked by user {chat_id}.')
-        m = None
+        print("message unauthorized to send")
     except telegram.error.BadRequest as e:
-        if 'Message to reply not found' in str(e):
-            m = bot.send_message(chat_id, textcropped)
-    return m
+        print("BadRequest\n" + str(e))
+        
 
 def get_avaliable_id(simple_ids):
         i = 1
@@ -69,11 +61,11 @@ add_cmd = False):
     if target_chat != None:
         
         #if there is no cards
-        if not target_chat in chats_last_card and first_pass == False:
-            pass #mod
+        if not target_chat in chats_last_card:
+            pass #2
 
         if set_last_card == False or set_last_card == -1:
-            set_last_card = chats_last_card[target_chat]
+            set_last_card = chats_last_card[target_chat] #2
     
     chats_ids = dict()
     
@@ -91,12 +83,15 @@ add_cmd = False):
     
     for card in update_cards():
         card_chats = []
+        ignore_card = False
         for command_set in get_commands_set(card["desc"]): 
             try:
                 code = trello_str_to_list(command_set)
             except:
                 code = None
             if code != None:
+                if ignore_card:
+                    break
 
                 #collect every chat_id assigned to the card in order to check if the card needs to be added when the card read is over.
                 card_chats.append(code[0])
@@ -106,7 +101,7 @@ add_cmd = False):
                     #collect all simple_id info in order to add a card with a not-used simple_id when all cards are read.
                     if not code[0] in chats_ids:
                         chats_ids[code[0]] = list()
-                    chats_ids[code[0]].append(code[1])
+                    chats_ids[code[0]].append(code[1]) 
 
                     
 
@@ -117,21 +112,26 @@ add_cmd = False):
                             if (done_card == -1 and set_last_card == code[1]) or done_card == code[1]:
                                 new_name = "[" + TRELLO_CALL_CMD + " " + str(code[0]) + " 0 " + str(code[2]) + " " + str(code[3])  + "]"
                                 edition = edit_from_desc(card, "[" + TRELLO_CALL_CMD + " " + command_set + "]", new_name)
+                                ignore_card = True
                                 if tengoque_lists[1] != None:
                                     change_card_list(card["id"], tengoque_lists[1])
                                 if edition != None:
+
                                     return_info.is_card_done = True
+                        if ignore_card:
+                            break
+
 
                         #with argument collect_names
                         if collect_names == True:
-                            return_info.names_message += "/show_plus" + str(code[1]) + " " + str(card["name"]) + '\n'
+                            return_info.names_message += "/shw" + str(code[1]) + " " + str(card["name"]) + '\n'
 
                         #with argument clarify_list
                         if clarify_list == True:
                             clarify(target_chat, str(card))
 
                         #with argument set_last_card
-                        if set_last_card != chats_last_card[target_chat]:
+                        if set_last_card != chats_last_card[target_chat]: #2
                             if set_last_card == code[1]:
                                 chats_last_card[target_chat] = set_last_card
                                 return_info.is_last_edited = True
@@ -139,9 +139,12 @@ add_cmd = False):
                         #with argument modify_sec
                         if modify_sec != False and modify_sec != -1:
                             if code[1] == set_last_card:
-                                edition = edit_from_desc(card,"[" + TRELLO_CALL_CMD + " " + command_set + "]","[" + TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time())) + " " + str(modify_sec) + "]")
+                                edition = edit_from_desc(card,"[" + TRELLO_CALL_CMD + " " + command_set + "]","[" + TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time())) + " " + str(modify_sec) + "]") 
+                                ignore_card = True
                                 if edition != None:
                                     return_info.sec_set = modify_sec
+                        if ignore_card:
+                            break
 
                         #with argument get_card
                         if get_card != False:
@@ -154,18 +157,25 @@ add_cmd = False):
                                 return_info.code_collected = code
 
                     #with argument first_pass
-                    if first_pass:
-                        if not code[0] in chats_last_card:
-                            chats_last_card[code[0]] = code[1]
+                    if first_pass: #2: debo sacar el first pass, hacer que siempre si falta una last_card que sea almenos una por la que pase, y ahí decirle al bot que en ciertas cosas si no hay un last_card no haga nada
+                        if not code[0] in chats_last_card: #2
+                            chats_last_card[code[0]] = code[1] #2
 
                     if int(time.time()) > (code[2] + code[3]):
                         old_str = "[" + TRELLO_CALL_CMD + " " + command_set + "]"
                         if old_str in card["desc"]:
                             edition = edit_from_desc(card, old_str, "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time())) + " " + str(code[3] * 2) + "]")
+                            ignore_card = True
                             if edition != None:
-                                chats_last_card[code[0]] = code[1]
-                                clarify(code[0], "/show_plus" + str(code[1]) + " " + str(edition["name"]) + "\n" + edition["url"])
+                                chats_last_card[code[0]] = code[1] #2
+                                clarify(code[0], "/shw" + str(code[1]) + " " + str(edition["name"]) + "\n" + edition["url"])
+                    if ignore_card:
+                        break
         
+        if ignore_card:
+            clarify(target_chat, "(" + card["url"] + "\ncard ignored because updated)")
+            continue
+
         #collect info in order to add the card. check if the card needs to be added
         chats_check_empty = []
         if add_cmd != False and add_cmd == card["id"]:
@@ -175,7 +185,7 @@ add_cmd = False):
             if chat_id not in card_chats:
                 if not chat_id in cards_need_add:
                     cards_need_add[chat_id] = []
-                cards_need_add[chat_id].append(card)
+                cards_need_add[chat_id].append(card) 
             
     
     for chat_id in cards_need_add:
