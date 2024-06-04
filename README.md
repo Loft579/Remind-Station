@@ -14,9 +14,6 @@ You can use virtualenv for install the packages, or you can use just pip.
 ## Run it
 
 ```bash
-# Open it
-cd processing/main-project
-
 # Install python 3.
 # At the moment this was written, this commands install python 3.8.10
 sudo apt-get update
