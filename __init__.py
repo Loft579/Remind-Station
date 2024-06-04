@@ -56,8 +56,24 @@ def any_message(bot, message):
             clarify(message.chat.id, MODOSHELP)
         elif text.startswith('/mode '):
             adj = text.split(" ")[1]
-            chats_mode[message.chat.id] = adj
-        elif text.startswith('/shw'):
+            if adj == "all":
+                chats_mode[message.chat.id] = adj
+                clarify(message.chat.id, "all cards will be added")
+            elif adj == "off":
+                chats_mode[message.chat.id] = adj
+                clarify(message.chat.id, "mode off")
+            elif adj.startswith("@"):
+                adj = adj[1:]
+                user_id = get_user_id_by_name(adj)
+                if user_id != None:
+                    chats_mode[message.chat.id] = get_user_id_by_name(adj)
+                    clarify(message.chat.id, "mode settled in " + str(user_id))
+                else:
+                    clarify(message.chat.id, "cannot get the user")
+            else:
+                clarify(message.chat.id, "error: unknow mode")
+
+        elif text.startswith('/see'):
             the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
             if the_pass.card_collected != None:
                 clarify(message.chat.id, str(the_pass.card_collected["name"]))
@@ -88,7 +104,15 @@ def any_message(bot, message):
             else:
                 clarify(message.chat.id, "No names to view")
         elif text == '/clean':
-            pass #Trello mod
+            chat_mode = None
+            if message.chat.id in chats_mode:
+                chat_mode = chats_mode[message.chat.id]
+            if chat_mode != "all":
+                clarify(message.chat.id, "loading...")
+                refresh_pass(message.chat.id, clean = True)
+                clarify(message.chat.id, "clean done")
+            else:
+                clarify(message.chat.id, "cannot clean because “all” mode is activated.")
         elif text == '/debug_help':
             clarify(message.chat.id, DEBUGHELP)
         elif text == '/chat_id':
@@ -154,15 +178,14 @@ def any_message(bot, message):
             
             if message.photo != []:
                 file = message.photo[-1].get_file()
-                file.download(str(message.chat.id) + '_received_image.jpg') #mod
+                filename = str(message.chat.id) + '_received_image.jpg'
+                file.download(filename)
                 logging.info("Image downloaded")
-                add_image_to_card(new_card["id"], str(message.chat.id) + '_received_image.jpg')
+                add_image_to_card(new_card["id"], filename)
             
             the_pass = refresh_pass(message.chat.id, add_cmd = new_card["id"])
             if the_pass.is_add_cmd_done == True:
                 clarify(message.chat.id, new_card['url'] + " added")
-    #except Exception as e:
-        #traceback.print_exc()
 
 
 if __name__ == '__main__':
@@ -174,7 +197,7 @@ if __name__ == '__main__':
     dispatcher = updater.dispatcher
     
 
-    def any_update(update, context): #lo ejecuta Telegram en cada update.
+    def any_update(update, context): #executed by Telegram with every update.
         bot = context.bot
         if update.message and update.message.text and update.message.text == '/exit' and update.message.from_user.id == ADMIN_USER_ID:
             bot.send_message(update.message.chat.id, 'bye bye')
@@ -188,9 +211,6 @@ if __name__ == '__main__':
         else:
             any_message(bot, None)
 
-    refresh_pass(None, first_pass = True)
-
-    #dispatcher.add_handler(MessageHandler(Filters.photo, image_handler))
     core_handler = MessageHandler(Filters.all, any_update, run_async=True)
     dispatcher.add_handler(core_handler)
     
@@ -200,10 +220,9 @@ if __name__ == '__main__':
     try:
         print('Press Ctrl+C to exit.')
         while True:
-            sleep(10)
             refresh_pass(None)
-            print("---")
-            print(chats_last_card)
+            print("chats_last_card:", chats_last_card)
+            sleep(10)
     except KeyboardInterrupt:
         print('\nCtrl+C detected. Bye bye.')
 

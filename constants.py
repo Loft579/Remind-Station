@@ -27,6 +27,7 @@ HELP = '''
 ' /min<mins> ' set minutes to the selected card
 ' /hour<hours> ' set hours to the selected card
 ' /day<days> ' set days to the selected card 
+' /mode <"all" or "@"<username> assigned to cards> ' set mode
 ' /debug_help ' debug help.
 '''
 
@@ -78,9 +79,10 @@ PERIODIC = 1
 ALARM = 2
 
 MODOSHELP = '''
-' /mode0 ' [modo silencioso] Send few messages.
-' /mode1 ' [modo ignorador] Deprecated.
-' /mode2 ' [modo limpiador] Delete own messages.'''
+' /mode @<username> ' add all cards of the board that have the member specified
+' /mode all ' add all cards of the board
+' /mode off ' no mode
+'''
 
 TRELLO_CALL_CMD = "/tengoquebot"
 
