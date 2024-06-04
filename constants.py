@@ -26,7 +26,8 @@ HELP = '''
 ' /sec<secs> ' set seconds to the selected card
 ' /min<mins> ' set minutes to the selected card
 ' /hour<hours> ' set hours to the selected card
-' /day<days> ' set days to the selected card 
+' /day<days> ' set days to the selected card
+' /clean ' unimport all cards
 ' /mode <"all" or "@"<username> assigned to cards> ' set mode
 ' /debug_help ' debug help.
 '''
