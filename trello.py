@@ -63,6 +63,7 @@ def get_all_lists_from_board(board_id):
     if response.status_code == 200:
         return response.json()
     else:
+        return None
         print("Failed to retrieve lists. Status code:", response.status_code)
 
 def get_card_from_url(url):
@@ -113,9 +114,6 @@ def edit_from_desc(card, old_value, new_value):
     "Accept": "application/json"
     }
 
-
-    print(card['desc'].replace(old_value, new_value))
-
     query = {
     'key': api_key,
     'token': token,
@@ -156,7 +154,8 @@ def get_all_cards_from_board(board_id):
     else:
         print(f"Failed to retrieve lists. Status code: {lists_response.status_code}")
         print(lists_response.text)  # This will print the raw response text, which can help in debugging
-        raise Exception()
+        return None
+        #raise Exception()
 
     all_cards = []
 
