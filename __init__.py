@@ -32,7 +32,7 @@ def get_defualt_seconds():
 
 def any_message(bot, message):
     if True:
-        text = message.text or ''
+        text = message.text or message.caption or ''
 
         # sub-index o sea, el X tal que /dayX, pero del mensaje enviado por el usuario
         subindex = -1
