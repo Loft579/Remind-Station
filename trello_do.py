@@ -15,7 +15,7 @@ chats_last_card = dict()
 chats_mode = dict()
 tengoque_lists = [None, None]
 
-class pass_return:
+class PassReturn:
     def __init__(self):
         self.is_last_edited = False
         self.sec_set = None
@@ -57,7 +57,7 @@ clean = False):
     
     cards_need_add = dict()
 
-    return_info = pass_return()
+    return_info = PassReturn()
 
     if set_last_card == -1:
         set_last_card = False
@@ -213,14 +213,12 @@ clean = False):
                 if not chat_id in chats_ids:
                     chats_ids[chat_id] = list()
                 avaliable_id = get_avaliable_id(chats_ids[chat_id])
+                #add pseudotag
                 edition = add_to_desc(card, "[" + TRELLO_CALL_CMD + " " + str(chat_id) + " " + str(avaliable_id) + " " + str(int(time.time())) + " " + str(DEFAULT_TIME) + "]" )
+                
                 if edition != None:
                     chats_ids[chat_id].append(avaliable_id)
                     if add_cmd != False and add_cmd != -1 and card["id"] == add_cmd:
                         return_info.is_add_cmd_done = True
 
         return return_info
-
-
-
-        
