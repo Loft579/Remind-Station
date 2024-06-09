@@ -15,7 +15,7 @@ chats_last_card = dict()
 chats_mode = dict()
 tengoque_lists = [None, None]
 
-class pass_return:
+class PassReturn:
     def __init__(self):
         self.is_last_edited = False
         self.sec_set = None
@@ -57,7 +57,7 @@ clean = False):
     
     cards_need_add = dict()
 
-    return_info = pass_return()
+    return_info = PassReturn()
 
     if set_last_card == -1:
         set_last_card = False
@@ -87,7 +87,7 @@ clean = False):
 
     cards_updated = update_cards()
     if cards_updated != None:
-        for card in update_cards():
+        for card in cards_updated:
             u_card = card
             card_chats = []
             for command_set in get_commands_set(card["desc"]): 
@@ -224,7 +224,3 @@ clean = False):
             clarify(chat_id, "/see" + str(laid[chat_id]))
         
         return return_info
-
-
-
-        
