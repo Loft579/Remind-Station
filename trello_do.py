@@ -87,7 +87,7 @@ clean = False):
 
     cards_updated = update_cards()
     if cards_updated != None:
-        for card in update_cards():
+        for card in cards_updated:
             u_card = card
             card_chats = []
             for command_set in get_commands_set(card["desc"]): 
