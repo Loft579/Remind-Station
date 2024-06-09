@@ -34,7 +34,7 @@ def clarify(chat_id, text):
         print("BadRequest\n" + str(e))
         
 
-def get_avaliable_id(simple_ids):
+def get_available_id(simple_ids):
         i = 1
         while i != False:
             if not (i in simple_ids):
@@ -207,18 +207,22 @@ clean = False):
                         cards_need_add[chat_id] = []
                     cards_need_add[chat_id].append(u_card)
                 
-        
+        laid = {} #in order to check the last available id added to the bot Telegram chat
         for chat_id in cards_need_add:
             for card in cards_need_add[chat_id]:
                 if not chat_id in chats_ids:
                     chats_ids[chat_id] = list()
-                avaliable_id = get_avaliable_id(chats_ids[chat_id])
-                edition = add_to_desc(card, "[" + TRELLO_CALL_CMD + " " + str(chat_id) + " " + str(avaliable_id) + " " + str(int(time.time())) + " " + str(DEFAULT_TIME) + "]" )
+                available_id = get_available_id(chats_ids[chat_id])
+                edition = add_to_desc(card, "[" + TRELLO_CALL_CMD + " " + str(chat_id) + " " + str(available_id) + " " + str(int(time.time())) + " " + str(DEFAULT_TIME) + "]" )
                 if edition != None:
-                    chats_ids[chat_id].append(avaliable_id)
+                    chats_ids[chat_id].append(available_id)
+                    laid[chat_id] = available_id
                     if add_cmd != False and add_cmd != -1 and card["id"] == add_cmd:
                         return_info.is_add_cmd_done = True
 
+        for chat_id in laid:
+            clarify(chat_id, "/see" + str(laid[chat_id]))
+        
         return return_info
 
 
