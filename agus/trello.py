@@ -67,3 +67,7 @@ def edit_from_desc(card, old_value, new_value):
     )
 
     response.raise_for_status()
+
+
+def create_card():
+    raise NotImplementedError()

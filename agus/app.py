@@ -10,7 +10,7 @@ import time
 from time import sleep
 from utils import *
 from constants import *
-from agus.trello import get_all_cards, get_one_card
+from agus.trello import get_all_cards, get_one_card, create_card
 import traceback
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
@@ -73,43 +73,10 @@ def any_message(bot, message):
             raise NotImplementedError('TODO')
         elif text.startswith('/sec'):
             modify_sec = subindex
-            card = get_one_card(card_id='')
+            card = get_one_card(card_id=last_card_id)
             set_seconds_to_card(card=card, seconds=modify_sec)
-            the_pass = refresh_pass(message.chat.id, modify_sec = subindex)
-            if the_pass.sec_set != None:
-                clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
-            else:
-                clarify(message.chat.id, "error in changing time")
-        elif text.startswith('/min'):
-            the_pass = refresh_pass(message.chat.id, modify_sec = subindex*MIN)
-            if the_pass.sec_set != None:
-                clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
-            else:
-                clarify(message.chat.id, "error in changing time")
-        elif text.startswith('/day'):
-            the_pass = refresh_pass(message.chat.id, modify_sec = subindex*DAY)
-            if the_pass.sec_set != None:
-                clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
-            else:
-                clarify(message.chat.id, "error in changing time")
-        elif text.startswith('/hour'):
-            the_pass = refresh_pass(message.chat.id, modify_sec = subindex*HOUR)
-            if the_pass.sec_set != None:
-                clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
-            else:
-                clarify(message.chat.id, "error in changing time")
         elif not text.startswith("/"):
-            # Create a new card
-            
-            if "\n" in text[:NAME_LIMIT]:
-                parts_text = text.split('\n', 1)
-            else:
-                parts_text = [text[:NAME_LIMIT], text[NAME_LIMIT:]]
-
-            new_card = create_card(tengoque_lists[0], parts_text[0])
-
-            if parts_text[1] != "":
-                add_to_desc(new_card, parts_text[1])
+            new_card = create_card()
             
             if message.photo != []:
                 file = message.photo[-1].get_file()
