@@ -74,14 +74,7 @@ def any_message(bot, message):
                 clarify(message.chat.id, "error: unknow mode")
 
         elif text.startswith('/see'):
-            the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
-            if the_pass.card_collected != None:
-                clarify(message.chat.id, str(the_pass.card_collected["name"]) + "\n" + str(the_pass.card_collected["url"]))
-                cmds_msg = "reminder duration: " + seg_to_str(int(the_pass.code_collected[3])) + ". time left: " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time())) + ". \n/done" + str(chats_last_card[message.chat.id]) + " /sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4"
-                clarify(message.chat.id, cmds_msg)
-            else:
-                if the_pass.is_last_edited == False:
-                    clarify(message.chat.id, "not card found, try using a valid ID.")
+            see(message.chat.id, subindex)
         elif text.startswith('/show'):
             the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
             if the_pass.card_collected != None:
