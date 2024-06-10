@@ -54,7 +54,8 @@ clarify_list = False,
 collect_names = False,
 done_card = False,
 add_cmd = False,
-clean = False):
+clean = False,
+ignore_show_name = False):
 
     
     cards_need_add = dict()
@@ -163,7 +164,7 @@ clean = False):
 
                             #with argument collect_names
                             if collect_names == True:
-                                return_info.names_message += "/see" + str(code[1]) + " " + str(u_card["name"]) + '\n'
+                                return_info.names_message += "/see" + str(code[1]) + " " + str(u_card["name"]) + " /done" + str(code[1]) + '\n'
 
                             #with argument clarify_list
                             if clarify_list == True:
@@ -220,17 +221,21 @@ clean = False):
                     chats_ids[chat_id].append(available_id)
                     laid[chat_id] = available_id
                     if add_cmd != False and add_cmd != -1 and card["id"] == add_cmd:
+                        if ignore_show_name == True:
+                            ignore_show_name = add_cmd
                         return_info.is_add_cmd_done = True
         for chat_id in laid:
-            see(chat_id, laid[chat_id])
-            
+            see(chat_id, laid[chat_id], ignore_show_name=ignore_show_name)
         return return_info
 
-def see(chat_id, subindex):
+def see(chat_id, subindex, ignore_show_name = False):
     the_pass = refresh_pass(chat_id, set_last_card = subindex, get_card = subindex)
     if the_pass.card_collected != None:
-        clarify(chat_id, str(the_pass.card_collected["name"]) + "\n" + str(the_pass.card_collected["url"]))
-        cmds_msg = "reminder duration: " + seg_to_str(int(the_pass.code_collected[3])) + ". time left: " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time())) + ". \n/done" + str(chats_last_card[chat_id]) + " /sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4"
+        name = ''
+        if ignore_show_name != the_pass.card_collected["id"]:
+            name = str(the_pass.card_collected["name"]) + "\n"
+        clarify(chat_id, "/done" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]))
+        cmds_msg = "reminder duration: " + seg_to_str(int(the_pass.code_collected[3])) + ". time left: " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time())) + ". \n" + "/sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4"
         clarify(chat_id, cmds_msg)
     else:
         if the_pass.is_last_edited == False:

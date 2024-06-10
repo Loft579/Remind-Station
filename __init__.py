@@ -34,17 +34,19 @@ def get_defualt_seconds():
 def any_message(bot, message):
     text = message.text
 
-    is_message_from_agusavior = message.from_user.id == 43759228
+    is_message_from_whisper_op = message.from_user.id == 43759228 or message.from_user.id == 424819435
 
     if not text and message.caption:
         text = message.caption
     
-    if not text and message.voice and is_message_from_agusavior:
-        filename = f'audio-{message.chat.id}.ogg'
+    is_text_from_msg = True
+    if not text and message.voice and is_message_from_whisper_op:
+        filename = f'{message.chat.id}_received_audio.ogg'
         file = bot.getFile(message.voice.file_id)
         file.download(filename)
         assert os.path.exists(filename)
         text = openai_whisper_api(local_filepath=filename)
+        is_text_from_msg = False
     
     if not text:
         clarify(message.chat.id, "No text in message. Please send a message with text or a voice message.")
@@ -182,7 +184,10 @@ def any_message(bot, message):
         if "\n" in text[:NAME_LIMIT]:
             parts_text = text.split('\n', 1)
         else:
-            parts_text = [text[:NAME_LIMIT], text[NAME_LIMIT:]]
+            if len(text) > NAME_LIMIT:
+                parts_text = [text[:NAME_LIMIT], text]
+            else:
+                parts_text = [text, ""]
 
         new_card = create_card(tengoque_lists[0], parts_text[0])
 
@@ -196,9 +201,9 @@ def any_message(bot, message):
             logging.info("Image downloaded")
             add_image_to_card(new_card["id"], filename)
         
-        the_pass = refresh_pass(message.chat.id, add_cmd = new_card["id"])
+        the_pass = refresh_pass(message.chat.id, add_cmd = new_card["id"], ignore_show_name=is_text_from_msg)
         if the_pass.is_add_cmd_done == True:
-            clarify(message.chat.id, new_card['url'] + " added")
+            clarify(message.chat.id, "card added")
 
 
 if __name__ == '__main__':
