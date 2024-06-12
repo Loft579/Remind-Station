@@ -38,7 +38,7 @@ pip install --upgrade pip
 # Install the proyect python packages
 pip install -r requirements.txt
 
-#Create ".env" file with this innit
+#Create ".env.user" file with this innit
 TRELLO_API_KEY=
 TRELLO_TOKEN=
 TELEGRAM_BOT_TOKEN=
@@ -48,7 +48,7 @@ OPENAI_API_KEY=
 #and fill all
 
 # Run it
-python __init__.py
+python app.py --env-file .env.user
 ```
 
 ## With docker
@@ -60,5 +60,5 @@ python __init__.py
 cd tengoquebot
 
 # Launch it
-docker build . -t tengoque && docker run tengoque
+docker build . -t tengoque && docker run --rm --env-file .env.user tengoque
 ```
