@@ -60,6 +60,7 @@ def any_message(bot, message):
 
     if not text and image_filename is not None:
         text = ImageUtils.extract_text_from_image(image_path=image_filename)
+        is_text_from_msg = False
     
     if not text:
         clarify(message.chat.id, "No text in message. Please send a message with text or a voice message.")
