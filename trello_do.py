@@ -45,6 +45,12 @@ def get_available_id(simple_ids):
             else:
                 i+=1
 
+def little_show(name):
+    little = name
+    if len(name) > NAME_LIMIT:
+        little = name[:NAME_LIMIT-3] + "..."
+    return little
+
 #important function
 def refresh_pass(target_chat,
 set_last_card = False,
@@ -116,7 +122,7 @@ ignore_show_name = False):
                                     command_set = get_commands_set(new_cmd)[0]
                                     code = trello_str_to_list(command_set)
                                     chats_last_card[code[0]] = code[1]
-                                    clarify(code[0], "/see" + str(code[1]) + " " + str(u_card["name"]) + "\n" + u_card["url"])
+                                    clarify(code[0], "/see" + str(code[1]) + " " + "/done" + str(code[1]) + " " + str(u_card["name"]) + "\n" + u_card["url"] + "\n" + seg_to_str(code[3] * 2))
 
                         #collect all simple_id info in order to add a card with a not-used simple_id when all cards are read.
                         if not code[0] in chats_ids:
@@ -164,7 +170,7 @@ ignore_show_name = False):
 
                             #with argument collect_names
                             if collect_names == True:
-                                return_info.names_message += "/see" + str(code[1]) + " " + str(u_card["name"]) + " /done" + str(code[1]) + '\n'
+                                return_info.names_message += "/see" + str(code[1]) + " " + little_show(str(u_card["name"])) + " /done" + str(code[1]) + '\n'
 
                             #with argument clarify_list
                             if clarify_list == True:
