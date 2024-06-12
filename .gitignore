@@ -142,3 +142,6 @@ old/**
 
 # All .env files
 .env**
+
+# Cache
+**_received_**
