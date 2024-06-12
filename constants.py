@@ -6,6 +6,7 @@ dotenv.load_dotenv()
 CURRENT_TIME_SHIFT_HOURS = -3
 
 TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', default=None)
 
 MIN = 60
 HOUR = 60 * MIN

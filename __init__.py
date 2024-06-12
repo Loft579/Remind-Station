@@ -17,6 +17,7 @@ import traceback
 from trello_do import *
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from imageutils import ImageUtils
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -36,6 +37,15 @@ def any_message(bot, message):
 
     is_message_from_whisper_op = message.from_user.id == 43759228 or message.from_user.id == 424819435
 
+    # If there is an image, download it
+    if message.photo != []:
+        file = message.photo[-1].get_file()
+        image_filename = str(message.chat.id) + '_received_image.jpg'
+        file.download(image_filename)
+        logging.info("Image downloaded")
+    else:
+        image_filename = None
+
     if not text and message.caption:
         text = message.caption
     
@@ -47,6 +57,9 @@ def any_message(bot, message):
         assert os.path.exists(filename)
         text = openai_whisper_api(local_filepath=filename)
         is_text_from_msg = False
+
+    if not text and image_filename is not None:
+        text = ImageUtils.extract_text_from_image(image_path=image_filename)
     
     if not text:
         clarify(message.chat.id, "No text in message. Please send a message with text or a voice message.")
@@ -194,12 +207,8 @@ def any_message(bot, message):
         if parts_text[1] != "":
             add_to_desc(new_card, parts_text[1])
         
-        if message.photo != []:
-            file = message.photo[-1].get_file()
-            filename = str(message.chat.id) + '_received_image.jpg'
-            file.download(filename)
-            logging.info("Image downloaded")
-            add_image_to_card(new_card["id"], filename)
+        if image_filename is not None:
+            add_image_to_card(new_card["id"], image_filename)
         
         the_pass = refresh_pass(message.chat.id, add_cmd = new_card["id"], ignore_show_name=is_text_from_msg)
         if the_pass.is_add_cmd_done == True:
