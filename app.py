@@ -13,9 +13,9 @@ parser.add_argument('-e', '--env-file', type=str, required=True, help='The name 
 # Get the arguments from command line
 args = parser.parse_args()
 
-if args.envfile:
+if args.env_file:
     # Load env variables from file
-    dotenv.load_dotenv(args.envfile)
+    dotenv.load_dotenv(args.env_file)
 
 from telegram.ext import Filters, MessageHandler, Updater
 import logging
