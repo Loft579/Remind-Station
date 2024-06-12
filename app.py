@@ -3,6 +3,20 @@
 # python-telegram-bot~=13.1
 # telegram~=0.0.1
 
+import argparse
+import dotenv
+
+# Define how the command will be used in Terminal/Bash/Shell Script/Command Line
+parser = argparse.ArgumentParser(description="Tengo Que Bot")
+parser.add_argument('-e', '--env-file', type=str, required=True, help='The name of the environment file to load.')
+
+# Get the arguments from command line
+args = parser.parse_args()
+
+if args.env_file:
+    # Load env variables from file
+    dotenv.load_dotenv(args.env_file)
+
 from telegram.ext import Filters, MessageHandler, Updater
 import logging
 from random import randint
