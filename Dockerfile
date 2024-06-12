@@ -1,5 +1,8 @@
 FROM python:3.8
 
+# Install tesseract
+RUN apt install tesseract-ocr -y
+
 # Set the working directory in the container
 WORKDIR /app
 

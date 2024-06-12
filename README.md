@@ -21,6 +21,9 @@ sudo apt-get install python3
 # Install venv
 sudo apt-get install python3-dev python3-venv
 
+# Tesseract for image-to-text
+sudo apt-get install tesseract-ocr
+
 # Create the .venv directory.
 # This assume that your python 3 binary is located in /usr/bin/python3
 /usr/bin/python3 -m venv .venv/
