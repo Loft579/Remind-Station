@@ -176,7 +176,7 @@ ignore_show_name = False):
 
                             #with argument collect_times
                             if collect_times == True:
-                                return_info.times_message += seg_to_str(int(code[3])) + ". " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + "/see" + str(code[1]) + " /done" + str(code[1]) + "\n" + little_show(str(u_card["name"]))  + '\n'
+                                return_info.times_message += seg_to_str(int(code[3])) + " | " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + " /see" + str(code[1]) + " /done" + str(code[1]) + "\n" + little_show(str(u_card["name"]))  + '\n'
 
                             #with argument clarify_list
                             if clarify_list == True:
