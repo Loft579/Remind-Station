@@ -194,13 +194,10 @@ def any_message(bot, message):
     elif not text.startswith("/"):
         # Create a new card
         
-        if "\n" in text[:NAME_LIMIT]:
+        if "\n" in text:
             parts_text = text.split('\n', 1)
         else:
-            if len(text) > NAME_LIMIT:
-                parts_text = [text[:NAME_LIMIT], text]
-            else:
-                parts_text = [text, ""]
+            parts_text = [text, ""]
 
         new_card = create_card(tengoque_lists[0], parts_text[0])
 

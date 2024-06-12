@@ -23,7 +23,7 @@ HELP = '''
 ' /add <URL> ' import card from Trello by URL
 ' /done<X> ' stop the X card
 ' /list ' Show list of reminders.
-' /names' show list of card names
+' /names ' show list of card names
 ' /sec<secs> ' set seconds to the selected card
 ' /min<mins> ' set minutes to the selected card
 ' /hour<hours> ' set hours to the selected card
