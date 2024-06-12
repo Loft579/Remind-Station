@@ -232,11 +232,11 @@ if __name__ == '__main__':
             exit()
         elif update.edited_message != None:
             pass # Nothing. Ignore in edited messages.
-        elif update.message is not None:
-            any_message(bot, update.message)
         else:
-            logging.info('ASDADASDAS2222D')
-            any_message(bot, None)
+            try:
+                any_message(bot, update.message)
+            except Exception as e:
+                bot.send_message(update.message.chat.id, str(e))
 
     core_handler = MessageHandler(Filters.all, any_update, run_async=True)
     dispatcher.add_handler(core_handler)
