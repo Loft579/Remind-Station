@@ -230,7 +230,10 @@ if __name__ == '__main__':
         elif update.edited_message != None:
             pass # Nothing. Ignore in edited messages.
         else:
-            any_message(bot, update.message)
+            try:
+                any_message(bot, update.message)
+            except Exception as e:
+                bot.send_message(update.message.chat.id, str(e))
 
     core_handler = MessageHandler(Filters.all, any_update, run_async=True)
     dispatcher.add_handler(core_handler)
