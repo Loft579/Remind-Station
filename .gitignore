@@ -139,3 +139,6 @@ chats.pickle
 
 #old code
 old/**
+
+# All .env files
+.env**

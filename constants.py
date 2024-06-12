@@ -1,6 +1,7 @@
 import os
 import dotenv
-dotenv.load_dotenv()
+import sys
+import argparse
 
 # Esto es por si la zona hoursria del server difiere de lo que vos necesitas
 CURRENT_TIME_SHIFT_HOURS = -3
