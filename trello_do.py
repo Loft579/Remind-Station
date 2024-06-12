@@ -24,6 +24,7 @@ class PassReturn:
         self.card_collected = None
         self.code_collected = None
         self.names_message = ""
+        self.times_message = ""
         self.is_card_done = False
         self.is_add_cmd_done = False
 
@@ -58,6 +59,7 @@ get_card = False,
 modify_sec = False,
 clarify_list = False,
 collect_names = False,
+collect_times = False,
 done_card = False,
 add_cmd = False,
 clean = False,
@@ -170,7 +172,11 @@ ignore_show_name = False):
 
                             #with argument collect_names
                             if collect_names == True:
-                                return_info.names_message += "/see" + str(code[1]) + " " + little_show(str(u_card["name"])) + " /done" + str(code[1]) + '\n'
+                                return_info.names_message += "/see" + str(code[1]) + " /done" + str(code[1]) + " " + little_show(str(u_card["name"]))  + '\n'
+
+                            #with argument collect_times
+                            if collect_times == True:
+                                return_info.times_message += seg_to_str(int(code[3])) + ". " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + "/see" + str(code[1]) + " /done" + str(code[1]) + "\n" + little_show(str(u_card["name"]))  + '\n'
 
                             #with argument clarify_list
                             if clarify_list == True:
