@@ -229,11 +229,8 @@ if __name__ == '__main__':
             exit()
         elif update.edited_message != None:
             pass # Nothing. Ignore in edited messages.
-        elif update.message is not None:
-            any_message(bot, update.message)
         else:
-            logging.info('ASDADASDAS2222D')
-            any_message(bot, None)
+            any_message(bot, update.message)
 
     core_handler = MessageHandler(Filters.all, any_update, run_async=True)
     dispatcher.add_handler(core_handler)
