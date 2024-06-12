@@ -195,10 +195,13 @@ def any_message(bot, message):
     elif not text.startswith("/"):
         # Create a new card
         
+        parts_text = ["",""]
+
         if "\n" in text:
-            parts_text = text.split('\n', 1)
+            parts_text[0] = text.replace('\n', "¶")
+            parts_text[1] = text
         else:
-            parts_text = [text, ""]
+            parts_text[0]
 
         new_card = create_card(tengoque_lists[0], parts_text[0])
 
