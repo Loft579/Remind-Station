@@ -122,7 +122,7 @@ ignore_show_name = False):
                                     command_set = get_commands_set(new_cmd)[0]
                                     code = trello_str_to_list(command_set)
                                     chats_last_card[code[0]] = code[1]
-                                    clarify(code[0], "/see" + str(code[1]) + " " + "/done" + str(code[1]) + " " + str(u_card["name"]) + "\n" + u_card["url"] + "\n" + seg_to_str(code[3] * 2))
+                                    clarify(code[0], "/see" + str(code[1]) + " " + "/done" + str(code[1]) + " " + str(u_card["name"]) + "\n" + u_card["url"] + "\n" + seg_to_str(code[3]))
 
                         #collect all simple_id info in order to add a card with a not-used simple_id when all cards are read.
                         if not code[0] in chats_ids:
