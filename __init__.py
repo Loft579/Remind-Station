@@ -197,11 +197,7 @@ def any_message(bot, message):
         
         parts_text = ["",""]
 
-        if "\n" in text:
-            parts_text[0] = text.replace('\n', "¶")
-            parts_text[1] = text
-        else:
-            parts_text[0]
+        parts_text[0] = text
 
         new_card = create_card(tengoque_lists[0], parts_text[0])
 
