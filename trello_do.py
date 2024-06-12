@@ -113,8 +113,8 @@ ignore_show_name = False):
                                 edition = edit_from_desc(u_card, old_cmd, new_cmd)
                                 if edition != None:
                                     u_card = edition
-                                    command_set = new_cmd
-                                    code = trello_str_to_list(get_commands_set(new_cmd)[0])
+                                    command_set = get_commands_set(new_cmd)[0]
+                                    code = trello_str_to_list(command_set)
                                     chats_last_card[code[0]] = code[1]
                                     clarify(code[0], "/see" + str(code[1]) + " " + str(u_card["name"]) + "\n" + u_card["url"])
 
@@ -152,14 +152,14 @@ ignore_show_name = False):
                                 continue
                             
                             #with argument modify_sec
-                            if modify_sec != False and modify_sec != -1:
+                            if modify_sec > 0:
                                 if code[1] == set_last_card:
                                     new_cmd = "[" + TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time())) + " " + str(modify_sec) + "]"
                                     edition = edit_from_desc(u_card,"[" + TRELLO_CALL_CMD + " " + command_set + "]", new_cmd)
                                     if edition != None:
-                                        command_set = new_cmd
                                         u_card = edition
-                                        code = trello_str_to_list(get_commands_set(new_cmd)[0])
+                                        command_set = get_commands_set(new_cmd)[0]
+                                        code = trello_str_to_list(command_set)
                                         return_info.sec_set = modify_sec
 
                             #with argument collect_names
