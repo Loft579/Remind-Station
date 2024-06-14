@@ -146,6 +146,12 @@ def any_message(bot, message):
             clarify(message.chat.id, the_pass.names_message)
         else:
             clarify(message.chat.id, "No names to view")
+    elif text == '/times':
+        the_pass = refresh_pass(message.chat.id, collect_times = True)
+        if the_pass.times_message != "":
+            clarify(message.chat.id, the_pass.times_message)
+        else:
+            clarify(message.chat.id, "No times to view")
     elif text == '/clean':
         chat_mode = None
         if message.chat.id in chats_mode:

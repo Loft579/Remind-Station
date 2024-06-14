@@ -25,6 +25,7 @@ HELP = '''
 ' /done<X> ' stop the X card
 ' /list ' Show list of reminders.
 ' /names ' show list of card names
+' /times ' show list of times with card names
 ' /sec<secs> ' set seconds to the selected card
 ' /min<mins> ' set minutes to the selected card
 ' /hour<hours> ' set hours to the selected card
@@ -89,6 +90,6 @@ MODOSHELP = '''
 
 TRELLO_CALL_CMD = "/tengoquebot"
 
-NAME_LIMIT = 120
+NAME_LIMIT = 60
 
 DEFAULT_TIME = 4*HOUR
