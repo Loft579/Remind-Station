@@ -173,7 +173,7 @@ ignore_show_name = False):
                             #with argument collect_names
                             if collect_names == True:
                                 id_of_card = code[1]
-                                return_info.names_message += f'/done{id_of_card} {little_show(str(u_card["name"]))} /see{id_of_card}\n'
+                                return_info.names_message += f'/done{id_of_card} /see{id_of_card} {little_show(str(u_card["name"]))}\n'
                             
                             #with argument collect_times
                             if collect_times == True:
