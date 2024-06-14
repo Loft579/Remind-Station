@@ -49,7 +49,7 @@ def little_show(name):
     little = name
     if len(name) > NAME_LIMIT:
         little = name[:NAME_LIMIT-3] + "..."
-    return little
+    return little.replace('\n', ' ')
 
 #important function
 def refresh_pass(target_chat,
@@ -170,7 +170,8 @@ ignore_show_name = False):
 
                             #with argument collect_names
                             if collect_names == True:
-                                return_info.names_message += "/see" + str(code[1]) + " " + little_show(str(u_card["name"])) + " /done" + str(code[1]) + '\n'
+                                id_of_card = code[1]
+                                return_info.names_message += f'/done{id_of_card} {little_show(str(u_card["name"]))} /see{id_of_card}\n'
 
                             #with argument clarify_list
                             if clarify_list == True:
