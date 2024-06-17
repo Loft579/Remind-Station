@@ -230,7 +230,10 @@ def any_message(bot, message):
         edition = None
         try:
             if not text.startswith("/#"):
-                edition = add_to_name_at_start(the_pass.card_collected, addition + " ")
+                if not addition in the_pass.card_collected["name"]:
+                    edition = add_to_name_at_start(the_pass.card_collected, addition + " ")
+                else:
+                    clarify(message.chat.id, "“" + addition + "” hashtag already exists")
             else:
                 edition = add_to_name(the_pass.card_collected, " " + addition)
         except:
