@@ -146,10 +146,17 @@ def any_message(bot, message):
             clarify(message.chat.id, the_pass.names_message)
         else:
             clarify(message.chat.id, "No names to view")
+    elif text.startswith('#'):
+        keyword = text.replace(" ", "")
+        the_pass = refresh_pass(message.chat.id, collect_names = True, find = keyword)
+        if the_pass.names_message != "":
+            clarify(message.chat.id, the_pass.names_message)
+        else:
+            clarify(message.chat.id, "No names to view")
     elif text == '/times':
-        the_pass = refresh_pass(message.chat.id, collect_times = True)
-        if the_pass.times_message != "":
-            clarify(message.chat.id, the_pass.times_message)
+        the_pass = refresh_pass(message.chat.id, collect_names = True, collect_times = True)
+        if the_pass.names_message != "":
+            clarify(message.chat.id, the_pass.names_message)
         else:
             clarify(message.chat.id, "No times to view")
     elif text == '/clean':
@@ -175,7 +182,7 @@ def any_message(bot, message):
         if the_pass.is_card_done == True:
             clarify(message.chat.id, "card done")
         else:
-            pass
+            clarify(message.chat.id, "couldn't be done to the specified card")
     elif text.startswith('/add '):
         urls = text.split(" ")
         urls.pop(0)
@@ -212,6 +219,26 @@ def any_message(bot, message):
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
+    elif text.startswith("/"):
+        addition = text.replace("/","",1)
+        addition = addition.replace(str(subindex),"",1)
+        if not text.startswith("/#"):
+            addition = "#" + addition.replace(" ", "")
+        else:
+            addition = addition.replace("#","",1)
+        the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
+        edition = None
+        try:
+            if not text.startswith("/#"):
+                edition = add_to_name_at_start(the_pass.card_collected, addition + " ")
+            else:
+                edition = add_to_name(the_pass.card_collected, " " + addition)
+        except:
+            pass
+        if edition != None:
+            clarify(message.chat.id, "“" + addition + "” added to name")
+        else:
+            clarify(message.chat.id, "error in adding “" + addition + "”")
     elif not text.startswith("/"):
         # Create a new card
         

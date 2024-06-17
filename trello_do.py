@@ -24,9 +24,9 @@ class PassReturn:
         self.card_collected = None
         self.code_collected = None
         self.names_message = ""
-        self.times_message = ""
         self.is_card_done = False
         self.is_add_cmd_done = False
+        self.hashtags_collected = []
 
 def clarify(chat_id, text):
     try:
@@ -63,7 +63,9 @@ collect_times = False,
 done_card = False,
 add_cmd = False,
 clean = False,
-ignore_show_name = False):
+ignore_show_name = False,
+find = False,
+collect_hashtags = False):
 
     
     cards_need_add = dict()
@@ -96,11 +98,14 @@ ignore_show_name = False):
     if clean == True:
         return_info.names_message += "deleted:\n"
 
+    see_args_remind = [] #values of remind if time passes.
+
     cards_updated = update_cards()
     if cards_updated != None:
         for card in cards_updated:
             u_card = card
             card_chats = []
+            
             for command_set in get_commands_set(card["desc"]): 
                 ignore_cmd_set = False
                 try:
@@ -124,7 +129,7 @@ ignore_show_name = False):
                                     command_set = get_commands_set(new_cmd)[0]
                                     code = trello_str_to_list(command_set)
                                     chats_last_card[code[0]] = code[1]
-                                    clarify(code[0], "/see" + str(code[1]) + " " + "/done" + str(code[1]) + " " + str(u_card["name"]) + "\n" + u_card["url"] + "\n" + seg_to_str(code[3]))
+                                    see_args_remind.append([code[0],code[1]])
 
                         #collect all simple_id info in order to add a card with a not-used simple_id when all cards are read.
                         if not code[0] in chats_ids:
@@ -170,14 +175,22 @@ ignore_show_name = False):
                                         code = trello_str_to_list(command_set)
                                         return_info.sec_set = modify_sec
 
+
                             #with argument collect_names
                             if collect_names == True:
-                                id_of_card = code[1]
-                                return_info.names_message += f'/done{id_of_card} /see{id_of_card} {little_show(str(u_card["name"]))}\n'
-                            
-                            #with argument collect_times
-                            if collect_times == True:
-                                return_info.times_message += seg_to_str(int(code[3])) + " | " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + " /see" + str(code[1]) + " /done" + str(code[1]) + "\n" + little_show(str(u_card["name"]))  + '\n'
+                                if find == False or find in u_card["name"]:
+                                    time_n_time_left = ""
+                                    if collect_times == True:
+                                        time_n_time_left = seg_to_str(int(code[3])) + " | " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + "\n"
+                                    return_info.names_message += f'/done{code[1]} /see{code[1]} {time_n_time_left}{little_show(str(u_card["name"]))}\n'
+
+                            if collect_hashtags == True:
+                                begings = u_card["name"].split("#")
+                                begings.pop(0)
+                                for beging in begings:
+                                    hashtag = "#" + beging.split(" ")[0]
+                                    if not hashtag in return_info.hashtags_collected:
+                                        return_info.hashtags_collected.append(hashtag)
 
                             #with argument clarify_list
                             if clarify_list == True:
@@ -237,18 +250,27 @@ ignore_show_name = False):
                         if ignore_show_name == True:
                             ignore_show_name = add_cmd
                         return_info.is_add_cmd_done = True
+        for call_values in see_args_remind:
+            see(call_values[0], call_values[1], again_see = True, ignore_time_left = True)
         for chat_id in laid:
             see(chat_id, laid[chat_id], ignore_show_name=ignore_show_name)
         return return_info
 
-def see(chat_id, subindex, ignore_show_name = False):
-    the_pass = refresh_pass(chat_id, set_last_card = subindex, get_card = subindex)
+def see(chat_id, subindex, ignore_show_name = False, again_see = "", ignore_time_left = False):
+    the_pass = refresh_pass(chat_id, set_last_card = subindex, get_card = subindex, collect_hashtags = True)
     if the_pass.card_collected != None:
-        name = ''
-        if ignore_show_name != the_pass.card_collected["id"]:
-            name = str(the_pass.card_collected["name"]) + "\n"
-        clarify(chat_id, "/done" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]))
-        cmds_msg = "reminder duration: " + seg_to_str(int(the_pass.code_collected[3])) + ". time left: " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time())) + ". \n" + "/sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4"
+        if again_see == True:
+            again_see = "/see" + str(the_pass.code_collected[1]) + " "
+        name = str(the_pass.card_collected["name"]) + "\n"
+        if ignore_show_name == the_pass.card_collected["id"]:
+            name = ''
+        time_left = " | " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time()))
+        if ignore_time_left:
+            time_left = ""
+        clarify(chat_id, again_see + "/done" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
+        cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4" + "\n"
+        for hashtag in the_pass.hashtags_collected:
+            cmds_msg += "/" + hashtag[1:] + str(the_pass.code_collected[1]) + " "
         clarify(chat_id, cmds_msg)
     else:
         if the_pass.is_last_edited == False:

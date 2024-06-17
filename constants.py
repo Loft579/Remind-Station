@@ -23,7 +23,7 @@ HELP = '''
 ' /show ' show the X card
 ' /add <URL> ' import card from Trello by URL
 ' /done<X> ' stop the X card
-' /list ' Show list of reminders.
+' /list ' show list of reminders.
 ' /names ' show list of card names
 ' /times ' show list of times with card names
 ' /sec<secs> ' set seconds to the selected card
@@ -32,6 +32,9 @@ HELP = '''
 ' /day<days> ' set days to the selected card
 ' /clean ' unimport all cards
 ' /mode <"off" or "all" or "@"<username> assigned to cards> ' set mode
+' /#<X> ' add text to the end of the card name
+' /<hashtag><X> ' set the hashtag at the beginning of the name
+' #<hashtag> ' show list of all cards with the hashtag specified
 ' /debug_help ' debug help.
 '''
 

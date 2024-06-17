@@ -78,6 +78,61 @@ def get_card_from_url(url):
     else:
         return None
 
+
+def add_to_name_at_start(card, addition):
+    card_id = card['id']
+    url = f"https://api.trello.com/1/cards/{card_id}"
+
+
+    headers = {
+    "Accept": "application/json"
+    }
+
+    query = {
+    'key': api_key,
+    'token': token,
+    'name': addition + card['name'] 
+    }
+
+    response = requests.request(
+    "PUT",
+    url,
+    headers=headers,
+    params=query
+    )
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+
+def add_to_name(card, addition):
+    card_id = card['id']
+    url = f"https://api.trello.com/1/cards/{card_id}"
+
+
+    headers = {
+    "Accept": "application/json"
+    }
+
+    query = {
+    'key': api_key,
+    'token': token,
+    'name': card['name'] + addition
+    }
+
+    response = requests.request(
+    "PUT",
+    url,
+    headers=headers,
+    params=query
+    )
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+
 def add_to_desc(card, addition):
     card_id = card['id']
     url = f"https://api.trello.com/1/cards/{card_id}"
