@@ -8,7 +8,7 @@ import dotenv
 
 # Define how the command will be used in Terminal/Bash/Shell Script/Command Line
 parser = argparse.ArgumentParser(description="Tengo Que Bot")
-parser.add_argument('-e', '--env-file', type=str, required=True, help='The name of the environment file to load.')
+parser.add_argument('-e', '--env-file', type=str, required=False, help='The name of the environment file to load.')
 
 # Get the arguments from command line
 args = parser.parse_args()
