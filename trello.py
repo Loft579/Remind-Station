@@ -172,7 +172,34 @@ def edit_from_desc(card, old_value, new_value):
     query = {
     'key': api_key,
     'token': token,
-    'desc': card['desc'].replace(old_value , new_value)
+    'desc': card['desc'].replace(old_value , new_value, 1)
+    }
+
+    response = requests.request(
+    "PUT",
+    url,
+    headers=headers,
+    params=query
+    )
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+    
+def edit_from_name(card, old_value, new_value):
+    card_id = card['id']
+    url = f"https://api.trello.com/1/cards/{card_id}"
+
+
+    headers = {
+    "Accept": "application/json"
+    }
+
+    query = {
+    'key': api_key,
+    'token': token,
+    'name': card['name'].replace(old_value , new_value, 1)
     }
 
     response = requests.request(

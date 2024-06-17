@@ -98,6 +98,7 @@ def any_message(bot, message):
         clarify(message.chat.id, HELP)
     elif text == '/hardcode':
         print("user id:", get_user_id_by_name("agusavior"))
+        clarify(message.chat.id, "/a#a /< d > /a.ll /sadfds_ll")
     elif text == '/mode' or text == '/mode ':
         clarify(message.chat.id, MODOSHELP)
     elif text.startswith('/mode '):
@@ -153,6 +154,19 @@ def any_message(bot, message):
             clarify(message.chat.id, the_pass.names_message)
         else:
             clarify(message.chat.id, "No names to view")
+    elif text == '/remove_hashtag_' or text == "/remove" or text == "/remove_hashtag" or text == "/remove hashtag":
+        clarify(message.chat.id, "you must specify text to use 'remove_hashtag_<hashtag>'")
+    elif text.startswith('/remove_hashtag_'):
+        str_to_remove = text.split("_",2)[2].replace(str(subindex),"",1)
+        str_to_remove = "#" + str_to_remove + " "
+        the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
+        edition = None
+        if str_to_remove in the_pass.card_collected["name"]:
+            edition = edit_from_name(the_pass.card_collected, str_to_remove, "")
+        if edition != None:
+            clarify(message.chat.id, "“" + str_to_remove + "” deleted")
+        else:
+            clarify(message.chat.id, "error in deleting “" + str_to_remove + "”")
     elif text == '/times':
         the_pass = refresh_pass(message.chat.id, collect_names = True, collect_times = True)
         if the_pass.names_message != "":
@@ -233,13 +247,15 @@ def any_message(bot, message):
                 if not addition in the_pass.card_collected["name"]:
                     edition = add_to_name_at_start(the_pass.card_collected, addition + " ")
                 else:
-                    clarify(message.chat.id, "“" + addition + "” hashtag already exists")
+                    clarify(message.chat.id, "hashtag already exists. are you sure you want to use /remove_hashtag_" + addition.replace("#","",1) + str(the_pass.code_collected[1]) + " ?")
+                    edition = "edition cancelled"
             else:
                 edition = add_to_name(the_pass.card_collected, " " + addition)
         except:
             pass
         if edition != None:
-            clarify(message.chat.id, "“" + addition + "” added to name")
+            if edition != "edition cancelled":
+                clarify(message.chat.id, "“" + addition + "” added to name")
         else:
             clarify(message.chat.id, "error in adding “" + addition + "”")
     elif not text.startswith("/"):
