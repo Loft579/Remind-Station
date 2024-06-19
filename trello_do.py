@@ -261,13 +261,13 @@ def see(chat_id, subindex, ignore_show_name = False, again_see = "", ignore_time
     if the_pass.card_collected != None:
         if again_see == True:
             again_see = "/see" + str(the_pass.code_collected[1]) + " "
-        name = str(the_pass.card_collected["name"]) + "\n"
+        name = "🔻\n" + str(the_pass.card_collected["name"]) + "\n🔺\n"
         if ignore_show_name == the_pass.card_collected["id"]:
             name = ''
         time_left = " | " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time()))
         if ignore_time_left:
             time_left = ""
-        clarify(chat_id, again_see + "/done" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
+        clarify(chat_id, "🛑\n" + again_see + "/done" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
         cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4" + "\n"
         for hashtag in the_pass.hashtags_collected:
             cmds_msg += "/" + hashtag[1:] + str(the_pass.code_collected[1]) + " "
