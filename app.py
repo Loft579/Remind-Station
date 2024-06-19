@@ -148,8 +148,9 @@ def any_message(bot, message):
             clarify(message.chat.id, the_pass.names_message)
         else:
             clarify(message.chat.id, "No names to view")
-    elif text.startswith('#'):
-        keyword = text.replace(" ", "")
+    elif text.startswith('/#'):
+        keyword = text.replace("/", "", 1)
+        keyword = keyword.split(" ")[0]
         the_pass = refresh_pass(message.chat.id, collect_names = True, find = keyword)
         if the_pass.names_message != "":
             clarify(message.chat.id, the_pass.names_message)
@@ -234,24 +235,22 @@ def any_message(bot, message):
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
-    elif text.startswith("/"):
+    elif text.startswith("/") or text.startswith("/ "):
         addition = text.replace("/","",1)
         addition = addition.replace(str(subindex),"",1)
-        if not text.startswith("/#"):
+        if not text.startswith("/ "):
             addition = "#" + addition.replace(" ", "")
-        else:
-            addition = addition.replace("#","",1)
         the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
         edition = None
         try:
-            if not text.startswith("/#"):
+            if not text.startswith("/ "):
                 if not addition in the_pass.card_collected["name"]:
                     edition = add_to_name_at_start(the_pass.card_collected, addition + " ")
                 else:
                     clarify(message.chat.id, "hashtag already exists. are you sure you want to use /remove_hashtag_" + addition.replace("#","",1) + str(the_pass.code_collected[1]) + " ?")
                     edition = "edition cancelled"
             else:
-                edition = add_to_name(the_pass.card_collected, " " + addition)
+                edition = add_to_name(the_pass.card_collected, addition)
         except:
             pass
         if edition != None:

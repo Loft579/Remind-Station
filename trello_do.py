@@ -185,12 +185,12 @@ collect_hashtags = False):
                                     return_info.names_message += f'/done{code[1]} /see{code[1]} {time_n_time_left}{little_show(str(u_card["name"]))}\n'
 
                             if collect_hashtags == True:
-                                begings = u_card["name"].split("#")
-                                begings.pop(0)
-                                for beging in begings:
-                                    hashtag = "#" + beging.split(" ")[0]
-                                    if not hashtag in return_info.hashtags_collected:
-                                        return_info.hashtags_collected.append(hashtag)
+                                parts = u_card["name"].replace("\n"," ")
+                                parts = parts.split(" ")
+                                for part in parts:
+                                    if part.startswith("#"):
+                                        if not part in return_info.hashtags_collected:
+                                            return_info.hashtags_collected.append(part)
 
                             #with argument clarify_list
                             if clarify_list == True:

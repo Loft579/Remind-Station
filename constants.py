@@ -32,9 +32,9 @@ HELP = '''
 ' /day<days> ' set days to the selected card
 ' /clean ' unimport all cards
 ' /mode <"off" or "all" or "@"<username> assigned to cards> ' set mode
-' /#<text> ' add text to the end of the card name
+' / <text> ' add text to the end of the card name
 ' /<hashtag><X> ' set the hashtag at the beginning of the name
-' #<hashtag> ' show list of all cards with the hashtag specified
+' /#<hashtag> ' show list of all cards with the hashtag specified
 ' /debug_help ' debug help.
 '''
 
