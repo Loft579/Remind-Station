@@ -32,6 +32,7 @@ from trello_do import *
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from imageutils import ImageUtils
+from threading import Lock
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -284,6 +285,7 @@ if __name__ == '__main__':
 
     updater = Updater(token=TELEGRAM_BOT_TOKEN)
     dispatcher = updater.dispatcher
+    any_message_lock = Lock()
 
     def any_update(update, context): #executed by Telegram with every update.
         bot = context.bot
@@ -296,7 +298,8 @@ if __name__ == '__main__':
             pass # Nothing. Ignore in edited messages.
         else:
             try:
-                any_message(bot, update.message)
+                with any_message_lock:
+                    any_message(bot, update.message)
             except Exception as e:
                 bot.send_message(update.message.chat.id, str(e))
 
