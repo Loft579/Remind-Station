@@ -9,8 +9,17 @@ dotenv.load_dotenv()
 
 api_key = os.environ['TRELLO_API_KEY']
 token = os.environ['TRELLO_TOKEN']
-board_id = os.environ['TRELLO_BOARD_ID']
+boards_id = os.environ['TRELLO_BOARDS_ID'].split(",")
 boards = None
+
+def get_whitelist_boards_id():
+    get_boards()
+    return_list = []
+    for board in boards:
+        if board["id"] in boards_id or boards_id == "all":
+            return_list.append(board["id"])
+    return return_list
+
 
 def get_boards():
     global boards
@@ -24,8 +33,8 @@ def get_boards():
     # Check if the request was successful
     if response.status_code == 200:
         boards = response.json()
-        for board in boards:
-            print(f"Board Name: {board['name']}, Board ID: {board['id']}")
+        #for board in boards:
+            #print(f"Board Name: {board['name']}, Board ID: {board['id']}")
     else:
         print(f"Failed to retrieve boards. Status code: {response.status_code}")
         print(response.text)
@@ -43,28 +52,34 @@ def get_one_card(card_id):
         return None
     
 
-def get_all_lists_from_board(board_id):
-    # Base URL for Trello API
-    base_url = "https://api.trello.com/1/"
+def get_all_lists_from_boards():
+    boards_list = []
+    for board_id in get_whitelist_boards_id():
+        # Base URL for Trello API
+        base_url = "https://api.trello.com/1/"
 
-    # Endpoint for getting all lists on the board
-    url = f"{base_url}boards/{board_id}/lists"
+        # Endpoint for getting all lists on the board
+        url = f"{base_url}boards/{board_id}/lists"
 
-    # Parameters for the API request
-    query = {
-        'key': api_key,
-        'token': token
-    }
+        # Parameters for the API request
+        query = {
+            'key': api_key,
+            'token': token
+        }
 
-    # Make a GET request to retrieve all lists on the board
-    response = requests.get(url, params=query)
+        # Make a GET request to retrieve all lists on the board
+        response = requests.get(url, params=query)
 
-    # Check if the request was successful
-    if response.status_code == 200:
-        return response.json()
+        # Check if the request was successful
+        if response.status_code == 200:
+            boards_list += response.json()
+        else:
+            print("Failed to retrieve lists. Status code:", response.status_code)
+    if boards_list != []:
+        return boards_list
     else:
-        return None
-        print("Failed to retrieve lists. Status code:", response.status_code)
+        print("Failed to retrieve lists from every whitelist board.")
+        return boards_list
 
 def get_card_from_url(url):
     json_url = url + '.json'
@@ -224,20 +239,11 @@ def add_image_to_card(card_id, image_path):
     logging.info("Card created with image attached")
 
 
-def get_all_cards_from_board(board_id):
+def get_all_cards_from_boards():
     base_url = "https://api.trello.com/1/"
     headers = {"Accept": "application/json"}
 
-    # Get all lists on the board
-    lists_url = f"{base_url}boards/{board_id}/lists?key={api_key}&token={token}"
-    lists_response = requests.get(lists_url, headers=headers)
-    if lists_response.status_code == 200:
-        lists = lists_response.json()
-    else:
-        print(f"Failed to retrieve lists. Status code: {lists_response.status_code}")
-        print(lists_response.text)  # This will print the raw response text, which can help in debugging
-        return None
-        #raise Exception()
+    lists = get_all_lists_from_boards()
 
     all_cards = []
 
@@ -250,7 +256,7 @@ def get_all_cards_from_board(board_id):
             cards = cards_response.json()
             all_cards.extend(cards)
         else:
-            print(f"Failed to retrieve cards. Status code: {lists_response.status_code}")
+            print(f"Failed to retrieve cards. Status code: {cards_response.status_code}")
 
     return all_cards
 
@@ -339,11 +345,10 @@ def create_card(list_id, card_name):
         return None
 
 # Use the function to get all cards from the specified board
-cards = get_all_cards_from_board(board_id)
 get_boards()
 
 # Print out the cards (for demonstration, you might want to process this data differently)
-print(json.dumps(cards, indent=4))  # This will print the cards data in a nicely formatted JSON string
+#print(json.dumps(cards, indent=4))  # This will print the cards data in a nicely formatted JSON string
 
 # Your callback URL where Trello will send notifications
 def change_card_list(card_id, idList):
@@ -387,17 +392,6 @@ def get_commands_set(str_):
             if not "[" in split_close[0]:
                 result.append(split_close[0])
     return result
-    
-
-def update_cards():
-    global cards
-    cards = get_all_cards_from_board(board_id)
-    return cards
-
-def get_cards_var():
-    global cards
-    print("return_cards first's type : " + str(type(cards[0])))
-    return cards
 
 def update_boards():
     global boards

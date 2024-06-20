@@ -13,7 +13,7 @@ import time
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
 chats_last_card = dict()
 chats_mode = dict()
-tengoque_lists = [None, None]
+chat_map = dict()
 
 
 
@@ -28,9 +28,9 @@ class PassReturn:
         self.is_add_cmd_done = False
         self.hashtags_collected = []
 
-def clarify(chat_id, text):
+def clarify(chat_id, text, parse_mode = ""):
     try:
-        bot.send_message(chat_id, text)
+        bot.send_message(chat_id, text, parse_mode = parse_mode)
     except telegram.error.Unauthorized:
         print("message unauthorized to send")
     except telegram.error.BadRequest as e:
@@ -66,7 +66,6 @@ clean = False,
 ignore_show_name = False,
 find = False,
 collect_hashtags = False):
-
     
     cards_need_add = dict()
 
@@ -82,25 +81,29 @@ collect_hashtags = False):
     
     chats_ids = dict()
     
-    #check list
-
-    tengoque_lists[0] = None
-    tengoque_lists[1] = None
-    
-    lists = get_all_lists_from_board(board_id)
-    if lists != None:
-        for list_ in lists:
-            if '[' + TRELLO_CALL_CMD + ']' in list_['name']:
-                tengoque_lists[0] = list_['id']
-            if '[' + TRELLO_CALL_CMD + ' done]' in list_['name']:
-                tengoque_lists[1] = list_['id']
-    
+    #check Trello lists
+    lists = get_all_lists_from_boards()
+    for list_ in lists:
+        for code_str in get_commands_set(list_["name"]):
+            if code_str != "done":
+                try:
+                    code_int = int(code_str)
+                except:
+                    code_int = None
+                if code_int != None:
+                    chat_map[code_int] = {"idBoard" : list_["idBoard"], "list_id" : list_["id"], "done_list_id" : None}
+    for list_ in lists:
+        for code_str in get_commands_set(list_["name"]):
+            if code_str == "done":
+                for chat_id in chat_map:
+                    if chat_map[chat_id]["idBoard"] == list_["idBoard"]:
+                        chat_map[chat_id]["done_list_id"] = list_["id"]
     if clean == True:
         return_info.names_message += "deleted:\n"
 
     see_args_remind = [] #values of remind if time passes.
-
-    cards_updated = update_cards()
+    
+    cards_updated = get_all_cards_from_boards()
     if cards_updated != None:
         for card in cards_updated:
             u_card = card
@@ -118,7 +121,6 @@ collect_hashtags = False):
                     card_chats.append(code[0])
 
                     if code[1] != 0:
-
                         if int(time.time()) > (code[2] + code[3]):
                             old_cmd = "[" + TRELLO_CALL_CMD + " " + command_set + "]"
                             if old_cmd in u_card["desc"]:
@@ -156,10 +158,11 @@ collect_hashtags = False):
                                     if edition != None:
                                         ignore_cmd_set = True #assert imaginario: no debe haber nada después de ["if code[1] != 0:" y lo de dentro] hasta que termine el elemento command_set del "for"
                                         u_card = edition
-                                        if tengoque_lists[1] != None:
-                                            edition_2 = change_card_list(u_card["id"], tengoque_lists[1])
-                                            if edition_2 != None:
-                                                u_card = edition_2
+                                        if target_chat in chat_map:
+                                            if chat_map[target_chat]["done_list_id"] != None:
+                                                edition_2 = change_card_list(u_card["id"], chat_map[target_chat]["done_list_id"])
+                                                if edition_2 != None:
+                                                    u_card = edition_2
                                         return_info.is_card_done = True
                             if ignore_cmd_set:
                                 continue

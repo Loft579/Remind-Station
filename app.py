@@ -265,7 +265,11 @@ def any_message(bot, message):
 
         parts_text[0] = text
 
-        new_card = create_card(tengoque_lists[0], parts_text[0])
+        if message.chat.id in chat_map:
+            new_card = create_card(chat_map[message.chat.id]["list_id"], parts_text[0])
+        else:
+            clarify(message.chat.id, "please, create a list in Trello with this in his name:\n`[" + TRELLO_CALL_CMD + " " + str(message.chat.id) + "]`", parse_mode = "MarkdownV2")
+            return
 
         if parts_text[1] != "":
             add_to_desc(new_card, parts_text[1])
@@ -314,7 +318,7 @@ if __name__ == '__main__':
                 refresh_pass(None)
             except Exception as e:
                 print(e)
-            print("chats_last_card:", chats_last_card)
+            print("---\nchats_last_card:", chats_last_card,"\nchat_map:",chat_map,"\ntime:",time.time())
             sleep(10)
     except KeyboardInterrupt:
         print('\nCtrl+C detected. Bye bye.')
