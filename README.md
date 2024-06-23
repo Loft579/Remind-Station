@@ -42,7 +42,7 @@ pip install -r requirements.txt
 TRELLO_API_KEY=
 TRELLO_TOKEN=
 TELEGRAM_BOT_TOKEN=
-TRELLO_BOARDS_ID= #whitelist separated by ",". could be "all" instead
+TRELLO_BOARDS_ID= #whitelist separated by ",". could be "all" instead, please, make sure your newly added board hasn't been used by this bot in the past
 OPENAI_API_KEY=
 
 #and fill all

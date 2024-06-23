@@ -66,6 +66,7 @@ clean = False,
 ignore_show_name = False,
 find = False,
 collect_hashtags = False):
+    print("new refresh_pass")
     
     cards_need_add = dict()
 
