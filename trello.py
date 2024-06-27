@@ -16,7 +16,7 @@ def get_whitelist_boards_id():
     get_boards()
     return_list = []
     for board in boards:
-        if board["id"] in boards_id or boards_id == "all":
+        if board["id"] in boards_id or boards_id == ["all"]:
             return_list.append(board["id"])
     return return_list
 
