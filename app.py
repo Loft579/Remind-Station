@@ -47,6 +47,8 @@ botname = 'tengo_que_bot'
 def get_defualt_seconds():
     return randint(HOUR * 6, HOUR * 8)
 
+
+
 def any_message(bot, message):
     text = message.text
 
@@ -98,24 +100,26 @@ def any_message(bot, message):
     if text == '/help':
         clarify(message.chat.id, HELP)
     elif text == '/hardcode':
-        print("user id:", get_user_id_by_name("agusavior"))
-        clarify(message.chat.id, "/a#a /< d > /a.ll /sadfds_ll")
+        print("chats_mode:", chats_mode)
     elif text == '/mode' or text == '/mode ':
         clarify(message.chat.id, MODOSHELP)
+    elif text == '/mode off':
+        del chats_mode[message.chat.id]
+        clarify(message.chat.id, "modes cleaned")
     elif text.startswith('/mode '):
-        adj = text.split(" ")[1]
+        board_id = get_board_from_url(text.split(" ")[1])["id"]
+        adj = text.split(" ")[2]
+        print("adj:", adj)
+        ini_chats_mode(message.chat.id)
         if adj == "all":
-            chats_mode[message.chat.id] = adj
-            clarify(message.chat.id, "all cards will be added")
-        elif adj == "off":
-            chats_mode[message.chat.id] = adj
-            clarify(message.chat.id, "mode off")
+            chats_mode[message.chat.id]["boards_all"].append(board_id)
+            clarify(message.chat.id, "all cards will be added in " + str(board_id))
         elif adj.startswith("@"):
             adj = adj[1:]
             user_id = get_user_id_by_name(adj)
             if user_id != None:
-                chats_mode[message.chat.id] = get_user_id_by_name(adj)
-                clarify(message.chat.id, "mode settled in " + str(user_id))
+                chats_mode[message.chat.id]["boards_members"][board_id].append(user_id)
+                clarify(message.chat.id, "mode settled in member " + str(user_id))
             else:
                 clarify(message.chat.id, "cannot get the user")
         else:
@@ -176,15 +180,9 @@ def any_message(bot, message):
         else:
             clarify(message.chat.id, "No times to view")
     elif text == '/clean':
-        chat_mode = None
-        if message.chat.id in chats_mode:
-            chat_mode = chats_mode[message.chat.id]
-        if chat_mode != "all":
-            clarify(message.chat.id, "loading...")
-            refresh_pass(message.chat.id, clean = True)
-            clarify(message.chat.id, "clean done")
-        else:
-            clarify(message.chat.id, "cannot clean because “all” mode is activated.")
+        clarify(message.chat.id, "loading...")
+        refresh_pass(message.chat.id, clean = True)
+        clarify(message.chat.id, "clean done")
     elif text == '/debug_help':
         clarify(message.chat.id, DEBUGHELP)
     elif text == '/chat_id':

@@ -93,6 +93,18 @@ def get_card_from_url(url):
     else:
         return None
 
+def get_board_from_url(url):
+    json_url = url + '.json'
+    query = {
+        'key': api_key,
+        'token': token
+    }
+    response = requests.get(json_url, params=query)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+
 
 def add_to_name_at_start(card, addition):
     card_id = card['id']

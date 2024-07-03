@@ -15,7 +15,11 @@ chats_last_card = dict()
 chats_mode = dict()
 chat_map = dict()
 
-
+def ini_chats_mode(chat_id):
+    if not chat_id in chats_mode:
+        chats_mode[chat_id] = {"boards_all" : [], "boards_members" : {}}
+        for board_id in get_whitelist_boards_id():
+            chats_mode[chat_id]["boards_members"][board_id] = list()
 
 class PassReturn:
     def __init__(self):
@@ -230,9 +234,9 @@ collect_hashtags = False):
                 chats_check_empty.append(target_chat)
             
             #automatically add the card
-            for adj_chat in chats_mode:
-                if chats_mode[adj_chat] in u_card["idMembers"] or chats_mode[adj_chat] == "all":
-                    chats_check_empty.append(adj_chat)
+            for chat_id in chats_mode:
+                if (u_card["idBoard"] in chats_mode[chat_id]["boards_all"]) or any(item in u_card["idMembers"] for item in chats_mode[chat_id]["boards_members"][u_card["idBoard"]]):
+                    chats_check_empty.append(chat_id)
 
             for chat_id in chats_check_empty:
                 if chat_id not in card_chats:
