@@ -34,7 +34,7 @@ class PassReturn:
 
 def clarify(chat_id, text, parse_mode = ""):
     try:
-        bot.send_message(chat_id, text, parse_mode = parse_mode)
+        bot.send_message(chat_id, text[:4000], parse_mode = parse_mode)
     except telegram.error.Unauthorized:
         print("message unauthorized to send")
     except telegram.error.BadRequest as e:
