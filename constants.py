@@ -31,7 +31,7 @@ HELP = '''
 ' /hour<hours> ' set hours to the selected card
 ' /day<days> ' set days to the selected card
 ' /clean ' unimport all cards
-' /mode <"off" or "all" or "@"<username> assigned to cards> ' set mode
+' /mode <<board_url> or "off"> <"all" or "@"<username> assigned to cards> ' set mode
 ' / <text> ' add text to the end of the card name
 ' /<hashtag><X> ' set the hashtag at the beginning of the name
 ' /#<hashtag> ' show list of all cards with the hashtag specified
@@ -86,9 +86,9 @@ PERIODIC = 1
 ALARM = 2
 
 MODOSHELP = '''
-' /mode @<username> ' add all cards of the board that have the member specified
-' /mode all ' add all cards of the board
-' /mode off ' no mode
+' /mode <board_url> all ' set mode to add all cards from the board
+' /mode <board_url> @<username> ' set mode to add all cards from the board that have the member specified
+' /mode off ' clean the modes
 '''
 
 TRELLO_CALL_CMD = "/tengoquebot"
