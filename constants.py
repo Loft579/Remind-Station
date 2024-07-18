@@ -98,4 +98,4 @@ NAME_LIMIT = 60
 
 DEFAULT_TIME = 4*HOUR
 
-PENDING_STR = "#Pending."
+PENDING_STR = "/#Pending."
