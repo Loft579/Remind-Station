@@ -134,8 +134,8 @@ find_desc = False):
                                 edition = edit_from_desc(u_card, old_cmd, new_cmd)
                                 if edition != None:
                                     u_card = edition
-                                    if not " #P " in u_card['desc']:
-                                        edition2 = add_to_desc(u_card, " #P ")
+                                    if not PENDING_STR in u_card['desc']:
+                                        edition2 = add_to_desc(u_card, PENDING_STR)
                                         u_card = edition2
                                     command_set = get_commands_set(new_cmd)[0]
                                     code = trello_str_to_list(command_set)
@@ -183,8 +183,8 @@ find_desc = False):
                                     edition = edit_from_desc(u_card,"[" + TRELLO_CALL_CMD + " " + command_set + "]", new_cmd)
                                     if edition != None:
                                         u_card = edition
-                                        if " #P " in u_card['desc']:
-                                            edition2 = edit_from_desc(u_card, " #P ", "")
+                                        if PENDING_STR in u_card['desc']:
+                                            edition2 = edit_from_desc(u_card, PENDING_STR, "")
                                             u_card = edition2
                                         command_set = get_commands_set(new_cmd)[0]
                                         code = trello_str_to_list(command_set)

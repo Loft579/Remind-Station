@@ -153,7 +153,7 @@ def any_message(bot, message):
         else:
             clarify(message.chat.id, "No names to view")
     elif text == "p" or text == "P":
-        the_pass = refresh_pass(message.chat.id, find_desc = " #P ")
+        the_pass = refresh_pass(message.chat.id, find_desc = PENDING_STR)
         if the_pass.names_message != "":
             clarify(message.chat.id, the_pass.names_message)
         else:
@@ -281,7 +281,7 @@ def any_message(bot, message):
         if image_filename is not None:
             add_image_to_card(new_card["id"], image_filename)
         
-        add_to_desc(new_card, " #P ")
+        add_to_desc(new_card, PENDING_STR )
 
         the_pass = refresh_pass(message.chat.id, add_cmd = new_card["id"], ignore_show_name=is_text_from_msg)
         if the_pass.is_add_cmd_done == True:

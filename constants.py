@@ -34,7 +34,8 @@ HELP = '''
 ' /mode <<board_url> or "off"> <"all" or "@"<username> assigned to cards> ' set mode
 ' / <text> ' add text to the end of the card name
 ' /<hashtag><X> ' set the hashtag at the beginning of the name
-' /#<hashtag> or "P" ' show list of all cards with the hashtag specified
+' /#<hashtag> ' show list of all cards with the hashtag specified
+' "P"/"p" ' show list of all cards with the hashtag #Pending.
 ' /debug_help ' debug help.
 '''
 
@@ -96,3 +97,5 @@ TRELLO_CALL_CMD = "/tengoquebot"
 NAME_LIMIT = 60
 
 DEFAULT_TIME = 4*HOUR
+
+PENDING_STR = "#Pending."
