@@ -69,7 +69,8 @@ add_cmd = False,
 clean = False,
 ignore_show_name = False,
 find = False,
-collect_hashtags = False):
+collect_hashtags = False,
+find_desc = False):
     print("new refresh_pass")
     
     cards_need_add = dict()
@@ -133,6 +134,9 @@ collect_hashtags = False):
                                 edition = edit_from_desc(u_card, old_cmd, new_cmd)
                                 if edition != None:
                                     u_card = edition
+                                    if not " #P " in u_card['desc']:
+                                        edition2 = add_to_desc(u_card, " #P ")
+                                        u_card = edition2
                                     command_set = get_commands_set(new_cmd)[0]
                                     code = trello_str_to_list(command_set)
                                     chats_last_card[code[0]] = code[1]
@@ -179,6 +183,9 @@ collect_hashtags = False):
                                     edition = edit_from_desc(u_card,"[" + TRELLO_CALL_CMD + " " + command_set + "]", new_cmd)
                                     if edition != None:
                                         u_card = edition
+                                        if " #P " in u_card['desc']:
+                                            edition2 = edit_from_desc(u_card, " #P ", "")
+                                            u_card = edition2
                                         command_set = get_commands_set(new_cmd)[0]
                                         code = trello_str_to_list(command_set)
                                         return_info.sec_set = modify_sec
@@ -186,7 +193,7 @@ collect_hashtags = False):
 
                             #with argument collect_names
                             if collect_names == True:
-                                if find == False or find in u_card["name"]:
+                                if (find == False and find_desc == False) or find in u_card["name"] or (find_desc in u_card["desc"]):
                                     time_n_time_left = ""
                                     if collect_times == True:
                                         time_n_time_left = seg_to_str(int(code[3])) + " | " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + "\n"
