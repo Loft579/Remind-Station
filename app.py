@@ -153,7 +153,7 @@ def any_message(bot, message):
         else:
             clarify(message.chat.id, "No names to view")
     elif text == "p" or text == "P":
-        the_pass = refresh_pass(message.chat.id, find_desc = PENDING_STR)
+        the_pass = refresh_pass(message.chat.id, collect_names = True, find_desc = PENDING_STR)
         if the_pass.names_message != "":
             clarify(message.chat.id, the_pass.names_message)
         else:
