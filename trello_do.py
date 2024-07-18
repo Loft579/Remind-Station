@@ -73,6 +73,9 @@ collect_hashtags = False,
 find_desc = False):
     print("new refresh_pass")
     
+    if collect_names == True and find == False and find_desc == False:
+        find == ""
+
     cards_need_add = dict()
 
     return_info = PassReturn()
@@ -193,11 +196,12 @@ find_desc = False):
 
                             #with argument collect_names
                             if collect_names == True:
-                                if (find == False and find_desc == False) or find in u_card["name"] or (find_desc in u_card["desc"]):
-                                    time_n_time_left = ""
-                                    if collect_times == True:
-                                        time_n_time_left = seg_to_str(int(code[3])) + " | " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + "\n"
-                                    return_info.names_message += f'/done{code[1]} /see{code[1]} {time_n_time_left}{little_show(str(u_card["name"]))}\n'
+                                if (find != False and find_desc != False):
+                                    if find in u_card["name"] or find_desc in u_card["desc"]:
+                                        time_n_time_left = ""
+                                        if collect_times == True:
+                                            time_n_time_left = seg_to_str(int(code[3])) + " | " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + "\n"
+                                        return_info.names_message += f'/done{code[1]} /see{code[1]} {time_n_time_left}{little_show(str(u_card["name"]))}\n'
 
                             if collect_hashtags == True:
                                 parts = u_card["name"].replace("\n"," ")
