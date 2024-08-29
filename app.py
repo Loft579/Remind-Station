@@ -52,7 +52,7 @@ def get_defualt_seconds():
 def any_message(bot, message):
     text = message.text
 
-    is_message_from_whisper_op = message.from_user.id == 43759228 or message.from_user.id == 424819435
+    is_message_from_whisper_op = message.from_user.id == 43759228 or message.from_user.id == 424819435 or message.from_user.id == 80627582
 
     # If there is an image, download it
     if message.photo != []:
