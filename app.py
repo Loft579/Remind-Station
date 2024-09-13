@@ -322,8 +322,8 @@ if __name__ == '__main__':
         while True:
             try:
                 refresh_pass(None)
-            except Exception as e:
-                print(e)
+            except BaseException as e:
+                print(f"Error in refresh_pass: {e}")
             print("---\nchats_last_card:", chats_last_card,"\nchat_map:",chat_map,"\ntime:",time.time())
             sleep(10)
     except KeyboardInterrupt:
