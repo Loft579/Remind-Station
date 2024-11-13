@@ -1,5 +1,6 @@
 import os
 import requests
+import traceback
 
 def report(content: str):
     user = os.environ.get('AGUSAVIOR_USERNAME', None)
@@ -8,7 +9,7 @@ def report(content: str):
         try:
             r = requests.post('https://agusavior.com/tengoque', auth=(user, passw), json={
                 'content': content,
-            }, timeout=5)
+            }, timeout=30)
             assert r.status_code <= 399
-        except Exception as e:
-            pass
+        except Exception:
+            print(traceback.format_exc())
