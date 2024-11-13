@@ -5,6 +5,7 @@
 
 import argparse
 import dotenv
+import agusavior
 
 # Define how the command will be used in Terminal/Bash/Shell Script/Command Line
 parser = argparse.ArgumentParser(description="Tengo Que Bot")
@@ -271,6 +272,7 @@ def any_message(bot, message):
 
         if message.chat.id in chat_map:
             new_card = create_card(chat_map[message.chat.id]["list_id"], parts_text[0])
+            agusavior.report(parts_text[0])
         else:
             clarify(message.chat.id, "please, create a list in Trello with this in his name:\n`[" + TRELLO_CALL_CMD + " " + str(message.chat.id) + "]`", parse_mode = "MarkdownV2")
             return
