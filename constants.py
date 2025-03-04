@@ -30,12 +30,14 @@ HELP = '''
 ' /min<mins> ' set minutes to the selected card
 ' /hour<hours> ' set hours to the selected card
 ' /day<days> ' set days to the selected card
+' /date <month of the year> <optional, day of the month> <h of the day> <min of the hour> ' set date to the selected card
 ' /clean ' unimport all cards.
 ' /mode ' mode command help
 ' / <text> ' add text to the end of the card name
-' /<hashtag><X> ' set the hashtag at the beginning of the name
+' /<hashtag><X> ' set the hashtag
 ' /#<hashtag> ' show list of all cards with the hashtag specified
 ' "P"/"p" ' show list of all cards with the hashtag #Pending.
+' /ok ' ok pending
 ' /debug_help ' debug help.
 '''
 

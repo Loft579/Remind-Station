@@ -148,42 +148,42 @@ def any_message(bot, message):
     elif text.startswith('/list'):
         refresh_pass(message.chat.id, clarify_list = True)
     elif text == '/names':
-        the_pass = refresh_pass(message.chat.id, collect_names = True)
-        if the_pass.names_message != "":
-            clarify(message.chat.id, the_pass.names_message)
+        the_pass = refresh_pass(message.chat.id, sort_by = "latests")
+        if the_pass.sorted_cards != "":
+            clarify(message.chat.id, the_pass.sorted_cards)
         else:
             clarify(message.chat.id, "No names to view")
-    elif text == "p" or text == "P":
-        the_pass = refresh_pass(message.chat.id, collect_names = True, find_desc = PENDING_STR)
-        if the_pass.names_message != "":
-            clarify(message.chat.id, the_pass.names_message)
-        else:
-            clarify(message.chat.id, "No names to view")
-    elif text.startswith('/#'):
-        keyword = text.replace("/", "", 1)
-        keyword = keyword.split(" ")[0]
-        the_pass = refresh_pass(message.chat.id, collect_names = True, find = keyword)
-        if the_pass.names_message != "":
-            clarify(message.chat.id, the_pass.names_message)
+    elif text.startswith('/#') or text == "p" or text == "P":
+        keyword = text.split(" ")[0] + "."
+        if text == "p" or text == "P":
+            keyword = PENDING_STR
+        the_pass = refresh_pass(message.chat.id, sort_by = "latests", find_desc = keyword)
+        if the_pass.sorted_cards != "":
+            clarify(message.chat.id, the_pass.sorted_cards)
         else:
             clarify(message.chat.id, "No names to view")
     elif text == '/remove_hashtag_' or text == "/remove" or text == "/remove_hashtag" or text == "/remove hashtag":
         clarify(message.chat.id, "you must specify text to use 'remove_hashtag_<hashtag>'")
     elif text.startswith('/remove_hashtag_'):
         str_to_remove = text.split("_",2)[2].replace(str(subindex),"",1)
-        str_to_remove = "#" + str_to_remove + " "
+        str_to_remove = "/#" + str_to_remove + "."
         the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
         edition = None
-        if str_to_remove in the_pass.card_collected["name"]:
-            edition = edit_from_name(the_pass.card_collected, str_to_remove, "")
+        if str_to_remove in the_pass.card_collected["desc"]:
+            edition = edit_from_desc(the_pass.card_collected, str_to_remove, "")
         if edition != None:
-            clarify(message.chat.id, "“" + str_to_remove + "” deleted")
+            clarify(message.chat.id, "“" + str_to_remove + "” hashtag removed from the card")
         else:
-            clarify(message.chat.id, "error in deleting “" + str_to_remove + "”")
+            clarify(message.chat.id, "error in removing “" + str_to_remove + "” from the card description")
+    elif text.startswith("/ok"):
+        subindex_str = ""
+        if subindex > 0:
+            subindex_str = str(subindex)
+        clarify(message.chat.id, "use /remove_hashtag_" + PENDING_STR.replace("/#", "", 1).replace(".","") + str(subindex_str))
     elif text == '/times':
-        the_pass = refresh_pass(message.chat.id, collect_names = True, collect_times = True)
-        if the_pass.names_message != "":
-            clarify(message.chat.id, the_pass.names_message)
+        the_pass = refresh_pass(message.chat.id, sort_by = "latests", collect_times = True)
+        if the_pass.sorted_cards != "":
+            clarify(message.chat.id, the_pass.sorted_cards)
         else:
             clarify(message.chat.id, "No times to view")
     elif text == '/clean':
@@ -240,19 +240,40 @@ def any_message(bot, message):
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
+    elif text == "/date":
+        clarify("/date <month> <optional, days> etc")
+    elif text.startswith("/date "):
+        text_split = text.split(" ")
+        month = int(text_split[1])
+        day = 1
+        hour = 0
+        minutes = 0
+        try:
+            day = int(text_split[2])
+            hour = int(text_split[3])
+            minutes = int(text_split[4])
+        except:
+            pass
+        date = calculate_start_date(month) + ((day - 1) * DAY + hour * HOUR + minutes * MIN)
+        the_pass = refresh_pass(message.chat.id, modify_sec = date - int(time.time()))
+        if the_pass.sec_set != None:
+            clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
+        else:
+            clarify(message.chat.id, "error in changing time")
+
     elif text.startswith("/") or text.startswith("/ "):
         addition = text.replace("/","",1)
         addition = addition.replace(str(subindex),"",1)
         if not text.startswith("/ "):
-            addition = "#" + addition.replace(" ", "")
+            addition = "/#" + addition.replace(" ", "") + "."
         the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
         edition = None
         try:
             if not text.startswith("/ "):
-                if not addition in the_pass.card_collected["name"]:
-                    edition = add_to_name_at_start(the_pass.card_collected, addition + " ")
+                if not addition in the_pass.card_collected["desc"]:
+                    edition = add_to_desc(the_pass.card_collected, addition)
                 else:
-                    clarify(message.chat.id, "hashtag already exists. are you sure you want to use /remove_hashtag_" + addition.replace("#","",1) + str(the_pass.code_collected[1]) + " ?")
+                    clarify(message.chat.id, "hashtag already exists. are you sure you want to use /remove_hashtag_" + addition.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]) + " ?")
                     edition = "edition cancelled"
             else:
                 edition = add_to_name(the_pass.card_collected, addition)
@@ -260,7 +281,7 @@ def any_message(bot, message):
             pass
         if edition != None:
             if edition != "edition cancelled":
-                clarify(message.chat.id, "“" + addition + "” added to name")
+                clarify(message.chat.id, "“" + addition + "” added to card")
         else:
             clarify(message.chat.id, "error in adding “" + addition + "”")
     elif not text.startswith("/"):

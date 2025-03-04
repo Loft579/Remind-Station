@@ -28,7 +28,8 @@ class PassReturn:
         self.sec_set = None
         self.card_collected = None
         self.code_collected = None
-        self.names_message = ""
+        self.cards_extract = list()
+        self.sorted_cards = ""
         self.is_card_done = False
         self.is_add_cmd_done = False
         self.hashtags_collected = []
@@ -57,13 +58,13 @@ def little_show(name):
         little = name[:NAME_LIMIT-3] + "..."
     return little.replace('\n', ' ')
 
-#important function
+#important function of loop-modify architecture
 def refresh_pass(target_chat,
 set_last_card = False,
 get_card = False,
 modify_sec = False,
 clarify_list = False,
-collect_names = False,
+sort_by = False,
 collect_times = False,
 done_card = False,
 add_cmd = False,
@@ -105,8 +106,6 @@ find_desc = False):
                 for chat_id in chat_map:
                     if chat_map[chat_id]["idBoard"] == list_["idBoard"]:
                         chat_map[chat_id]["done_list_id"] = list_["id"]
-    if clean == True:
-        return_info.names_message += "deleted:\n"
 
     see_args_remind = [] #values of remind if time passes.
     
@@ -192,8 +191,8 @@ find_desc = False):
                                         return_info.sec_set = modify_sec
 
 
-                            #with argument collect_names
-                            if collect_names == True:
+                            #with argument sort_by
+                            if sort_by != False:
                                 collect_this_name = False
                                 if (find == False and find_desc == False):
                                     collect_this_name = True
@@ -207,15 +206,16 @@ find_desc = False):
                                     time_n_time_left = ""
                                     if collect_times == True:
                                         time_n_time_left = seg_to_str(int(code[3])) + " | " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + "\n"
-                                    return_info.names_message += f'/done{code[1]} /see{code[1]} {time_n_time_left}{little_show(str(u_card["name"]))}\n'
+                                    return_info.cards_extract.append({"date": code[2] + code[3], "msg_part":f'/done{code[1]} /see{code[1]} {time_n_time_left}{little_show(str(u_card["name"]))}\n'})
 
                             if collect_hashtags == True:
-                                parts = u_card["name"].replace("\n"," ")
-                                parts = parts.split(" ")
+                                parts = u_card["desc"]
+                                parts = parts.split("/#")
+                                parts.pop(0)
                                 for part in parts:
-                                    if part.startswith("#"):
-                                        if not part in return_info.hashtags_collected:
-                                            return_info.hashtags_collected.append(part)
+                                    hashtag_name = part.split(".")[0]
+                                    if not hashtag_name in return_info.hashtags_collected:
+                                        return_info.hashtags_collected.append(hashtag_name)
 
                             #with argument clarify_list
                             if clarify_list == True:
@@ -260,7 +260,7 @@ find_desc = False):
                     if not chat_id in cards_need_add:
                         cards_need_add[chat_id] = []
                     cards_need_add[chat_id].append(u_card)
-                
+
         laid = {} #in order to check the last available id added to the bot Telegram chat
         for chat_id in cards_need_add:
             for card in cards_need_add[chat_id]:
@@ -279,6 +279,17 @@ find_desc = False):
             see(call_values[0], call_values[1], again_see = True, ignore_time_left = True)
         for chat_id in laid:
             see(chat_id, laid[chat_id], ignore_show_name=ignore_show_name)
+        
+        # getting information to create code free of “loop-modify architecture”, now the processed info as return_info.
+        if sort_by == "earliest":
+            return_info.cards_extract.sort(key=lambda x: x["date"], reverse=False)
+        if sort_by == "latests":
+            return_info.cards_extract.sort(key=lambda x: x["date"], reverse=True)
+        if clean == True:
+            return_info.sorted_cards += "deleted:\n"
+        for dict_ in return_info.cards_extract:
+            return_info.sorted_cards += dict_["msg_part"]
+
         return return_info
 
 def see(chat_id, subindex, ignore_show_name = False, again_see = "", ignore_time_left = False):
@@ -293,11 +304,11 @@ def see(chat_id, subindex, ignore_show_name = False, again_see = "", ignore_time
         if ignore_time_left:
             time_left = ""
         clarify(chat_id, "🛑\n" + again_see + "/done" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
-        if chat_id == ADMIN_CHAT_ID:
+        if int(the_pass.code_collected[0]) == ADMIN_CHAT_ID:
             agusavior.report(str(the_pass.card_collected["name"]))
         cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4" + "\n"
         for hashtag in the_pass.hashtags_collected:
-            cmds_msg += "/" + hashtag[1:] + str(the_pass.code_collected[1]) + " "
+            cmds_msg += "/" + hashtag + str(the_pass.code_collected[1]) + " "
         clarify(chat_id, cmds_msg)
     else:
         if the_pass.is_last_edited == False:
