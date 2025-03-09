@@ -13,7 +13,7 @@ MIN = 60
 HOUR = 60 * MIN
 DAY = HOUR * 24
 
-ADJUST_UTC = HOUR*-3
+ADJUST_UTC = HOUR*0
 
 PRIVATEWELCOME = '''Hi. You may tell me what do you want to do and I will help you.
 /help para ver comandos especiales.'''

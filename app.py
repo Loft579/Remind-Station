@@ -255,7 +255,7 @@ def any_message(bot, message):
         except:
             pass
         date = calculate_start_date(month) + ((day - 1) * DAY + hour * HOUR + minutes * MIN)
-        the_pass = refresh_pass(message.chat.id, modify_sec = (date - int(time.time())) + ADJUST_UTC)
+        the_pass = refresh_pass(message.chat.id, modify_sec = (date + ADJUST_UTC - int(time.time())))
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
