@@ -36,7 +36,7 @@ class PassReturn:
 
 def clarify(chat_id, text, parse_mode = ""):
     try:
-        bot.send_message(chat_id, text[:4000], parse_mode = parse_mode)
+        bot.send_message(chat_id, text[-4000:], parse_mode = parse_mode)
     except telegram.error.Unauthorized:
         print("message unauthorized to send")
     except telegram.error.BadRequest as e:
@@ -307,7 +307,7 @@ def see(chat_id, subindex, ignore_show_name = False, is_reminded = "", ignore_ti
         time_left = " | " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time()))
         if ignore_time_left:
             time_left = ""
-        clarify(chat_id, (is_reminded + "/done" + str(the_pass.code_collected[1]) + " /ok" + str(the_pass.code_collected[1])+ "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)[-3990:])
+        clarify(chat_id, is_reminded + "/done" + str(the_pass.code_collected[1]) + " /ok" + str(the_pass.code_collected[1])+ "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
         if int(the_pass.code_collected[0]) == ADMIN_CHAT_ID:
             agusavior.report(str(the_pass.card_collected["name"]))
         cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4" + "\n"

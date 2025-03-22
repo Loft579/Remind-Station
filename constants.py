@@ -40,7 +40,7 @@ HELP = '''
 ' /<hashtag><X> ' set the hashtag
 ' /#<hashtag> ' show list of all cards with the hashtag specified
 ' "P"/"p" ' show list of all cards with the hashtag #Pending.
-' /ok ' ok pending
+' /ok ' stop card
 ' /debug_help ' debug help.
 '''
 
