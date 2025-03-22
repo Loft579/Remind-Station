@@ -203,10 +203,12 @@ find_desc = False):
                                     if find_desc in u_card["desc"]:
                                         collect_this_name = True
                                 if collect_this_name:
-                                    time_n_time_left = ""
+                                    time_str = ""
                                     if collect_times == True:
-                                        time_n_time_left = seg_to_str(int(code[3])) + " | " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + "\n"
-                                    return_info.cards_extract.append({"date": code[2] + code[3], "msg_part":f'/done{code[1]} /see{code[1]} {time_n_time_left}{little_show(str(u_card["name"]))}\n'})
+                                        time_str = seg_to_str(int(code[3])) + " | " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + "\n"
+                                    elif collect_times == "ago":
+                                        time_str = seg_to_str(int(time.time()) - int(code[2])) + " ago\n"
+                                    return_info.cards_extract.append({"date": code[2] + code[3], "reminded_date": code[2], "msg_part":f'/done{code[1]} /see{code[1]} {time_str}{little_show(str(u_card["name"]))}\n'})
 
                             if collect_hashtags == True:
                                 parts = u_card["desc"]
@@ -281,6 +283,8 @@ find_desc = False):
             see(chat_id, laid[chat_id], ignore_show_name=ignore_show_name)
         
         # getting information to create code free of “loop-modify architecture”, now the processed info as return_info.
+        if sort_by == "earliest_reminded":
+            return_info.cards_extract.sort(key=lambda x: x["reminded_date"], reverse=False)
         if sort_by == "earliest":
             return_info.cards_extract.sort(key=lambda x: x["date"], reverse=False)
         if sort_by == "latests":
@@ -293,7 +297,7 @@ find_desc = False):
         return return_info
 
 def see(chat_id, subindex, ignore_show_name = False, again_see = "", ignore_time_left = False):
-    the_pass = refresh_pass(chat_id, set_last_card = subindex, get_card = subindex, collect_hashtags = True)
+    the_pass = refresh_pass(chat_id, set_last_card = subindex, get_card = subindex, collect_hashtags = True, collect_times="ago", find_desc = "/#Pending.", sort_by="earliest_reminded")
     if the_pass.card_collected != None:
         if again_see == True:
             again_see = "/see" + str(the_pass.code_collected[1]) + " "
@@ -303,7 +307,7 @@ def see(chat_id, subindex, ignore_show_name = False, again_see = "", ignore_time
         time_left = " | " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time()))
         if ignore_time_left:
             time_left = ""
-        clarify(chat_id, "🛑\n" + again_see + "/done" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
+        clarify(chat_id, "🛑\n" + the_pass.return_info.sorted_cards + "\n" + again_see + "/done" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
         if int(the_pass.code_collected[0]) == ADMIN_CHAT_ID:
             agusavior.report(str(the_pass.card_collected["name"]))
         cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4" + "\n"
