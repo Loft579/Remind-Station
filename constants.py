@@ -12,6 +12,7 @@ OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', default=None)
 MIN = 60
 HOUR = 60 * MIN
 DAY = HOUR * 24
+YEAR = DAY * 365
 
 ADJUST_UTC = -3
 

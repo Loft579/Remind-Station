@@ -175,11 +175,6 @@ def any_message(bot, message):
             clarify(message.chat.id, "“" + str_to_remove + "” hashtag removed from the card")
         else:
             clarify(message.chat.id, "error in removing “" + str_to_remove + "” from the card description")
-    elif text.startswith("/ok"):
-        subindex_str = ""
-        if subindex > 0:
-            subindex_str = str(subindex)
-        clarify(message.chat.id, "use /remove_hashtag_" + PENDING_STR.replace("/#", "", 1).replace(".","") + str(subindex_str))
     elif text == '/times':
         the_pass = refresh_pass(message.chat.id, sort_by = "latests", collect_times = True)
         if the_pass.sorted_cards != "":
@@ -228,14 +223,26 @@ def any_message(bot, message):
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
+    elif text.startswith('/hour'):
+        the_pass = refresh_pass(message.chat.id, modify_sec = subindex*HOUR)
+        if the_pass.sec_set != None:
+            clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
+        else:
+            clarify(message.chat.id, "error in changing time")
     elif text.startswith('/day'):
         the_pass = refresh_pass(message.chat.id, modify_sec = subindex*DAY)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
-    elif text.startswith('/hour'):
-        the_pass = refresh_pass(message.chat.id, modify_sec = subindex*HOUR)
+    elif text.startswith('/year'):
+        the_pass = refresh_pass(message.chat.id, modify_sec = subindex*YEAR)
+        if the_pass.sec_set != None:
+            clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
+        else:
+            clarify(message.chat.id, "error in changing time")
+    elif text.startswith("/ok"):
+        the_pass = refresh_pass(message.chat.id, set_last_card = subindex, modify_sec = DAY*35600)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
