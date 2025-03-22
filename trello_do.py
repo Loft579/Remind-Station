@@ -307,7 +307,7 @@ def see(chat_id, subindex, ignore_show_name = False, again_see = "", ignore_time
         time_left = " | " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time()))
         if ignore_time_left:
             time_left = ""
-        clarify(chat_id, "🛑\n" + the_pass.return_info.sorted_cards + "\n" + again_see + "/done" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
+        clarify(chat_id, "🛑\n" + the_pass.sorted_cards + "\n" + again_see + "/done" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
         if int(the_pass.code_collected[0]) == ADMIN_CHAT_ID:
             agusavior.report(str(the_pass.card_collected["name"]))
         cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4" + "\n"
