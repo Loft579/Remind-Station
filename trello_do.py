@@ -297,10 +297,10 @@ find_desc = False):
         return return_info
 
 def see(chat_id, subindex, ignore_show_name = False, is_reminded = "", ignore_time_left = False):
-    the_pass = refresh_pass(chat_id, set_last_card = subindex, get_card = subindex, collect_hashtags = True, collect_times="ago", find_desc = "/#Pending.", sort_by="earliest_reminded")
+    the_pass = refresh_pass(chat_id, set_last_card = subindex, get_card = subindex, collect_hashtags = True)
     if the_pass.card_collected != None:
         if is_reminded == True:
-            is_reminded = the_pass.sorted_cards + "\n🛑\n" + "/see" + str(the_pass.code_collected[1]) + " "
+            is_reminded = "🛑\n" + "/see" + str(the_pass.code_collected[1]) + " "
         name = "🔻\n" + str(the_pass.card_collected["name"]) + "\n🔺\n"
         if ignore_show_name == the_pass.card_collected["id"]:
             name = ''
