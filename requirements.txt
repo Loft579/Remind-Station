@@ -1,0 +1,13 @@
+python-telegram-bot==13.1
+telegram==0.0.1
+requests==2.31.0 #for trello.py
+
+# For loading ENV
+python-dotenv==1.0.1 #for trello.py
+
+# OpenAI, whisper
+openai==1.1.1
+
+# For extracting audio from mp4
+# moviepy==1.0.3
+pytesseract==0.3.10
