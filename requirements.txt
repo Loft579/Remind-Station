@@ -6,7 +6,7 @@ requests==2.31.0 #for trello.py
 python-dotenv==1.0.1 #for trello.py
 
 # OpenAI, whisper
-openai==1.1.1
+openai==1.71.0
 
 # For extracting audio from mp4
 # moviepy==1.0.3
