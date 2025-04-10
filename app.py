@@ -165,7 +165,7 @@ def any_message(bot, message):
         clarify(message.chat.id, "you must specify text to use 'remove_hashtag_<hashtag>'")
     elif text.startswith("/ok"):
         the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
-        clarify("are you sure you want to use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]) + " , /stop" + str(the_pass.code_collected[1]) +  " ?")
+        clarify(message.chat.id, "are you sure you want to use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]) + " , /stop" + str(the_pass.code_collected[1]) +  " ?")
     elif text.startswith('/remove_hashtag_'):
         str_to_remove = text.split("_",2)[2].replace(str(subindex),"",1)
         str_to_remove = "/#" + str_to_remove + "."
@@ -250,7 +250,7 @@ def any_message(bot, message):
         else:
             clarify(message.chat.id, "error in changing time.\nyou can also use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]))
     elif text == "/date":
-        clarify("/date <month> <optional, days> etc")
+        clarify(message.chat.id, "/date <month> <optional, days> etc")
     elif text.startswith("/date "):
         text_split = text.split(" ")
         month = int(text_split[1])
