@@ -40,7 +40,8 @@ HELP = '''
 ' /<hashtag><X> ' set the hashtag
 ' /#<hashtag> ' show list of all cards with the hashtag specified
 ' "P"/"p" ' show list of all cards with the hashtag #Pending.
-' /ok ' stop card
+' /stop ' stop card's reminding
+' /ok ' remove card from selection zone
 ' /debug_help ' debug help.
 '''
 
@@ -104,3 +105,4 @@ NAME_LIMIT = 60
 DEFAULT_TIME = 4*HOUR
 
 PENDING_STR = "/#Pending."
+SELECTED_STR = "/#selecteds."

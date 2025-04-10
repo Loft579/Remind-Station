@@ -5,7 +5,6 @@
 
 import argparse
 import dotenv
-import agusavior
 
 # Define how the command will be used in Terminal/Bash/Shell Script/Command Line
 parser = argparse.ArgumentParser(description="Tengo Que Bot")
@@ -164,6 +163,9 @@ def any_message(bot, message):
             clarify(message.chat.id, "No names to view")
     elif text == '/remove_hashtag_' or text == "/remove" or text == "/remove_hashtag" or text == "/remove hashtag":
         clarify(message.chat.id, "you must specify text to use 'remove_hashtag_<hashtag>'")
+    elif text.startswith("/ok"):
+        the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
+        clarify("are you sure you want to use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]) + " , /stop" + str(the_pass.code_collected[1]) +  " ?")
     elif text.startswith('/remove_hashtag_'):
         str_to_remove = text.split("_",2)[2].replace(str(subindex),"",1)
         str_to_remove = "/#" + str_to_remove + "."
@@ -241,12 +243,12 @@ def any_message(bot, message):
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
-    elif text.startswith("/ok"):
-        the_pass = refresh_pass(message.chat.id, set_last_card = subindex, modify_sec = DAY*35600)
+    elif text.startswith("/stop"):
+        the_pass = refresh_pass(message.chat.id, set_last_card = subindex, modify_sec = DAY*35600, get_card=subindex)
         if the_pass.sec_set != None:
-            clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
+            clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set) + "\nso you can also use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]))
         else:
-            clarify(message.chat.id, "error in changing time")
+            clarify(message.chat.id, "error in changing time.\nyou can also use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]))
     elif text == "/date":
         clarify("/date <month> <optional, days> etc")
     elif text.startswith("/date "):
