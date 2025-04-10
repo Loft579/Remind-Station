@@ -183,9 +183,6 @@ find_desc = False):
                                     edition = edit_from_desc(u_card,"[" + TRELLO_CALL_CMD + " " + command_set + "]", new_cmd)
                                     if edition != None:
                                         u_card = edition
-                                        if PENDING_STR in u_card['desc']:
-                                            edition2 = edit_from_desc(u_card, PENDING_STR, "")
-                                            u_card = edition2
                                         command_set = get_commands_set(new_cmd)[0]
                                         code = trello_str_to_list(command_set)
                                         return_info.sec_set = modify_sec
@@ -300,14 +297,14 @@ def see(chat_id, subindex, ignore_show_name = False, is_reminded = "", ignore_ti
     the_pass = refresh_pass(chat_id, set_last_card = subindex, get_card = subindex, collect_hashtags = True, collect_times="ago", find_desc = "/#Pending.", sort_by="earliest_reminded")
     if the_pass.card_collected != None:
         if is_reminded == True:
-            is_reminded = the_pass.sorted_cards + "\n🛑\n" + "/see" + str(the_pass.code_collected[1]) + " "
-        name = "🔻\n" + str(the_pass.card_collected["name"]) + "\n🔺\n"
+            is_reminded = the_pass.sorted_cards + "\n🛑 " + "/see" + str(the_pass.code_collected[1]) + " "
+        name = str(the_pass.card_collected["name"])
         if ignore_show_name == the_pass.card_collected["id"]:
             name = ''
         time_left = " | " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time()))
         if ignore_time_left:
             time_left = ""
-        clarify(chat_id, is_reminded + "/done" + str(the_pass.code_collected[1]) + " /ok" + str(the_pass.code_collected[1])+ "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
+        clarify(chat_id, is_reminded + "/done" + str(the_pass.code_collected[1]) + " /ok" + str(the_pass.code_collected[1])+ "\n" + name + "\n\n" + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
         if int(the_pass.code_collected[0]) == ADMIN_CHAT_ID:
             agusavior.report(str(the_pass.card_collected["name"]))
         cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4" + "\n"
