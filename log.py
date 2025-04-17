@@ -14,7 +14,7 @@ def activity(activity_url, filename, log_file_path="./",):
     # Encode the parameter to ensure it is safe for logging
     encoded_parameter = quote(activity_url, safe="")
     with open(os.path.join(log_file_path, filename), 'a') as file:
-        file.write(str(time.time()) + "," + activity_url + "\n")
+        file.write(str(int(time.time())) + "," + activity_url + "\n")
 
 
 def add_question_mark(filename,log_file_path="./"):
