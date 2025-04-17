@@ -301,7 +301,7 @@ def see(chat_id, subindex, ignore_show_name = False, is_reminded = "", ignore_ti
         time_left = " | " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time()))
         if ignore_time_left:
             time_left = ""
-        clarify(chat_id, "/track" + str(the_pass.code_collected[1]) + " /track_fade" + str(the_pass.code_collected[1]) + " /track_undofade" + str(the_pass.code_collected[1]) + "\n" + is_reminded + "/done" + str(the_pass.code_collected[1]) + " /selecteds" + str(the_pass.code_collected[1]) + " /stop" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
+        clarify(chat_id, "/track" + str(the_pass.code_collected[1]) + " /track_fade" + " /track_undofade" + "\n" + is_reminded + "/done" + str(the_pass.code_collected[1]) + " /selecteds" + str(the_pass.code_collected[1]) + " /stop" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
         cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4" + "\n"
         for hashtag in the_pass.hashtags_collected:
             cmds_msg += "/" + hashtag + str(the_pass.code_collected[1]) + " "
