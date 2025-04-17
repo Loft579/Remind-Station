@@ -2,7 +2,7 @@ import os
 import time
 from urllib.parse import quote
 
-def activity(activity_url,log_file_path="./", filename=""):
+def activity(activity_url, filename, log_file_path="./",):
     """
     Logs an activity with a timestamp to the specified file.
 
