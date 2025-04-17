@@ -5,6 +5,7 @@
 
 import argparse
 import dotenv
+import log
 
 # Define how the command will be used in Terminal/Bash/Shell Script/Command Line
 parser = argparse.ArgumentParser(description="Tengo Que Bot")
@@ -163,9 +164,6 @@ def any_message(bot, message):
             clarify(message.chat.id, "No names to view")
     elif text == '/remove_hashtag_' or text == "/remove" or text == "/remove_hashtag" or text == "/remove hashtag":
         clarify(message.chat.id, "you must specify text to use 'remove_hashtag_<hashtag>'")
-    elif text.startswith("/ok"):
-        the_pass = refresh_pass(message.chat.id, set_last_card = subindex, get_card = subindex)
-        clarify(message.chat.id, "are you sure you want to use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]) + " , /stop" + str(the_pass.code_collected[1]) +  " ?")
     elif text.startswith('/remove_hashtag_'):
         str_to_remove = text.split("_",2)[2].replace(str(subindex),"",1)
         str_to_remove = "/#" + str_to_remove + "."
@@ -269,7 +267,16 @@ def any_message(bot, message):
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
-
+    elif text.startswith("/track"):
+        clarify(message.chat.id, "ok! use /help for tracking help.")
+        the_pass = refresh_pass(message.chat.id, get_card = subindex)
+        filename = f"track_{message.from_user.id}.txt"
+        if "undo" in text:
+            log.undo_last_log(filename)
+        if "fade" in text:
+            log.add_question_mark(filename)
+        if not "undo" in text and not "fade" in text:
+            log.activity(the_pass.card_collected["url"], filename)
     elif text.startswith("/") or text.startswith("/ "):
         addition = text.replace("/","",1)
         addition = addition.replace(str(subindex),"",1)

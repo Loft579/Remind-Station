@@ -41,7 +41,10 @@ HELP = '''
 ' /#<hashtag> ' show list of all cards with the hashtag specified
 ' "P"/"p" ' show list of all cards with the hashtag #Pending.
 ' /stop ' stop card's reminding
-' /ok ' remove card from selection zone
+' /selecteds ' just the hashtag's command
+' /track ' for statistics, end the last tracking and start tracking the X Trello card now
+' /track_fade ' set unknown end for the tracked card, the last one tracked
+' /track_undo_fade ' undo the last tracked card and set unknown end for remaining last card
 ' /debug_help ' debug help.
 '''
 
