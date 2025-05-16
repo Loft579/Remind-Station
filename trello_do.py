@@ -129,9 +129,7 @@ find_desc = False):
                         if int(time.time()) > (code[2] + code[3]):
                             old_cmd = "[" + TRELLO_CALL_CMD + " " + command_set + "]"
                             if old_cmd in u_card["desc"]:
-                                new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time())) + " " + str(code[3] * 2) + "]"
-                                if not PENDING_STR in u_card['desc']:
-                                    new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time())) + " " + str(YEAR*100) + "]"
+                                new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time())) + " " + str(code[3]) + "]"
                                 edition = edit_from_desc(u_card, old_cmd, new_cmd)
                                 u_card = edition
                                 command_set = get_commands_set(new_cmd)[0]
@@ -302,7 +300,7 @@ def see(chat_id, subindex, ignore_show_name = False, is_reminded = "", ignore_ti
         if ignore_time_left:
             time_left = ""
         clarify(chat_id, "/track" + str(the_pass.code_collected[1]) + " /track_fade" + " /track_undofade" + "\n" + is_reminded + "/done" + str(the_pass.code_collected[1]) + " /selecteds" + str(the_pass.code_collected[1]) + " /stop" + str(the_pass.code_collected[1]) + "\n" + name + str(the_pass.card_collected["url"]) + "\n" + seg_to_str(int(the_pass.code_collected[3])) + time_left)
-        cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) / 2)) + " /hour2 " + "/hour6 " + "/hour12 " + "/day1 " + "/day2 " + "/day4" + "\n"
+        cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) * 2)) + " /hour2" + " /hour6 " + " /hour12" + " /day1" + " /day2" + " /day4" + "\n"
         for hashtag in the_pass.hashtags_collected:
             cmds_msg += "/" + hashtag + str(the_pass.code_collected[1]) + " "
         clarify(chat_id, cmds_msg)
