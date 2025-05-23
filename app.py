@@ -5,7 +5,6 @@
 
 import argparse
 import dotenv
-import agusavior
 
 # Define how the command will be used in Terminal/Bash/Shell Script/Command Line
 parser = argparse.ArgumentParser(description="Tengo Que Bot")
@@ -312,7 +311,7 @@ def any_message(bot, message):
         
         add_to_desc(new_card, PENDING_STR )
 
-        the_pass = refresh_pass(message.chat.id, add_cmd = new_card["id"], ignore_show_name=is_text_from_msg)
+        the_pass = refresh_pass(message.chat.id, add_cmd = new_card["id"])
         if the_pass.is_add_cmd_done == True:
             clarify(message.chat.id, "card added")
 
