@@ -22,30 +22,34 @@ PRIVATEWELCOME = '''Hi. You may tell me what do you want to do and I will help y
 GROUPWELCOME = PRIVATEWELCOME
 
 
-HELP = ''' 
-' /show<X>' show the X card
-' /add <URL> ' import card from Trello by URL
-' /done<X> ' stop the X card
-' /list ' show list of reminders.
+HELP = '''
+'<message>' create a new card and import to the bot
+' /add <URL> ' import a card from Trello by URL
+' /done<X> ' done the X card
 ' /names ' show list of card names
 ' /times ' show list of times with card names
 ' /sec<secs> ' set seconds to the selected card
 ' /min<mins> ' set minutes to the selected card
 ' /hour<hours> ' set hours to the selected card
 ' /day<days> ' set days to the selected card
-' /date <month of the year> <optional, day of the month> <h of the day> <min of the hour> ' set date to the selected card
-' /clean ' unimport all cards.
-' /mode ' mode command help
+' /stop ' stop card's reminding
 ' / <text> ' add text to the end of the card name
+' /selecteds ' just the hashtag's command, add card to the selecteds list
+advanced:
+' /mute <hh:mm:ss> <hh:mm:ss> ' mute card between time range of the day
+' /mute clear ' clear mute time ranges
+' /date <month of the year> <optional, day of the month> <h of the day> <min of the hour> ' put date to the selected card
 ' /<hashtag><X> ' set the hashtag
 ' /#<hashtag> ' show list of all cards with the hashtag specified
+' /clean ' unimport all cards. ⚠️ be careful, this will reset the bot for you.
+' /mode ' mode command help
 ' "P"/"p" ' show list of all cards with the hashtag #Pending.
-' /stop ' stop card's reminding
-' /selecteds ' just the hashtag's command
 ' /track ' for statistics, end the last tracking and start tracking the X Trello card now
 ' /track_fade ' set unknown end for the tracked card, the last one tracked
 ' /track_undo_fade ' undo the last tracked card and set unknown end for remaining last card
 ' /debug_help ' debug help.
+' /list ' show list of reminders.
+' /show<X>' show the X card
 '''
 
 DEBUGHELP = '''
@@ -96,8 +100,8 @@ PERIODIC = 1
 ALARM = 2
 
 MODOSHELP = '''
-' /mode <board_url> all ' set mode to add all cards from the board
-' /mode <board_url> @<username> ' set mode to add all cards from the board that have the member specified
+' /mode <board_url> all ' set mode to add all cards from the board, ⚠️ this will add all cards from the board, be careful
+' /mode <board_url> @<username> ' set mode to add all cards from the board that have the member specified, ⚠️ this will add all these cards from the board, be careful
 ' /mode off ' clean the modes
 '''
 

@@ -267,6 +267,35 @@ def any_message(bot, message):
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
+    elif text == "/mute clear":
+        mute = list()
+        clarify(message.chat.id, "mute time cleared")
+    elif text.startswith("/mute"):
+        text_split = text.split(" ")
+        start = [0,0,0]
+        end = [0,0,0]
+        try:
+            start = text_split[1].split(":")
+            try:
+                start[0] = int(start[0])
+                start[1] = int(start[1])
+                start[2] = int(start[2])
+            except:
+                pass
+        except:
+            start = [0,0,0]
+        try:
+            end = text_split[2].split(":")
+            try:
+                end[0] = int(end[0])
+                end[1] = int(end[1])
+                end[2] = int(end[2])
+            except:
+                pass
+        except:
+            end = [0,0,0]
+        mute.append((HOUR * start[0] + MIN * start[1] + start[2], HOUR * end[0] + MIN * end[1] + end[2]))
+        clarify(message.chat.id, "mute time now covering " + end[0] + ":" + end[1] + ":" + end[2] + " to " + start[0] + ":" + start[1] + ":" + start[2])
     elif text.startswith("/track"):
         clarify(message.chat.id, "ok! use /help for tracking help.")
         the_pass = refresh_pass(message.chat.id, get_card = subindex)

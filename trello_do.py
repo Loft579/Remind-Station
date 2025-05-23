@@ -4,7 +4,8 @@ import traceback
 from typing import List
 
 import telegram
-from utils import seg_to_str
+from utils import *
+import datetime
 from constants import *
 from trello import *
 from telegram import Bot
@@ -14,6 +15,7 @@ bot = Bot(token=TELEGRAM_BOT_TOKEN)
 chats_last_card = dict()
 chats_mode = dict()
 chat_map = dict()
+mute = list()
 
 def ini_chats_mode(chat_id):
     if not chat_id in chats_mode:
@@ -135,7 +137,15 @@ find_desc = False):
                                 command_set = get_commands_set(new_cmd)[0]
                                 code = trello_str_to_list(command_set)
                                 chats_last_card[code[0]] = code[1]
-                                see_args_remind.append([code[0],code[1]])
+                                # check if the bot is muted
+                                is_muted = False
+                                now = datetime.now(TIMEZONE)
+                                seconds_of_day = now.hour * 3600 + now.minute * 60 + now.second
+                                for time_range in mute:
+                                    if time_range[0] <= seconds_of_day <= time_range[1]:
+                                        is_muted = True
+                                if not is_muted:
+                                    see_args_remind.append([code[0],code[1]])
 
                         #collect all simple_id info in order to add a card with a not-used simple_id when all cards are read.
                         if not code[0] in chats_ids:
