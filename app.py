@@ -101,7 +101,7 @@ def any_message(bot, message):
 
     # analiza el caso...
     if text == '/help':
-        clarify(message.chat.id, HELP)
+        clarify(message.chat.id, HELP, parse_mode='MarkdownV2')
     elif text == '/hardcode':
         print("chats_mode:", chats_mode)
     elif text == '/mode' or text == '/mode ':
