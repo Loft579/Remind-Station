@@ -279,27 +279,27 @@ def any_message(bot, message):
         start = [0,0,0]
         end = [0,0,0]
         try:
-            start = text_split[1].split(":")
+            start_ = text_split[1].split(":")
             try:
-                start[0] = int(start[0])
-                start[1] = int(start[1])
-                start[2] = int(start[2])
+                start[0] = int(start_[0])
+                start[1] = int(start_[1])
+                start[2] = int(start_[2])
             except:
                 pass
         except:
             start = [0,0,0]
         try:
-            end = text_split[2].split(":")
+            end_ = text_split[2].split(":")
             try:
-                end[0] = int(end[0])
-                end[1] = int(end[1])
-                end[2] = int(end[2])
+                end[0] = int(end_[0])
+                end[1] = int(end_[1])
+                end[2] = int(end_[2])
             except:
                 pass
         except:
-            end = [2,0,0]
+            end = [0,0,0]
         mute[message.chat.id].append((HOUR * start[0] + MIN * start[1] + start[2], HOUR * end[0] + MIN * end[1] + end[2]))
-        clarify(message.chat.id, "mute time now covering " + end[0] + ":" + end[1] + ":" + end[2] + " to " + start[0] + ":" + start[1] + ":" + start[2])
+        clarify(message.chat.id, f"mute time now covering {start[0]}:{start[1]}:{start[2]} to {end[0]}:{end[1]}:{end[2]}")
     elif text.startswith("/track"):
         clarify(message.chat.id, "ok! use /help for tracking help.")
         the_pass = refresh_pass(message.chat.id, get_card = subindex)
