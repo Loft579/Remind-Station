@@ -83,6 +83,8 @@ def any_message(bot, message):
     if not text:
         clarify(message.chat.id, "No text in message. Please send a message with text or a voice message.")
         return
+    
+    global mute
 
     # sub-index o sea, el X tal que /dayX, pero del mensaje enviado por el usuario
     subindex = -1
@@ -268,9 +270,11 @@ def any_message(bot, message):
         else:
             clarify(message.chat.id, "error in changing time")
     elif text == "/mute clear":
-        mute = list()
+        mute[message.chat.id] = list()
         clarify(message.chat.id, "mute time cleared")
     elif text.startswith("/mute"):
+        if not message.chat.id in mute.keys():
+            mute[message.chat.id] = list()
         text_split = text.split(" ")
         start = [0,0,0]
         end = [0,0,0]
@@ -293,8 +297,8 @@ def any_message(bot, message):
             except:
                 pass
         except:
-            end = [0,0,0]
-        mute.append((HOUR * start[0] + MIN * start[1] + start[2], HOUR * end[0] + MIN * end[1] + end[2]))
+            end = [2,0,0]
+        mute[message.chat.id].append((HOUR * start[0] + MIN * start[1] + start[2], HOUR * end[0] + MIN * end[1] + end[2]))
         clarify(message.chat.id, "mute time now covering " + end[0] + ":" + end[1] + ":" + end[2] + " to " + start[0] + ":" + start[1] + ":" + start[2])
     elif text.startswith("/track"):
         clarify(message.chat.id, "ok! use /help for tracking help.")

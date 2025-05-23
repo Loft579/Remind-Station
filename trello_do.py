@@ -15,7 +15,7 @@ bot = Bot(token=TELEGRAM_BOT_TOKEN)
 chats_last_card = dict()
 chats_mode = dict()
 chat_map = dict()
-mute = list()
+mute = dict()
 
 def ini_chats_mode(chat_id):
     if not chat_id in chats_mode:
@@ -74,6 +74,7 @@ ignore_show_name = False,
 find = False,
 collect_hashtags = False,
 find_desc = False):
+    
     print("new refresh_pass")
     
     cards_need_add = dict()
@@ -110,6 +111,7 @@ find_desc = False):
 
     see_args_remind = [] #values of remind if time passes.
     
+
     cards_updated = get_all_cards_from_boards()
     if cards_updated != None:
         for card in cards_updated:
@@ -137,11 +139,15 @@ find_desc = False):
                                 command_set = get_commands_set(new_cmd)[0]
                                 code = trello_str_to_list(command_set)
                                 chats_last_card[code[0]] = code[1]
+
                                 # check if the bot is muted
+                                global mute
+                                if not code[0] in mute.keys():
+                                    mute[code[0]] = list()
                                 is_muted = False
                                 now = datetime.now(TIMEZONE)
                                 seconds_of_day = now.hour * 3600 + now.minute * 60 + now.second
-                                for time_range in mute:
+                                for time_range in mute[code[0]]:
                                     if time_range[0] <= seconds_of_day <= time_range[1]:
                                         is_muted = True
                                 if not is_muted:
