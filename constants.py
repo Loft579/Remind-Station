@@ -35,10 +35,12 @@ HELP = '''
 ' /stop ' stop card's reminding
 ' / <text> ' add text to the end of the card name
 ' /selecteds ' just the hashtag's command, add card to the selecteds list
-advanced:
+
+__advanced:__
+
 ' /mute <hh:mm:ss> <hh:mm:ss> ' mute card between time range of the day
 ' /mute clear ' clear mute time ranges
-' /date <month of the year> <optional, day of the month> <h of the day> <min of the hour> ' put date to the selected card
+' /date <month of the year> <optional, day of the month> <h of the day> <min of the hour> ' set date's time left to the selected card
 ' /<hashtag><X> ' set the hashtag
 ' /#<hashtag> ' show list of all cards with the hashtag specified
 ' /clean ' unimport all cards. ⚠️ be careful, this will reset the bot for you.
