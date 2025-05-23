@@ -299,6 +299,19 @@ def any_message(bot, message):
         except:
             end = [0,0,0]
         mute[message.chat.id].append((HOUR * start[0] + MIN * start[1] + start[2], HOUR * end[0] + MIN * end[1] + end[2]))
+
+        start[1] = str(start[1])
+        start[2] = str(start[2])
+        if len(start[1]) == 1:
+            start[1] = "0" + start[1]
+        if len(start[2]) == 1:
+            start[2] = "0" + start[2]
+        end[1] = str(end[1])
+        end[2] = str(end[2])
+        if len(end[1]) == 1:
+            end[1] = "0" + end[1]
+        if len(end[2]) == 1:
+            end[2] = "0" + end[2]
         clarify(message.chat.id, f"mute time now covering {start[0]}:{start[1]}:{start[2]} to {end[0]}:{end[1]}:{end[2]}")
     elif text.startswith("/track"):
         clarify(message.chat.id, "ok! use /help for tracking help.")
