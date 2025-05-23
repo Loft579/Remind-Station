@@ -36,7 +36,7 @@ HELP = '''
 ' / <text> ' add text to the end of the card name
 ' /selecteds ' just the hashtag's command, add card to the selecteds list
 
-__advanced:__
+advanced:
 
 ' /mute <hh:mm:ss> <hh:mm:ss> ' mute card between time range of the day
 ' /mute clear ' clear mute time ranges
