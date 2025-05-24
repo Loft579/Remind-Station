@@ -7,7 +7,7 @@ import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import html
 from utils import *
-import datetime
+from datetime import datetime
 from constants import *
 from trello import *
 from telegram import Bot
@@ -147,7 +147,7 @@ find_desc = False):
                                     mute[code[0]] = list()
                                 is_muted = False
                                 now = datetime.now(TIMEZONE)
-                                seconds_of_day = now.hour * 3600 + now.minute * 60 + now.second
+                                seconds_of_day = now.hour * HOUR + now.minute * MIN + now.second
                                 for time_range in mute[code[0]]:
                                     if time_range[0] <= seconds_of_day <= time_range[1]:
                                         is_muted = True
