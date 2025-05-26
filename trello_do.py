@@ -135,29 +135,28 @@ find_desc = False):
                     #collect every chat_id assigned to the card in order to check if the card needs to be added when the card read is over.
                     card_chats.append(code[0])
 
-                    if code[1] != 0:
-                        while int(time.time()) > (code[2] + code[3]):
+                    # check if the bot is muted
+                    global mute
+                    if not code[0] in mute.keys():
+                        mute[code[0]] = list()
+                    is_muted = False
+                    now = datetime.now(TIMEZONE)
+                    seconds_of_day = now.hour * HOUR + now.minute * MIN + now.second
+                    for time_range in mute[code[0]]:
+                        if time_range[0] <= seconds_of_day <= time_range[1]:
+                            is_muted = True
+                    
+                    if code[1] != 0 and not is_muted:
+                        if int(time.time()) > (code[2] + code[3]):
                             old_cmd = "[" + TRELLO_CALL_CMD + " " + command_set + "]"
                             if old_cmd in u_card["desc"]:
-                                new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(code[2] + code[3]) + " " + str(code[3]) + "]"
+                                new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(code[2] + code[3] * int((max(int(time.time()) - code[2] / code[3],0)))) + " " + str(code[3]) + "]"
                                 edition = edit_from_desc(u_card, old_cmd, new_cmd)
                                 u_card = edition
                                 command_set = get_commands_set(new_cmd)[0]
                                 code = trello_str_to_list(command_set)
                                 chats_last_card[code[0]] = code[1]
-
-                                # check if the bot is muted
-                                global mute
-                                if not code[0] in mute.keys():
-                                    mute[code[0]] = list()
-                                is_muted = False
-                                now = datetime.now(TIMEZONE)
-                                seconds_of_day = now.hour * HOUR + now.minute * MIN + now.second
-                                for time_range in mute[code[0]]:
-                                    if time_range[0] <= seconds_of_day <= time_range[1]:
-                                        is_muted = True
-                                if not is_muted:
-                                    see_args_remind.append([code[0],code[1]])
+                                see_args_remind.append([code[0],code[1]])
 
                         #collect all simple_id info in order to add a card with a not-used simple_id when all cards are read.
                         if not code[0] in chats_ids:
