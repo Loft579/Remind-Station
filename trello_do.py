@@ -292,8 +292,10 @@ find_desc = False):
                     laid[chat_id] = available_id
                     if add_cmd != False and add_cmd != -1 and card["id"] == add_cmd:
                         return_info.is_add_cmd_done = True
+        call_values_i = 0
         for call_values in see_args_remind:
-            see(call_values[0], call_values[1], is_reminded = True, ignore_time_left = True)
+            see(call_values[0], call_values[1], is_reminded = True, ignore_time_left = True, call_values_i = call_values_i)
+            call_values_i += 1
         for chat_id in laid:
             see(chat_id, laid[chat_id])
         
@@ -311,7 +313,7 @@ find_desc = False):
 
         return return_info
 
-def see(chat_id, subindex, is_reminded = "", ignore_time_left = False):
+def see(chat_id, subindex, is_reminded = "", ignore_time_left = False, call_values_i = 0):
     the_pass = refresh_pass(chat_id, set_last_card = subindex, get_card = subindex, collect_hashtags = True, collect_times="ago", find_desc = SELECTED_STR, sort_by="earliest_reminded")
     if the_pass.card_collected != None:
 
@@ -323,18 +325,21 @@ def see(chat_id, subindex, is_reminded = "", ignore_time_left = False):
         keyboard = InlineKeyboardMarkup([[button]])'''
 
         if is_reminded == True:
-            is_reminded = the_pass.sorted_cards + "\n🛑\n" + "/see" + str(the_pass.code_collected[1]) + " "
+            is_reminded += "\n⏰ /see" + str(the_pass.code_collected[1]) + "\n"
+            if call_values_i == 0:
+                is_reminded = the_pass.sorted_cards + is_reminded + "\n"
         card_name = html.escape(the_pass.card_collected["name"])
         card_url = html.escape(the_pass.card_collected["url"])
         name = f'<blockquote><a href="{card_url}">{card_name}</a></blockquote>'
         time_left = " | " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time()))
         if ignore_time_left:
             time_left = ""
-        clarify(chat_id, "/track" + str(the_pass.code_collected[1]) + " /track_fade" + " /track_undofade" + "\n" + is_reminded + "/done" + str(the_pass.code_collected[1]) + " /selecteds" + str(the_pass.code_collected[1]) + " /stop" + str(the_pass.code_collected[1]) + " " + name + seg_to_str(int(the_pass.code_collected[3])) + time_left, parse_mode="HTML")
-        cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) * 2)) + " /min144 /hour2 /hour6 /hour8 /hour12 /day1 /day2 /day4\n"
-        for hashtag in the_pass.hashtags_collected:
-            cmds_msg += "/" + hashtag + str(the_pass.code_collected[1]) + " "
-        clarify(chat_id, cmds_msg)
+        clarify(chat_id, "/track" + str(the_pass.code_collected[1]) + " /track_fade" + " /track_undofade" + is_reminded + "/done" + str(the_pass.code_collected[1]) + " /selecteds" + str(the_pass.code_collected[1]) + " /stop" + str(the_pass.code_collected[1]) + " " + name + seg_to_str(int(the_pass.code_collected[3])) + time_left, parse_mode="HTML")
+        if call_values_i == 0:    
+            cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) * 2)) + " /min144 /hour2 /hour6 /hour8 /hour12 /day1 /day2 /day4\n"
+            for hashtag in the_pass.hashtags_collected:
+                cmds_msg += "/" + hashtag + str(the_pass.code_collected[1]) + " "
+            clarify(chat_id, cmds_msg)
     else:
         if the_pass.is_last_edited == False:
             clarify(chat_id, "not card found, try using a valid ID.")
