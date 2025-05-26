@@ -449,6 +449,7 @@ if __name__ == '__main__':
                 with any_message_lock:
                     any_message(bot, update.message)
             except BaseException as e:
+                print(f"Error in any_update: {e}")
                 bot.send_message(update.message.chat.id, str(e))
 
     core_handler = MessageHandler(Filters.all, any_update, run_async=True)

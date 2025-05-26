@@ -224,7 +224,7 @@ find_desc = False):
                                     if collect_times == True:
                                         time_str = seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + " / " + seg_to_str(int(code[3])) + "\n"
                                     elif collect_times == "ago":
-                                        time_str = seg_to_str("started at " + int(code[2])) + "\n"
+                                        time_str = seg_to_str("started at " + str(code[2])) + "\n"
                                     return_info.cards_extract.append({"date": code[2] + code[3], "start_date": code[2], "msg_part":f'/done{code[1]} /selecteds{code[1]} /see{code[1]} {time_str}{little_show(str(u_card["name"]))}\n'})
 
                             if collect_hashtags == True:
