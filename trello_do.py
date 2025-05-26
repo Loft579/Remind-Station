@@ -65,7 +65,8 @@ def little_show(name):
 def refresh_pass(target_chat,
 set_last_card = False,
 get_card = False,
-modify_sec = False,
+modify_sec = 0,
+start = None,
 clarify_list = False,
 sort_by = False,
 collect_times = False,
@@ -75,7 +76,11 @@ clean = False,
 find = False,
 collect_hashtags = False,
 find_desc = False):
-    
+    if start == None:
+        start = modify_sec
+    else:
+        start = start
+
     print("new refresh_pass")
     
     cards_need_add = dict()
@@ -189,9 +194,12 @@ find_desc = False):
                                 continue
                             
                             #with argument modify_sec
+                            if start != modify_sec:
+                                modify_sec = code[3]
                             if modify_sec > 0:
                                 if code[1] == set_last_card:
-                                    new_cmd = "[" + TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time())) + " " + str(modify_sec) + "]"
+                                    start = start - modify_sec #with algebra, stablish the start argument
+                                    new_cmd = "[" + TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time() + start)) + " " + str(modify_sec) + "]"
                                     edition = edit_from_desc(u_card,"[" + TRELLO_CALL_CMD + " " + command_set + "]", new_cmd)
                                     if edition != None:
                                         u_card = edition
@@ -214,10 +222,10 @@ find_desc = False):
                                 if collect_this_name:
                                     time_str = ""
                                     if collect_times == True:
-                                        time_str = seg_to_str(int(code[3])) + " | " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + "\n"
+                                        time_str = seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + " / " + seg_to_str(int(code[3])) + "\n"
                                     elif collect_times == "ago":
-                                        time_str = seg_to_str(int(time.time()) - int(code[2])) + " ago\n"
-                                    return_info.cards_extract.append({"date": code[2] + code[3], "reminded_date": code[2], "msg_part":f'/done{code[1]} /selecteds{code[1]} /see{code[1]} {time_str}{little_show(str(u_card["name"]))}\n'})
+                                        time_str = seg_to_str("started at " + int(code[2])) + "\n"
+                                    return_info.cards_extract.append({"date": code[2] + code[3], "start_date": code[2], "msg_part":f'/done{code[1]} /selecteds{code[1]} /see{code[1]} {time_str}{little_show(str(u_card["name"]))}\n'})
 
                             if collect_hashtags == True:
                                 parts = u_card["desc"]
@@ -291,7 +299,7 @@ find_desc = False):
         
         # getting information to create code free of “loop-modify architecture”, now the processed info as return_info.
         if sort_by == "earliest_reminded":
-            return_info.cards_extract.sort(key=lambda x: x["reminded_date"], reverse=False)
+            return_info.cards_extract.sort(key=lambda x: x["start_date"], reverse=False)
         if sort_by == "earliest":
             return_info.cards_extract.sort(key=lambda x: x["date"], reverse=False)
         if sort_by == "latests":

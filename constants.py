@@ -36,16 +36,16 @@ HELP = '''
 ' / <text> ' add text to the end of the card name
 ' /selecteds ' just the hashtag's command, add card to the selecteds list
 
-advanced:
-
-' /mute <hh:mm:ss> <hh:mm:ss> ' mute card between time range of the day
-' /mute clear ' clear mute time ranges
+advanced: 
 ' /date <month of the year> <optional, day of the month> <h of the day> <min of the hour> ' set date's time left to the selected card
+' /mute <hh:mm:ss> <hh:mm:ss> ' mute card between time range of the day
+' /unmute ' clear mute time ranges
 ' /<hashtag><X> ' set the hashtag
 ' /#<hashtag> ' show list of all cards with the hashtag specified
 ' /clean ' unimport all cards. ⚠️ be careful, this will reset the bot for you.
 ' /mode ' mode command help
 ' "P"/"p" ' show list of all cards with the hashtag #Pending.
+' /start ' inject another time to “when the card was reminded for last time” for the next time set command
 ' /track ' for statistics, end the last tracking and start tracking the X Trello card now
 ' /track_fade ' set unknown end for the tracked card, the last one tracked
 ' /track_undo_fade ' undo the last tracked card and set unknown end for remaining last card
