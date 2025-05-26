@@ -325,7 +325,7 @@ def see(chat_id, subindex, is_reminded = "", ignore_time_left = False, call_valu
         keyboard = InlineKeyboardMarkup([[button]])'''
 
         if is_reminded == True:
-            is_reminded += "\n⏰ /see" + str(the_pass.code_collected[1]) + "\n"
+            is_reminded += "⏰ /see" + str(the_pass.code_collected[1]) + "\n"
             if call_values_i == 0:
                 is_reminded = the_pass.sorted_cards + is_reminded + "\n"
         card_name = html.escape(the_pass.card_collected["name"])
@@ -334,7 +334,7 @@ def see(chat_id, subindex, is_reminded = "", ignore_time_left = False, call_valu
         time_left = " | " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time()))
         if ignore_time_left:
             time_left = ""
-        clarify(chat_id, "/track" + str(the_pass.code_collected[1]) + " /track_fade" + " /track_undofade" + is_reminded + "/done" + str(the_pass.code_collected[1]) + " /selecteds" + str(the_pass.code_collected[1]) + " /stop" + str(the_pass.code_collected[1]) + " " + name + seg_to_str(int(the_pass.code_collected[3])) + time_left, parse_mode="HTML")
+        clarify(chat_id, "/track" + str(the_pass.code_collected[1]) + " /track_fade" + " /track_undofade\n" + is_reminded + "/done" + str(the_pass.code_collected[1]) + " /selecteds" + str(the_pass.code_collected[1]) + " /stop" + str(the_pass.code_collected[1]) + " " + name + seg_to_str(int(the_pass.code_collected[3])) + time_left, parse_mode="HTML")
         if call_values_i == 0:    
             cmds_msg = "/sec" + str(int(int(the_pass.code_collected[3]) * 2)) + " /min144 /hour2 /hour6 /hour8 /hour12 /day1 /day2 /day4\n"
             for hashtag in the_pass.hashtags_collected:
