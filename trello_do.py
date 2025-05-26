@@ -136,7 +136,7 @@ find_desc = False):
                     card_chats.append(code[0])
 
                     if code[1] != 0:
-                        if int(time.time()) > (code[2] + code[3]):
+                        while int(time.time()) > (code[2] + code[3]):
                             old_cmd = "[" + TRELLO_CALL_CMD + " " + command_set + "]"
                             if old_cmd in u_card["desc"]:
                                 new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(code[2] + code[3]) + " " + str(code[3]) + "]"
@@ -325,7 +325,7 @@ def see(chat_id, subindex, is_reminded = "", ignore_time_left = False, call_valu
         keyboard = InlineKeyboardMarkup([[button]])'''
 
         if is_reminded == True:
-            is_reminded += "⏰ /see" + str(the_pass.code_collected[1]) + "\n"
+            is_reminded = "⏰ /see" + str(the_pass.code_collected[1]) + "\n"
             if call_values_i == 0:
                 is_reminded = the_pass.sorted_cards + is_reminded + "\n"
         card_name = html.escape(the_pass.card_collected["name"])
