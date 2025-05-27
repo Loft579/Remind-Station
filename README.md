@@ -1,3 +1,6 @@
+product and code not explained
+
+(advanced):
 # Tengoquebot
 Telegram bot for manage reminders.
 

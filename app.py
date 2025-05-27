@@ -294,7 +294,7 @@ def any_message(bot, message):
             clarify(message.chat.id, "argument replaced")
         the_pass = refresh_pass(message.chat.id, set_last_card = subindex, modify_sec = modify_sec, start = start, get_card=subindex)
         if the_pass.sec_set != None:
-            clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set) + "\nso you can also use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]))
+            clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set) + "\nyou can also use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]))
         else:
             clarify(message.chat.id, "error in changing time.\nyou can also use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]))
     elif text == "/date":
