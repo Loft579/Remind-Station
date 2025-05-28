@@ -45,13 +45,13 @@ advanced:
 ' /clean ' unimport all cards. ⚠️ be careful, this will reset the bot for you.
 ' /mode ' mode command help
 ' "P"/"p" ' show list of all cards with the hashtag #Pending.
-' /start ' inject another time to “when the card was reminded for last time” for the next time set command
 ' /track ' for statistics, end the last tracking and start tracking the X Trello card now
 ' /track_fade ' set unknown end for the tracked card, the last one tracked
 ' /track_undo_fade ' undo the last tracked card and set unknown end for remaining last card
 ' /debug_help ' debug help.
 ' /list ' show list of reminders.
 ' /show<X>' show the X card
+' /inject_start ' inject another time to “when the card was reminded for last time” for the next time set command
 '''
 
 DEBUGHELP = '''

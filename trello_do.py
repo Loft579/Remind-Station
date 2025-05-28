@@ -18,6 +18,7 @@ chats_last_card = dict()
 chats_mode = dict()
 chat_map = dict()
 mute = dict()
+inject_start_args = dict()
 
 def ini_chats_mode(chat_id):
     if not chat_id in chats_mode:
@@ -66,7 +67,7 @@ def refresh_pass(target_chat,
 set_last_card = False,
 get_card = False,
 modify_sec = 0,
-start = None,
+inject_start = None, #with algebra, stablish the start value
 clarify_list = False,
 sort_by = False,
 collect_times = False,
@@ -76,10 +77,10 @@ clean = False,
 find = False,
 collect_hashtags = False,
 find_desc = False):
-    if start == None:
-        start = modify_sec
+    if inject_start == None:
+        inject_start = modify_sec
     else:
-        start = start
+        inject_start = inject_start
 
     print("new refresh_pass")
     
@@ -193,12 +194,12 @@ find_desc = False):
                                 continue
                             
                             #with argument modify_sec
-                            if start != modify_sec:
+                            if inject_start != modify_sec:
                                 modify_sec = code[3]
                             if modify_sec > 0:
                                 if code[1] == set_last_card:
-                                    start = start - modify_sec #with algebra, stablish the start argument
-                                    new_cmd = "[" + TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time() + start)) + " " + str(modify_sec) + "]"
+                                    inject_start = inject_start - modify_sec 
+                                    new_cmd = "[" + TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time() + inject_start)) + " " + str(modify_sec) + "]"
                                     edition = edit_from_desc(u_card,"[" + TRELLO_CALL_CMD + " " + command_set + "]", new_cmd)
                                     if edition != None:
                                         u_card = edition

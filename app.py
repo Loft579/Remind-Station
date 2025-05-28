@@ -41,7 +41,6 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 updater = None
 dispatcher = None
 botname = 'tengo_que_bot'
-start_args = dict()
 
 # Los seconds que se pospone el recordatorio la primera vez que se
 # crea.
@@ -51,7 +50,7 @@ def get_defualt_seconds():
 
 
 def any_message(bot, message):
-    global start_args
+    global inject_start_args
     text = message.text
 
     is_message_from_whisper_op = message.from_user.id == 43759228 or message.from_user.id == 424819435 or message.from_user.id == 80627582
@@ -85,13 +84,12 @@ def any_message(bot, message):
         clarify(message.chat.id, "No text in message. Please send a message with text or a voice message.")
         return
     try:
-        if start_args[message.chat.id] == 2:
-            start_args[message.chat.id] -= 1
-        elif start_args[message.chat.id] == 1:
-            start_args[message.chat.id] -= 1
+        if inject_start_args[message.chat.id] == 2:
+            inject_start_args[message.chat.id] = 1
+        elif inject_start_args[message.chat.id] == 1:
+            inject_start_args[message.chat.id] = False
     except:
-        start_args[message.chat.id] = False
-    assert(start_args[message.chat.id] > -1)
+        pass
 
     global mute
 
@@ -222,77 +220,77 @@ def any_message(bot, message):
                 clarify(message.chat.id, "error in importing the card")
         else:
             clarify(message.chat.id, "cannot get the card from URL")
-    elif text == '/start':
-        start_args[message.chat.id] = 2
-        clarify(message.chat.id, "injected '/start' time for the next command")
+    elif text == '/inject_start':
+        inject_start_args[message.chat.id] = 2
+        clarify(message.chat.id, "hacked start date time for the next command")
     elif text.startswith('/sec'):
         modify_sec = subindex
-        start = None
-        if start_args[message.chat.id] != False:
-            start = modify_sec
+        inject_start = None
+        if inject_start_args[message.chat.id] != False:
+            inject_start = modify_sec
             modify_sec = 0
             clarify(message.chat.id, "argument replaced")
-        the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, start = start)
+        the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
     elif text.startswith('/min'):
         modify_sec = subindex*MIN
-        start = None
-        if start_args[message.chat.id] != False:
-            start = modify_sec
+        inject_start = None
+        if inject_start_args[message.chat.id] != False:
+            inject_start = modify_sec
             modify_sec = 0
             clarify(message.chat.id, "argument replaced")
-        the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, start = start)
+        the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
     elif text.startswith('/hour'):
         modify_sec = subindex*HOUR
-        start = None
-        if start_args[message.chat.id] != False:
-            start = modify_sec
+        inject_start = None
+        if inject_start_args[message.chat.id] != False:
+            inject_start = modify_sec
             modify_sec = 0
             clarify(message.chat.id, "argument replaced")
-        the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, start = start)
+        the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
     elif text.startswith('/day'):
         modify_sec = subindex*DAY
-        start = None
-        if start_args[message.chat.id] != False:
-            start = modify_sec
+        inject_start = None
+        if inject_start_args[message.chat.id] != False:
+            inject_start = modify_sec
             modify_sec = 0
             clarify(message.chat.id, "argument replaced")
-        the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, start = start)
+        the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
     elif text.startswith('/year'):
         modify_sec = subindex*YEAR
-        start = None
-        if start_args[message.chat.id] != False:
-            start = modify_sec
+        inject_start = None
+        if inject_start_args[message.chat.id] != False:
+            inject_start = modify_sec
             modify_sec = 0
             clarify(message.chat.id, "argument replaced")
-        the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, start = start)
+        the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
             clarify(message.chat.id, "error in changing time")
     elif text.startswith("/stop"):
         modify_sec = DAY*35600
-        start = None
-        if start_args[message.chat.id] != False:
-            start = modify_sec
+        inject_start = None
+        if inject_start_args[message.chat.id] != False:
+            inject_start = modify_sec
             modify_sec = 0
             clarify(message.chat.id, "argument replaced")
-        the_pass = refresh_pass(message.chat.id, set_last_card = subindex, modify_sec = modify_sec, start = start, get_card=subindex)
+        the_pass = refresh_pass(message.chat.id, set_last_card = subindex, modify_sec = modify_sec, inject_start = inject_start, get_card=subindex)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set) + "\nyou can also use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]))
         else:
@@ -314,13 +312,13 @@ def any_message(bot, message):
         date = calculate_start_date(month) + ((day - 1) * DAY + hour * HOUR + minutes * MIN)
 
         modify_sec = date - int(time.time())
-        start = None
-        if start_args[message.chat.id] != False:
-            start = modify_sec
+        inject_start = None
+        if inject_start_args[message.chat.id] != False:
+            inject_start = modify_sec
             modify_sec = 0
             clarify(message.chat.id, "argument replaced")
         
-        the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, start = start)
+        the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
         else:
