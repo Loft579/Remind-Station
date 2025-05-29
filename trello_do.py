@@ -344,7 +344,7 @@ def see(chat_id, subindex, is_reminded = "", ignore_time_left = False, call_valu
             if chat_id in last_preview:
                 bot.delete_message(chat_id, last_preview[chat_id])
             last_preview[chat_id] = clarify(chat_id, preview).message_id
-        clarify(chat_id, "/track" + str(the_pass.code_collected[1]) + " /track_fade" + " /track_undofade\n" + "/done" + str(the_pass.code_collected[1]) + " /selecteds" + str(the_pass.code_collected[1]) + " /stop" + str(the_pass.code_collected[1]) + is_reminded + name + seg_to_str(int(the_pass.code_collected[3])) + time_left, parse_mode="HTML")
+        clarify(chat_id, "/track" + str(the_pass.code_collected[1]) + " /track_fade" + " /track_undofade\n" + "/done" + str(the_pass.code_collected[1]) + " /selecteds" + str(the_pass.code_collected[1]) + " /stop" + str(the_pass.code_collected[1]) + " " + is_reminded + name + seg_to_str(int(the_pass.code_collected[3])) + time_left, parse_mode="HTML")
 
     else:
         if the_pass.is_last_edited == False:
