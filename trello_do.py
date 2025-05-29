@@ -199,7 +199,10 @@ find_desc = False):
                                 modify_sec = code[3]
                             if modify_sec > 0:
                                 if code[1] == set_last_card:
-                                    inject_start = inject_start - modify_sec 
+                                    if inject_start > 0:
+                                        inject_start = inject_start - modify_sec
+                                    else:
+                                        inject_start = inject_start * -1 - DAY
                                     new_cmd = "[" + TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time() + inject_start)) + " " + str(modify_sec) + "]"
                                     edition = edit_from_desc(u_card,"[" + TRELLO_CALL_CMD + " " + command_set + "]", new_cmd)
                                     if edition != None:
