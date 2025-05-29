@@ -51,6 +51,8 @@ def get_defualt_seconds():
 
 def any_message(bot, message):
     global inject_start_args
+    if not message.chat.id in inject_start_args:
+        inject_start_args[message.chat.id] = False
     text = message.text
 
     is_message_from_whisper_op = message.from_user.id == 43759228 or message.from_user.id == 424819435 or message.from_user.id == 80627582
