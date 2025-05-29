@@ -103,7 +103,7 @@ def any_message(bot, message):
     for c in text:
         if c == ' ':
             break
-        elif c in map(str, range(10)):
+        elif c in map(str, list(range(10)) + ['-']):
             temp += c
     if temp != '':
         subindex = int(temp)
