@@ -98,7 +98,6 @@ def any_message(bot, message):
     # sub-index o sea, el X tal que /dayX, pero del mensaje enviado por el usuario
     subindex = -1
 
-    i = 0
     temp = ''
     for c in text:
         if c == ' ':
@@ -230,7 +229,7 @@ def any_message(bot, message):
         inject_start = None
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
-            modify_sec = 0
+            modify_sec = False
             clarify(message.chat.id, "argument replaced")
         the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
@@ -242,7 +241,7 @@ def any_message(bot, message):
         inject_start = None
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
-            modify_sec = 0
+            modify_sec = False
             clarify(message.chat.id, "argument replaced")
         the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
@@ -254,7 +253,7 @@ def any_message(bot, message):
         inject_start = None
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
-            modify_sec = 0
+            modify_sec = False
             clarify(message.chat.id, "argument replaced")
         the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
@@ -266,7 +265,7 @@ def any_message(bot, message):
         inject_start = None
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
-            modify_sec = 0
+            modify_sec = False
             clarify(message.chat.id, "argument replaced")
         the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
@@ -278,7 +277,7 @@ def any_message(bot, message):
         inject_start = None
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
-            modify_sec = 0
+            modify_sec = False
             clarify(message.chat.id, "argument replaced")
         the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
@@ -290,7 +289,7 @@ def any_message(bot, message):
         inject_start = None
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
-            modify_sec = 0
+            modify_sec = False
             clarify(message.chat.id, "argument replaced")
         the_pass = refresh_pass(message.chat.id, set_last_card = subindex, modify_sec = modify_sec, inject_start = inject_start, get_card=subindex)
         if the_pass.sec_set != None:
@@ -317,7 +316,7 @@ def any_message(bot, message):
         inject_start = None
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
-            modify_sec = 0
+            modify_sec = False
             clarify(message.chat.id, "argument replaced")
         
         the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)

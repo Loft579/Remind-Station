@@ -67,7 +67,7 @@ def little_show(name):
 def refresh_pass(target_chat,
 set_last_card = False,
 get_card = False,
-modify_sec = 0,
+modify_sec = False,
 inject_start = None, #with algebra, stablish the start value
 clarify_list = False,
 sort_by = False,
@@ -197,7 +197,7 @@ find_desc = False):
                             #with argument modify_sec
                             if inject_start != modify_sec:
                                 modify_sec = code[3]
-                            if modify_sec > 0:
+                            if not isinstance(modify_sec,bool) and modify_sec != False:
                                 if code[1] == set_last_card:
                                     if inject_start > 0:
                                         inject_start = inject_start - modify_sec
