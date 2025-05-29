@@ -18,6 +18,7 @@ chats_last_card = dict()
 chats_mode = dict()
 chat_map = dict()
 mute = dict()
+last_preview = dict()
 inject_start_args = dict()
 
 def ini_chats_mode(chat_id):
@@ -40,7 +41,7 @@ class PassReturn:
 
 def clarify(chat_id, text, parse_mode = "", reply_markup = None):
     try:
-        bot.send_message(chat_id, text[-4000:], parse_mode = parse_mode, reply_markup = reply_markup)
+        return bot.send_message(chat_id, text[-4000:], parse_mode = parse_mode, reply_markup = reply_markup)
     except telegram.error.Unauthorized:
         print("message unauthorized to send")
     except telegram.error.BadRequest as e:
@@ -336,8 +337,10 @@ def see(chat_id, subindex, is_reminded = "", ignore_time_left = False, call_valu
         time_left = " | " + seg_to_str((int(the_pass.code_collected[2]) + int(the_pass.code_collected[3])) - int(time.time()))
         if ignore_time_left:
             time_left = ""
-        if call_values_i == 0:    
-            clarify(chat_id, preview)
+        if call_values_i == 0:
+            if chat_id in last_preview:
+                bot.delete_message(chat_id, last_preview[chat_id])
+            last_preview[chat_id] = clarify(chat_id, preview).message_id
         clarify(chat_id, "/track" + str(the_pass.code_collected[1]) + " /track_fade" + " /track_undofade\n" + "/done" + str(the_pass.code_collected[1]) + " /selecteds" + str(the_pass.code_collected[1]) + " /stop" + str(the_pass.code_collected[1]) + is_reminded + name + seg_to_str(int(the_pass.code_collected[3])) + time_left, parse_mode="HTML")
 
     else:
