@@ -298,7 +298,7 @@ find_desc = False):
                         return_info.is_add_cmd_done = True
         call_values_i = 0
         for call_values in see_args_remind:
-            see(call_values[0], call_values[1], is_reminded = True, ignore_time_left = True, call_values_i = call_values_i)
+            see(call_values[0], call_values[1], is_reminded = True, call_values_i = call_values_i)
             call_values_i += 1
         for chat_id in laid:
             see(chat_id, laid[chat_id])
@@ -318,7 +318,7 @@ find_desc = False):
         return return_info
 
 def see(chat_id, subindex, is_reminded = "", ignore_time_left = False, call_values_i = 0):
-    the_pass = refresh_pass(chat_id, set_last_card = subindex, get_card = subindex, collect_hashtags = True, collect_times="ago", find_desc = SELECTED_STR, sort_by="earliest_reminded")
+    the_pass = refresh_pass(chat_id, set_last_card = subindex, get_card = subindex, collect_hashtags = True, collect_times=True, find_desc = SELECTED_STR, sort_by="earliest_reminded")
     if the_pass.card_collected != None:
 
         # Create button with the link to the card of Trello
