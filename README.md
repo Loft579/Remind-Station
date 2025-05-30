@@ -1,10 +1,7 @@
+# Remind Station
 product and code not explained
 
-(advanced):
-# Tengoquebot
-Telegram bot for manage reminders.
-
-## Getting started
+## Getting started (advanced):
 ```
 git clone REPO
 cd tengoquebot
