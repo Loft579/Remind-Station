@@ -227,7 +227,7 @@ find_desc = False):
                                 if collect_this_name:
                                     time_str = ""
                                     if collect_times == True:
-                                        time_str = datetime.fromtimestamp(code[2] + code[3]).strftime('%Y-%m-%d %H:%M:%S') + " - " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + "\n"
+                                        time_str = datetime.fromtimestamp(code[2] + code[3] +ADJUST_UTC*HOUR).strftime('%Y-%m-%d %H:%M:%S') + " - " + seg_to_str((int(code[2]) + int(code[3])) - int(time.time())) + "\n"
                                     elif collect_times == "ago":
                                         time_str = seg_to_str(int(time.time()) - int(code[2])) + " ago started\n"
                                     return_info.cards_extract.append({"date": code[2] + code[3], "start_date": code[2], "msg_part":f'/done{code[1]} /selecteds{code[1]} /see{code[1]} {time_str}{little_show(str(u_card["name"]))}\n'})
