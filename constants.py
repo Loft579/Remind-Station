@@ -107,7 +107,7 @@ MODOSHELP = '''
 ' /mode off ' clean the modes
 '''
 
-TRELLO_CALL_CMD = "/tengoquebot"
+TRELLO_CALL_CMD = "/REMIND-STATION"
 
 NAME_LIMIT = 60
 
