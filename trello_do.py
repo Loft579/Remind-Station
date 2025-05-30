@@ -329,7 +329,7 @@ def see(chat_id, subindex, is_reminded = "", ignore_time_left = False, call_valu
         button3 = InlineKeyboardButton("❌ Eliminar Carta", callback_data="eliminar_carta")
         keyboard = InlineKeyboardMarkup([[button]])'''
 
-        preview =  "/sec" + str(int(int(the_pass.code_collected[3]) * 2)) + " /min144 /hour1 /hour2 /hour6 /hour8 /hour12 /day1 /day2 /day4 /day7 /inject_start /date0 🚂\n"
+        preview =  "/sec" + str(int(int(the_pass.code_collected[3]) * 2)) + " /min144 /hour1 /hour2 /hour4 /hour6 /hour8 /hour12 /day1 /day2 /day4 /day7 /inject_start /date0 🚂\n"
         for hashtag in the_pass.hashtags_collected:
             preview += "/" + hashtag + str(the_pass.code_collected[1]) + " "
         if is_reminded == True:
