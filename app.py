@@ -102,7 +102,7 @@ def any_message(bot, message):
     for c in text:
         if c == ' ':
             break
-        elif c in map(str, list(range(10)) + ['-']):
+        elif c in map(str, list(range(10))):
             temp += c
     if temp != '':
         subindex = int(temp)
@@ -230,7 +230,7 @@ def any_message(bot, message):
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
             modify_sec = False
-            clarify(message.chat.id, "argument replaced")
+            clarify(message.chat.id, "argument injected")
         the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
@@ -242,7 +242,7 @@ def any_message(bot, message):
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
             modify_sec = False
-            clarify(message.chat.id, "argument replaced")
+            clarify(message.chat.id, "argument injected")
         the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
@@ -254,7 +254,7 @@ def any_message(bot, message):
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
             modify_sec = False
-            clarify(message.chat.id, "argument replaced")
+            clarify(message.chat.id, "argument injected")
         the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
@@ -266,7 +266,7 @@ def any_message(bot, message):
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
             modify_sec = False
-            clarify(message.chat.id, "argument replaced")
+            clarify(message.chat.id, "argument injected")
         the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
@@ -278,7 +278,7 @@ def any_message(bot, message):
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
             modify_sec = False
-            clarify(message.chat.id, "argument replaced")
+            clarify(message.chat.id, "argument injected")
         the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set))
@@ -290,24 +290,24 @@ def any_message(bot, message):
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
             modify_sec = False
-            clarify(message.chat.id, "argument replaced")
+            clarify(message.chat.id, "argument injected")
         the_pass = refresh_pass(message.chat.id, set_last_card = subindex, modify_sec = modify_sec, inject_start = inject_start, get_card=subindex)
         if the_pass.sec_set != None:
             clarify(message.chat.id, "the card will be reminded in " + seg_to_str(the_pass.sec_set) + "\nyou can also use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]))
         else:
             clarify(message.chat.id, "error in changing time.\nyou can also use: /remove_hashtag_" + SELECTED_STR.replace("/#","",1).replace(".","") + str(the_pass.code_collected[1]))
     elif text == "/date":
-        clarify(message.chat.id, "/date <month> <optional, days> etc")
-    elif text.startswith("/date "):
+        clarify(message.chat.id, "/date<month> <optional, days> etc")
+    elif text.startswith("/date"):
         text_split = text.split(" ")
-        month = int(text_split[1])
+        month = subindex
         day = 1
         hour = 0
         minutes = 0
         try:
-            day = int(text_split[2])
-            hour = int(text_split[3])
-            minutes = int(text_split[4])
+            day = int(text_split[1])
+            hour = int(text_split[2])
+            minutes = int(text_split[3])
         except:
             pass
         date = calculate_start_date(month) + ((day - 1) * DAY + hour * HOUR + minutes * MIN)
@@ -317,7 +317,7 @@ def any_message(bot, message):
         if inject_start_args[message.chat.id] != False:
             inject_start = modify_sec
             modify_sec = False
-            clarify(message.chat.id, "argument replaced")
+            clarify(message.chat.id, "argument injected")
         
         the_pass = refresh_pass(message.chat.id, modify_sec = modify_sec, inject_start = inject_start)
         if the_pass.sec_set != None:

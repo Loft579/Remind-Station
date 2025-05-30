@@ -152,7 +152,7 @@ find_desc = False):
                         if int(time.time()) > (code[2] + code[3]):
                             old_cmd = "[" + TRELLO_CALL_CMD + " " + command_set + "]"
                             if old_cmd in u_card["desc"]:
-                                new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(code[2] + code[3] * int(max((time.time() - code[2]) / code[3],0))) + " " + str(code[3]) + "]"
+                                new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(code[2] + abs(code[3]) * int(max((time.time() - code[2]) / abs(code[3]),2))) + " " + str(abs(code[3])) + "]"
                                 edition = edit_from_desc(u_card, old_cmd, new_cmd)
                                 u_card = edition
                                 command_set = get_commands_set(new_cmd)[0]
@@ -199,11 +199,11 @@ find_desc = False):
                                 modify_sec = code[3]
                             if not isinstance(modify_sec,bool) and modify_sec != False:
                                 if code[1] == set_last_card:
-                                    if inject_start > 0:
+                                    if inject_start >= 0:
                                         inject_start = inject_start - modify_sec
                                     else:
-                                        inject_start = inject_start * -1 - DAY
-                                    new_cmd = "[" + TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time() + inject_start)) + " " + str(modify_sec) + "]"
+                                        inject_start = inject_start
+                                    new_cmd = "[" + TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(int(time.time()) + inject_start) + " " + str(modify_sec) + "]"
                                     edition = edit_from_desc(u_card,"[" + TRELLO_CALL_CMD + " " + command_set + "]", new_cmd)
                                     if edition != None:
                                         u_card = edition
@@ -328,7 +328,7 @@ def see(chat_id, subindex, is_reminded = "", ignore_time_left = False, call_valu
         button3 = InlineKeyboardButton("❌ Eliminar Carta", callback_data="eliminar_carta")
         keyboard = InlineKeyboardMarkup([[button]])'''
 
-        preview = "/sec" + str(int(int(the_pass.code_collected[3]) * 2)) + " /min144 /hour2 /hour6 /hour8 /hour12 /day1 /day2 /day4\n"
+        preview =  "/sec" + str(int(int(the_pass.code_collected[3]) * 2)) + " /min144 /hour1 /hour2 /hour6 /hour8 /hour12 /day1 /day2 /day4 /day7 /inject_start /date0 🚂\n"
         for hashtag in the_pass.hashtags_collected:
             preview += "/" + hashtag + str(the_pass.code_collected[1]) + " "
         if is_reminded == True:

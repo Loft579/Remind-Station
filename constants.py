@@ -37,7 +37,7 @@ HELP = '''
 ' /selecteds ' just the hashtag's command, add card to the selecteds list
 
 advanced: 
-' /date <month of the year> <optional, day of the month> <h of the day> <min of the hour> ' set date's time left to the selected card
+' /date<month date> <optional, day date> <h date> <min date> ' set date sound to the selected card
 ' /mute <hh:mm:ss> <hh:mm:ss> ' mute card between time range of the day
 ' /unmute ' clear mute time ranges
 ' /<hashtag><X> ' set the hashtag
