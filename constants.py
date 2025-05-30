@@ -107,7 +107,7 @@ MODOSHELP = '''
 ' /mode off ' clean the modes
 '''
 
-TRELLO_CALL_CMD = "/REMIND-STATION"
+TRELLO_CALL_CMD = "/RemindStation"
 
 NAME_LIMIT = 60
 
