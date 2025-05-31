@@ -153,7 +153,7 @@ find_desc = False):
                         if int(time.time()) > (code[2] + code[3]):
                             old_cmd = "[" + TRELLO_CALL_CMD + " " + command_set + "]"
                             if old_cmd in u_card["desc"]:
-                                new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(code[2] + abs(code[3]) * int(max((time.time() - code[2]) / abs(code[3]),2))) + " " + str(abs(code[3])) + "]"
+                                new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(code[2] + abs(code[3]) * int(max((time.time() - code[2]) / abs(code[3]),1))) + " " + str(abs(code[3])) + "]"
                                 edition = edit_from_desc(u_card, old_cmd, new_cmd)
                                 u_card = edition
                                 command_set = get_commands_set(new_cmd)[0]
