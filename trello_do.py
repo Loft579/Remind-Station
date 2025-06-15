@@ -149,17 +149,17 @@ find_desc = False):
                         if time_range[0] <= seconds_of_day <= time_range[1]:
                             is_muted = True
                     
-                    if code[1] != 0 and not is_muted:
-                        if int(time.time()) > (code[2] + code[3]):
-                            old_cmd = "[" + TRELLO_CALL_CMD + " " + command_set + "]"
-                            if old_cmd in u_card["desc"]:
-                                new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(code[2] + abs(code[3]) * int(max((time.time() - code[2]) / abs(code[3]),1))) + " " + str(abs(code[3])) + "]"
-                                edition = edit_from_desc(u_card, old_cmd, new_cmd)
-                                u_card = edition
-                                command_set = get_commands_set(new_cmd)[0]
-                                code = trello_str_to_list(command_set)
-                                chats_last_card[code[0]] = code[1]
-                                see_args_remind.append([code[0],code[1]])
+                        if code[1] != 0 and not is_muted:
+                            if int(time.time()) > (code[2] + code[3]):
+                                old_cmd = "[" + TRELLO_CALL_CMD + " " + command_set + "]"
+                                if old_cmd in u_card["desc"]:
+                                    new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(code[2] + abs(code[3]) * int(max((time.time() - code[2]) / abs(code[3]),1))) + " " + str(abs(code[3])) + "]"
+                                    edition = edit_from_desc(u_card, old_cmd, new_cmd)
+                                    u_card = edition
+                                    command_set = get_commands_set(new_cmd)[0]
+                                    code = trello_str_to_list(command_set)
+                                    chats_last_card[code[0]] = code[1]
+                                    see_args_remind.append([code[0],code[1]])
 
                         #collect all simple_id info in order to add a card with a not-used simple_id when all cards are read.
                         if not code[0] in chats_ids:
@@ -343,7 +343,10 @@ def see(chat_id, subindex, is_reminded = "", ignore_time_left = False, call_valu
             time_left = ""
         if call_values_i == 0:
             if chat_id in last_preview:
-                bot.delete_message(chat_id, last_preview[chat_id])
+                try:
+                    bot.delete_message(chat_id, last_preview[chat_id])
+                except:
+                    pass
             last_preview[chat_id] = clarify(chat_id, preview).message_id
         clarify(chat_id, "/track" + str(the_pass.code_collected[1]) + " /track_fade" + " /track_undofade\n" + "/done" + str(the_pass.code_collected[1]) + " /selecteds" + str(the_pass.code_collected[1]) + " /stop" + str(the_pass.code_collected[1]) + " " + is_reminded + name + seg_to_str(int(the_pass.code_collected[3])) + time_left, parse_mode="HTML")
 
