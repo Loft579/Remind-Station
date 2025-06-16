@@ -1,0 +1,37 @@
+diff --git a/constants.py b/constants.py
+index b301864..e7fe035 100644
+--- a/constants.py
++++ b/constants.py
+@@ -63,6 +63,7 @@ DEBUGHELP = '''
+ 
+ ADMIN_USER_ID = 43759228
+ ADMIN_CHAT_ID = 43759228
++TIME_X2_USERS = [ADMIN_USER_ID]
+ 
+ RECORDARTEXT = '''👆
+ /edit{} &| /hours | /days &| /done{}
+diff --git a/trello_do.py b/trello_do.py
+index d6d50d9..f18d653 100644
+--- a/trello_do.py
++++ b/trello_do.py
+@@ -153,7 +153,8 @@ find_desc = False):
+                         if int(time.time()) > (code[2] + code[3]) and not is_muted:
+                             old_cmd = "[" + TRELLO_CALL_CMD + " " + command_set + "]"
+                             if old_cmd in u_card["desc"]:
+-                                new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(code[2] + abs(code[3]) * int(max((time.time() - code[2]) / abs(code[3]),1))) + " " + str(abs(code[3])) + "]"
++                                double = (1,2)[(code[0] in TIME_X2_USERS)]
++                                new_cmd = "["+ TRELLO_CALL_CMD + " " + str(code[0]) + " " + str(code[1]) + " " + str(code[2] + abs(code[3]) * int(max((time.time() - code[2]) / abs(code[3]),1))) + " " + str(abs(code[3]) * double) + "]"
+                                 edition = edit_from_desc(u_card, old_cmd, new_cmd)
+                                 u_card = edition
+                                 command_set = get_commands_set(new_cmd)[0]
+@@ -329,7 +330,9 @@ def see(chat_id, subindex, is_reminded = "", ignore_time_left = False, call_valu
+         button3 = InlineKeyboardButton("❌ Eliminar Carta", callback_data="eliminar_carta")
+         keyboard = InlineKeyboardMarkup([[button]])'''
+ 
+-        preview =  "/sec" + str(int(int(the_pass.code_collected[3]) * 2)) + " /min144 /hour1 /hour2 /hour4 /hour6 /hour8 /hour12 /day1 /day2 /day4 /day7 /inject_start /date0 🚂\n"
++
++        double = (2,1)[(the_pass.code_collected[0] in TIME_X2_USERS)]
++        preview =  "/sec" + str(int(int(the_pass.code_collected[3]) * double)) + " /min144 /hour1 /hour2 /hour4 /hour6 /hour8 /hour12 /day1 /day2 /day4 /day7 /inject_start /date0 🚂\n"
+         for hashtag in the_pass.hashtags_collected:
+             preview += "/" + hashtag + str(the_pass.code_collected[1]) + " "
+         if is_reminded == True:
