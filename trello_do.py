@@ -3,18 +3,15 @@ import traceback
 
 from typing import List
 
-import telegram
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+import adapter
 import html
 from datetime import datetime
 from utils import *
 from datetime import datetime
 from constants import *
-from trello import *
-from telegram import Bot
 import time
 
-bot = Bot(token=TELEGRAM_BOT_TOKEN)
+bot = adapter.bot
 chats_last_card = dict()
 chats_mode = dict()
 chat_map = dict()
@@ -43,10 +40,8 @@ class PassReturn:
 def clarify(chat_id, text, parse_mode = "", reply_markup = None):
     try:
         return bot.send_message(chat_id, text[-4000:], parse_mode = parse_mode, reply_markup = reply_markup)
-    except telegram.error.Unauthorized:
-        print("message unauthorized to send")
-    except telegram.error.BadRequest as e:
-        print("BadRequest\n" + str(e))
+    except Exception as e:
+        print(f"Error sending message: {str(e)}")
         
 
 def get_available_id(simple_ids):

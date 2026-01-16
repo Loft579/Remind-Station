@@ -18,7 +18,6 @@ if args.env_file:
     # Load env variables from file
     dotenv.load_dotenv(args.env_file)
 
-from telegram.ext import Filters, MessageHandler, Updater
 import logging
 from random import randint
 import time
@@ -26,12 +25,10 @@ from time import sleep
 from customstdout import change_original_stdout
 from utils import *
 from constants import *
-from whisperbot import openai_whisper_api
-from trello import *
+#from whisperbot import openai_whisper_api
+import adapter as adapter
 import traceback
 from trello_do import *
-from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from imageutils import ImageUtils
 from threading import Lock
 
@@ -430,18 +427,16 @@ if __name__ == '__main__':
     print('Starting...')
     change_original_stdout()
 
-    updater = Updater(token=TELEGRAM_BOT_TOKEN)
-    dispatcher = updater.dispatcher
+    # Using adapter bot instead of Telegram updater
+    bot = adapter.bot
     any_message_lock = Lock()
 
-    def any_update(update, context): #executed by Telegram with every update.
-        bot = context.bot
+    def any_update(update): #executed locally
         if update.message and update.message.text and update.message.text == '/exit' and update.message.from_user.id == ADMIN_USER_ID:
             bot.send_message(update.message.chat.id, 'bye bye')
-            updater.stop()
             print('Bot killed by /exit')
             exit()
-        elif update.edited_message != None:
+        elif hasattr(update, 'edited_message') and update.edited_message != None:
             pass # Nothing. Ignore in edited messages.
         else:
             try:
@@ -451,13 +446,9 @@ if __name__ == '__main__':
                 print(f"Error in any_update: {e}")
                 bot.send_message(update.message.chat.id, "code error: " + str(e))
 
-    core_handler = MessageHandler(Filters.all, any_update, run_async=True)
-    dispatcher.add_handler(core_handler)
-
-    updater.start_polling()
-
     try:
         print('Press Ctrl+C to exit.')
+        print('Local adapter mode - no Telegram polling')
         while True:
             try:
                 refresh_pass(None)
@@ -468,7 +459,6 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print('\nCtrl+C detected. Bye bye.')
 
-    print('Waiting for update.stop()...')
-    updater.stop()
+    print('Local adapter closed')
 
 

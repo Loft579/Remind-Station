@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Remind Station Local</title>
+  <style>
+    body { font-family: sans-serif; }
+    .card { border: 1px solid #ccc; padding: 8px; margin: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Remind Station Local</h1>
+  <input id="msg" placeholder="Escribe tu recordatorio">
+  <button onclick="addCard()">Agregar</button>
+  <div id="cards"></div>
+
+  <script>
+    let cards = [];
+
+    function addCard() {
+        const text = document.getElementById("msg").value;
+        const time = Date.now() + 60000; // ejemplo: 1 minuto después
+        const card = { id: Date.now(), text, time };
+        cards.push(card);
+        saveCards();
+        renderCards();
+        setTimeout(() => alert("Recordatorio: " + text), 60000);
+    }
+
+
+    function deleteCard(id) {
+      cards = cards.filter(c => c.id !== id);
+      renderCards();
+      saveCards()
+    }
+
+    function renderCards() {
+      const container = document.getElementById("cards");
+      container.innerHTML = "";
+      cards.forEach(c => {
+        container.innerHTML += `
+          <div class="card">
+            ${c.text}
+            <button onclick="deleteCard(${c.id})">Eliminar</button>
+          </div>`;
+      });
+    }
+    function saveCards() {
+      localStorage.setItem("cards", JSON.stringify(cards));
+    }
+
+    function loadCards() {
+      const data = localStorage.getItem("cards");
+      if (data) cards = JSON.parse(data);
+      renderCards();
+    }
+
+    // Llamar loadCards() al inicio
+    window.onload = loadCards;
+
+  </script>
+</body>
+</html>

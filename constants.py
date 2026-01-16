@@ -6,7 +6,7 @@ import argparse
 # Esto es por si la zona hoursria del server difiere de lo que vos necesitas
 CURRENT_TIME_SHIFT_HOURS = -3
 
-TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
+TELEGRAM_BOT_TOKEN = None
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', default=None)
 
 MIN = 60

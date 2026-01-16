@@ -6,7 +6,7 @@ from constants import *
 import logging
 
 dotenv.load_dotenv()
-
+z
 api_key = os.environ['TRELLO_API_KEY']
 token = os.environ['TRELLO_TOKEN']
 boards_id = os.environ['TRELLO_BOARDS_ID'].split(",")

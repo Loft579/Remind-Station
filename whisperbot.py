@@ -1,7 +1,6 @@
 
 
-from telegram.ext import Updater, MessageHandler, Filters, Dispatcher, CallbackContext
-from telegram import Update
+from adapter import download_audio, send_message
 import requests
 import os
 import logging
@@ -34,20 +33,20 @@ def openai_whisper_api(local_filepath: str):
     logging.debug(transcription)
     return transcription.text
 
-def handle_audio(update: Update, context: CallbackContext):
-    # Download audio file from the message
-    file = context.bot.getFile(update.message.voice.file_id)
-    file.download('audio.ogg')
+def handle_audio(audio_path: str = "audio.ogg"):
+    # En vez de usar context.bot.getFile, llamás a tu función local
+    download_audio(audio_path)
 
-    whisper_result = openai_whisper_api(local_filepath='audio.ogg')
+    whisper_result = openai_whisper_api(local_filepath=audio_path)
 
-    # Send the transcription
-    update.message.reply_text(whisper_result)
+    # En vez de reply_text, usás tu adapter
+    send_message(whisper_result)
 
-# Function to handle errors occurred in the dispatcher
-def error_handler(update: Update, context: CallbackContext):
-    """Log the error and send a message to notify the user."""
-    logging.error(msg="Exception while handling an update:", exc_info=context.error)
+def error_handler(error: Exception, audio_path: str = "audio.ogg"):
+    """Log the error and notify the user locally."""
+    logging.error("Exception while handling an update:", exc_info=error)
+    send_message(f"Ocurrió un error: {error}")
+
 
 def handle_video_note(update: Update, context: CallbackContext):
     raise Exception('Deprecated')
