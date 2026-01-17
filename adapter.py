@@ -5,7 +5,6 @@ Provides FakeBot, FakeUpdate, and FakeTrello classes for testing without externa
 
 class FakeBot:
     """Mock Telegram Bot that simulates sending messages."""
-    
     def send_message(self, chat_id, text, parse_mode="", reply_markup=None):
         """Simulate sending a message."""
         print(f"[BOT to {chat_id}] {text}")
@@ -20,7 +19,11 @@ class FakeBot:
     def getFile(self, file_id):
         """Simulate getting a file."""
         return type("File", (), {"file_id": file_id, "download": lambda filename: None})()
-
+    
+    def download_audio(filepath: str):
+        # En Telegram se descargaba el archivo desde la nube.
+        # En V2 podés simular que ya lo tenés en tu front-end o subirlo manualmente.
+        print(f"[AUDIO] Archivo simulado guardado en {filepath}")
 
 class FakeUpdate:
     """Mock Telegram Update with message and chat information."""
@@ -76,37 +79,10 @@ trello = FakeTrello()
 
 
 # Helper functions
-def send_message(chat_id, text, parse_mode="", reply_markup=None):
-    """Send a message through the fake bot."""
-    return bot.send_message(chat_id, text, parse_mode, reply_markup)
-
-
 def receive_message(text, chat_id=1):
     """Simulate receiving a message from user."""
     print(f"[USER {chat_id}] {text}")
     return FakeUpdate(text, chat_id)
-
-
-def add_card(text):
-    """Add a card to fake Trello."""
-    return trello.add_card(text)
-
-
-def update_card(card_id, new_text):
-    """Update a Trello card."""
-    return trello.update_card(card_id, new_text)
-
-
-def delete_card(card_id):
-    """Delete a Trello card."""
-    return trello.delete_card(card_id)
-
-def download_audio(filepath: str):
-    # En Telegram se descargaba el archivo desde la nube.
-    # En V2 podés simular que ya lo tenés en tu front-end o subirlo manualmente.
-    print(f"[AUDIO] Archivo simulado guardado en {filepath}")
-
-
 
 # Re-export for convenience
 __all__ = [

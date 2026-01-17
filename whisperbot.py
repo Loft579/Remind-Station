@@ -1,6 +1,6 @@
 
 
-from adapter import download_audio, send_message
+from adapter import bot
 import requests
 import os
 import logging
@@ -35,17 +35,17 @@ def openai_whisper_api(local_filepath: str):
 
 def handle_audio(audio_path: str = "audio.ogg"):
     # En vez de usar context.bot.getFile, llamás a tu función local
-    download_audio(audio_path)
+    bot.download_audio(audio_path)
 
     whisper_result = openai_whisper_api(local_filepath=audio_path)
 
     # En vez de reply_text, usás tu adapter
-    send_message(whisper_result)
+    bot.send_message(whisper_result)
 
 def error_handler(error: Exception, audio_path: str = "audio.ogg"):
     """Log the error and notify the user locally."""
     logging.error("Exception while handling an update:", exc_info=error)
-    send_message(f"Ocurrió un error: {error}")
+    bot.send_message(f"Ocurrió un error: {error}")
 
 
 def handle_video_note(update: Update, context: CallbackContext):
