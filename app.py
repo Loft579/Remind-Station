@@ -32,6 +32,23 @@ from trello_do import *
 from imageutils import ImageUtils
 from threading import Lock
 
+# V3: Este archivo reemplaza al dispatcher de Telegram.
+# Aquí definimos cómo "escuchar" mensajes y despacharlos a los handlers.
+# Podés enchufar cualquier otra fuente de mensajes (consola, HTML, API REST).
+
+def main():
+    print("Remind-Station V3 iniciado...")
+    while True:
+        try:
+            text = input(">> ")
+            adapter_any(0, text)
+        except Exception as e:
+            adapter.error_handler(e)
+
+if __name__ == "__main__":
+    main()
+
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
@@ -46,7 +63,9 @@ def get_defualt_seconds():
 
 
 
-def any_message(bot, message):
+def adapter_any(bot, message):
+    adapter.receive_message(bot, message)
+
     global inject_start_args
     if not message.chat.id in inject_start_args:
         inject_start_args[message.chat.id] = False
