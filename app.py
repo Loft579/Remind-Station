@@ -32,22 +32,10 @@ from trello_do import *
 from imageutils import ImageUtils
 from threading import Lock
 
+
 # V3: Este archivo reemplaza al dispatcher de Telegram.
 # Aquí definimos cómo "escuchar" mensajes y despacharlos a los handlers.
 # Podés enchufar cualquier otra fuente de mensajes (consola, HTML, API REST).
-
-def main():
-    print("Remind-Station V3 iniciado...")
-    while True:
-        try:
-            text = input(">> ")
-            adapter_any(0, text)
-        except Exception as e:
-            adapter.error_handler(e)
-
-if __name__ == "__main__":
-    main()
-
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -63,7 +51,7 @@ def get_defualt_seconds():
 
 
 
-def adapter_any(bot, message):
+def any_message(bot, message):
     adapter.receive_message(bot, message)
 
     global inject_start_args
@@ -450,7 +438,7 @@ if __name__ == '__main__':
     bot = adapter.bot
     any_message_lock = Lock()
 
-    def any_update(update): #executed locally
+    def adapter_any(update): #executed locally
         if update.message and update.message.text and update.message.text == '/exit' and update.message.from_user.id == ADMIN_USER_ID:
             bot.send_message(update.message.chat.id, 'bye bye')
             print('Bot killed by /exit')
@@ -469,6 +457,7 @@ if __name__ == '__main__':
         print('Press Ctrl+C to exit.')
         print('Local adapter mode - no Telegram polling')
         while True:
+            # adapter things here
             try:
                 refresh_pass(None)
             except BaseException as e:
@@ -478,6 +467,8 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print('\nCtrl+C detected. Bye bye.')
 
+    def main():
+        print("Remind-Station V3 iniciado...")
     print('Local adapter closed')
 
 
