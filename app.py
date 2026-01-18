@@ -450,14 +450,14 @@ if __name__ == '__main__':
                 with any_message_lock:
                     any_message(bot, update.message)
             except BaseException as e:
-                print(f"Error in any_update: {e}")
+                print(f"Error in adapter_any: {e}")
                 bot.send_message(update.message.chat.id, "code error: " + str(e))
 
     try:
         print('Press Ctrl+C to exit.')
         print('Local adapter mode - no Telegram polling')
         while True:
-            # adapter things here
+            # adapter things here calling "adapter_any" function
             try:
                 refresh_pass(None)
             except BaseException as e:
