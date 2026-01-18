@@ -9,6 +9,7 @@ from datetime import datetime
 from utils import *
 from datetime import datetime
 from constants import *
+from trello import *
 import time
 
 bot = adapter.bot
