@@ -1,0 +1,13 @@
+{
+  "name": "Remind-Station",
+  "version": "3",
+  "description": "Mi aplicación con Electron",
+  "main": "main.js",
+  "author": "Lus",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^29.0.0"
+  }
+}

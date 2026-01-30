@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Remind-Station</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #dropbox {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 250px;
+      height: 120px;
+      border: 2px dashed #666;
+      padding: 10px;
+      background: #fafafa;
+    }
+    .card {
+      border: 1px solid #999;
+      padding: 10px;
+      margin: 10px 0;
+      background: #f0f0f0;
+    }
+    .countdown { font-weight: bold; margin-left: 10px; color: darkred; }
+    #cards { margin-top: 160px; }
+
+    #notifBtn {
+    position: fixed;   /* lo fija en la pantalla */
+    top: 20px;         /* distancia desde arriba */
+    right: 20px;       /* distancia desde la derecha */
+    z-index: 9999;     /* asegura que quede por encima de otros elementos */
+    padding: 8px 12px;
+    background: #ffcc00;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  </style>
+</head>
+<body>
+  <h1>Sesión</h1>
+  <button id="notifBtn">🔔 Activar notificaciones</button>
+  <div id="dropbox">Arrastra aquí para crear nueva carta</div>
+  <div id="cards"></div>
+
+  <script>
+    
+    let counter = 0;
+    const dropbox = document.getElementById("dropbox");
+    const cardsContainer = document.getElementById("cards");
+
+
+    document.getElementById("notifBtn").addEventListener("click", () => {
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          alert("Notificaciones activadas ✅");
+          // opcional: ocultar el botón después de aceptar
+          document.getElementById("notifBtn").style.display = "none";
+        } else {
+          alert("No se activaron las notificaciones ❌");
+        }
+      });
+    });
+
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
+    window.addEventListener("load", () => {
+      loadCards();
+    });
+
+    document.addEventListener("input", e => {
+      if (e.target.closest(".card")) {
+        saveAllCards();
+      }
+    });
+
+
+    function parseDelay(str) {
+      let totalMs = 0;
+      const regex = /(\d+)([hdsm'])/g;
+      let match;
+      while ((match = regex.exec(str)) !== null) {
+        const value = parseInt(match[1]);
+        const unit = match[2];
+        if (unit === "h") totalMs += value * 3600000;
+        else if (unit === "d") totalMs += value * 86400000;
+        else if (unit === "s") totalMs += value * 1000;
+        else if (unit === "'") totalMs += value * 60000;
+      }
+      return totalMs;
+    }
+  
+    function nextAvailableId() {
+      const data = JSON.parse(localStorage.getItem("cards")) || {};
+      let id = 1;
+      while (data[id] || document.querySelector(`[data-id="${id}"]`)) {
+        id++;
+      }
+      return id;
+    }
+
+
+    function createCard(
+      id = nextAvailableId(),
+      delayStr = "",
+      startAt = Date.now(),
+      title = `pedido_${id}`,
+      description = ""
+    ) {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.dataset.id = id;
+      card.dataset.startAt = startAt;
+      card.dataset.delayStr = delayStr;
+      card.dataset.delay = parseDelay(delayStr);
+
+      card.innerHTML = `
+        <input type="text" class="titleInput"
+              value="${title}"
+              data-id="${id}" data-field="title">
+        <textarea class="descInput"
+              placeholder="Descripción"
+              data-id="${id}" data-field="description">${description}</textarea>
+        <input type="text" class="delayInput"
+              placeholder="ej: 20s, 1h1d"
+              value="${delayStr}"
+              data-id="${id}" data-field="delayStr">
+        <button class="postpone">[➕⏲️]</button>
+        <button class="delete">🗑️</button>
+        <span class="countdown">--</span>
+      `;
+
+      cardsContainer.appendChild(card);
+    }
+
+
+
+    // guarda todas las cartas en localStorage
+    function saveAllCards() {
+      const data = {};
+      document.querySelectorAll(".card").forEach(card => {
+        const id = card.dataset.id;
+        data[id] = {
+          title: card.querySelector(".titleInput").value,
+          description: card.querySelector(".descInput").value,
+          delayStr: card.querySelector(".delayInput").value,
+          delay: parseInt(card.dataset.delay || 0),
+          startAt: parseInt(card.dataset.startAt || Date.now())
+        };
+      });
+      localStorage.setItem("cards", JSON.stringify(data));
+    }
+
+    // carga las cartas desde localStorage
+    function loadCards() {
+      const data = JSON.parse(localStorage.getItem("cards")) || {};
+      cardsContainer.innerHTML = "";
+
+      for (const [id, meta] of Object.entries(data)) {
+        createCard(id, meta.delayStr || "", meta.startAt || Date.now(), meta.title, meta.description);
+        const cardEl = cardsContainer.querySelector(`[data-id="${id}"]`);
+        if (cardEl) {
+          cardEl.dataset.delay = meta.delay || 0;
+        }
+      }
+    }
+
+    // Guardar carta en localStorage
+    function saveCard(id, delayStr="", startAt=Date.now()) {
+      const data = JSON.parse(localStorage.getItem("cards")) || {};
+      data[id] = { delayStr, startAt };
+      localStorage.setItem("cards", JSON.stringify(data));
+    }
+
+    dropbox.addEventListener("dragover", e => e.preventDefault());
+    dropbox.addEventListener("drop", e => {
+      e.preventDefault();
+      counter++;
+      createCard(undefined, String(counter));
+    });
+
+
+    cardsContainer.addEventListener("click", e => {
+      const card = e.target.closest(".card");
+      if (!card) return;
+
+      if (e.target.classList.contains("postpone")) {
+        const delayStr = card.querySelector(".delayInput").value.trim();
+        const delay = parseDelay(delayStr);
+        if (delay > 0) {
+          card.dataset.delayStr = delayStr;
+          card.dataset.delay = delay;
+          card.dataset.startAt = Date.now();
+          saveAllCards();
+        } else {
+          alert("Formato inválido. Usa ej: 20s, 1h1d, 1'");
+        }
+      }
+
+      if (e.target.classList.contains("delete")) {
+        card.remove();
+        saveAllCards();
+      }
+    });
+
+
+function checkRings() {
+  const now = Date.now();
+  document.querySelectorAll(".card").forEach(card => {
+    let start = parseInt(card.dataset.startAt);
+    const delay = parseInt(card.dataset.delay || 0);
+    const countdownEl = card.querySelector(".countdown");
+
+    if (delay > 0) {
+      // avanzar start hasta el ciclo actual
+      const start_old = start;
+      while (start + delay <= now) {
+        start += delay;
+      }
+      const nextRing = start + delay;
+      const remaining = nextRing - now;
+
+      if (start !== start_old) {
+        // suena
+        cardsContainer.prepend(card);
+        card.dataset.startAt = start; // ojo: se acumula, no se reinicia
+        if (Notification.permission === "granted") {
+          new Notification(`pedido_${card.dataset.id} está sonando!`);
+          const audio = new Audio("ding.mp3"); // poné tu archivo de sonido
+          audio.play(); }
+        }
+      
+      // mostrar contador
+      const seconds = Math.floor(remaining / 1000) % 60;
+      const minutes = Math.floor(remaining / 60000) % 60;
+      const hours = Math.floor(remaining / 3600000);
+      countdownEl.textContent = `${hours}h ${minutes}m ${seconds}s`;
+
+      // aplicar transparencia según cuánto pasó desde el último ring
+      const elapsed = now - start; // tiempo desde el último ciclo
+      if (elapsed <= 60000) {
+        const opacity = 1 - (elapsed / 60000) * 0.8;
+        countdownEl.style.opacity = opacity;
+      } else {
+        countdownEl.style.opacity = 0.2;
+      }
+    }
+  });
+}
+
+let wakeLock = null;
+
+async function requestWakeLock() {
+  try {
+    wakeLock = await navigator.wakeLock.request("screen");
+    console.log("Wake lock activado");
+    wakeLock.addEventListener("release", () => {
+      console.log("Wake lock liberado");
+    });
+  } catch (err) {
+    console.error(`${err.name}, ${err.message}`);
+  }
+}
+
+// Pedirlo al cargar
+document.addEventListener("DOMContentLoaded", () => {
+  requestWakeLock();
+});
+
+// Reintentar si la pestaña vuelve a estar visible
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && !wakeLock) {
+    requestWakeLock();
+  }
+});
+
+    setInterval(checkRings, 1000);
+  </script>
+</body>
+</html>
