@@ -1,6 +1,5 @@
 const { app, BrowserWindow, Tray, Menu } = require('electron');
 const path = require('path');
-const checkRings = require('./checkRings.js');
 
 let win;
 let tray;
@@ -12,7 +11,6 @@ function createWindow() {
     icon: path.join(__dirname, 'icon.ico'), // tu ícono
     webPreferences: {
       nodeIntegration: true,
-      preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true
     }
   });
@@ -40,6 +38,6 @@ app.whenReady().then(() => {
   tray.on('click', () => {
     win.show(); // restaurar al hacer clic
   })
-  setInterval(checkRings, 1000);
+  //setInterval(checkRings, 1000);
 });
 

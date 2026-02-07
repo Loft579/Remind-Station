@@ -41,7 +41,7 @@
 </head>
 <body>
   <h1>Sesión</h1>
-  <button id="notifBtn">🔔 Activar notificaciones</button>
+  <button id="notifBtn">🔔</button>
   <div id="dropbox">Arrastra aquí para crear nueva carta</div>
   <div id="cards"></div>
 
@@ -55,7 +55,7 @@
     document.getElementById("notifBtn").addEventListener("click", () => {
       Notification.requestPermission().then(permission => {
         if (permission === "granted") {
-          alert("Notificaciones activadas ✅");
+          alert("Notificaciones activadas ✅ \n/dateMM:DD:HH:'' por ejemplo /date6 para 6 meses después del punto 0 del inicio del año");
           // opcional: ocultar el botón después de aceptar
           document.getElementById("notifBtn").style.display = "none";
         } else {
@@ -142,8 +142,12 @@
     // guarda todas las cartas en localStorage
     function saveAllCards() {
       const data = {};
+      const order = []; // Aquí guardaremos el orden visual exacto
+
       document.querySelectorAll(".card").forEach(card => {
         const id = card.dataset.id;
+        order.push(id); // Guardamos el ID en la lista de orden
+        
         data[id] = {
           title: card.querySelector(".titleInput").value,
           description: card.querySelector(".descInput").value,
@@ -152,22 +156,33 @@
           startAt: parseInt(card.dataset.startAt || Date.now())
         };
       });
+
       localStorage.setItem("cards", JSON.stringify(data));
+      localStorage.setItem("cardsOrder", JSON.stringify(order)); // Guardamos el orden
     }
 
-    // carga las cartas desde localStorage
-    function loadCards() {
-      const data = JSON.parse(localStorage.getItem("cards")) || {};
-      cardsContainer.innerHTML = "";
+function loadCards() {
+  const data = JSON.parse(localStorage.getItem("cards")) || {};
+  const order = JSON.parse(localStorage.getItem("cardsOrder")) || [];
+  
+  cardsContainer.innerHTML = ""; // Limpiamos
 
-      for (const [id, meta] of Object.entries(data)) {
-        createCard(id, meta.delayStr || "", meta.startAt || Date.now(), meta.title, meta.description);
-        const cardEl = cardsContainer.querySelector(`[data-id="${id}"]`);
-        if (cardEl) {
-          cardEl.dataset.delay = meta.delay || 0;
-        }
+  // Si hay un orden guardado, lo usamos para crear las cartas
+  if (order.length > 0) {
+    order.forEach(id => {
+      // Verificamos que los datos existan (por seguridad)
+      if (data[id]) {
+        const meta = data[id];
+        createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description);
       }
+    });
+  } else {
+    // Fallback por si es la primera vez (carga desordenada antigua)
+    for (const [id, meta] of Object.entries(data)) {
+      createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description);
     }
+  }
+}
 
     // Guardar carta en localStorage
     function saveCard(id, delayStr="", startAt=Date.now()) {
@@ -188,68 +203,127 @@
       const card = e.target.closest(".card");
       if (!card) return;
 
-      if (e.target.classList.contains("postpone")) {
-        const delayStr = card.querySelector(".delayInput").value.trim();
-        const delay = parseDelay(delayStr);
-        if (delay > 0) {
-          card.dataset.delayStr = delayStr;
-          card.dataset.delay = delay;
-          card.dataset.startAt = Date.now();
-          saveAllCards();
+    if (e.target.classList.contains("postpone")) {
+      const delayInput = card.querySelector(".delayInput");
+      const rawValue = delayInput.value.trim();
+      const now = Date.now();
+      const currentYear = new Date().getFullYear();
+      const currentDelay = parseInt(card.dataset.delay) || 0;
+      let currentStartAt = parseInt(card.dataset.startAt) || now;
+
+      if (rawValue.startsWith("/date")) {
+        const parts = rawValue.replace("/date", "").split(":").map(p => parseInt(p) || 0);
+        const targetDate = new Date(currentYear, (parts[0] || 1) - 1, parts[1] || 1, parts[2] || 0, parts[3] || 0, parts[4] || 0);
+        const targetMs = targetDate.getTime();
+        if (targetMs > now) {
+          card.dataset.startAt = now;
+          card.dataset.delay = targetMs - now;
         } else {
-          alert("Formato inválido. Usa ej: 20s, 1h1d, 1'");
+          card.dataset.startAt = targetMs - currentDelay;
+        }
+      } else {
+        const isNegative = rawValue.startsWith("-");
+        const inputMs = parseDelay(isNegative ? rawValue.substring(1) : rawValue);
+        if (isNegative) {
+          card.dataset.startAt = currentStartAt - inputMs - currentDelay;
+        } else if (inputMs > 0) {
+          card.dataset.delay = inputMs;
+          card.dataset.delayStr = rawValue;
+          card.dataset.startAt = now;
         }
       }
 
-      if (e.target.classList.contains("delete")) {
-        card.remove();
-        saveAllCards();
-      }
-    });
+      saveAllCards();
+      
+      // MANDAR AL FINAL: Así sale de la zona roja
+      const cardsContainer = document.getElementById("cards");
+      cardsContainer.appendChild(card);
+
+      // Si la línea se quedó sola al final o no hay nada arriba, podrías ocultarla,
+      // pero con 'after' la línea siempre se mantiene pegada a la última que sonó.
+    }
+
+          if (e.target.classList.contains("delete")) {
+            card.remove();
+            saveAllCards();
+          }
+        });
 
 
 function checkRings() {
   const now = Date.now();
+  
   document.querySelectorAll(".card").forEach(card => {
     let start = parseInt(card.dataset.startAt);
     const delay = parseInt(card.dataset.delay || 0);
     const countdownEl = card.querySelector(".countdown");
 
     if (delay > 0) {
-      // avanzar start hasta el ciclo actual
       const start_old = start;
-      while (start + delay <= now) {
-        start += delay;
-      }
-      const nextRing = start + delay;
-      const remaining = nextRing - now;
+      while (start + delay <= now) { start += delay; }
 
       if (start !== start_old) {
-        // suena
-        cardsContainer.prepend(card);
-        card.dataset.startAt = start; // ojo: se acumula, no se reinicia
-        if (Notification.permission === "granted") {
-          new Notification(`pedido_${card.dataset.id} está sonando!`);
-          const audio = new Audio("ding.mp3"); // poné tu archivo de sonido
-          audio.play(); }
-        }
-      
-      // mostrar contador
-      const seconds = Math.floor(remaining / 1000) % 60;
-      const minutes = Math.floor(remaining / 60000) % 60;
-      const hours = Math.floor(remaining / 3600000);
-      countdownEl.textContent = `${hours}h ${minutes}m ${seconds}s`;
+        const cardId = card.dataset.id;
 
-      // aplicar transparencia según cuánto pasó desde el último ring
-      const elapsed = now - start; // tiempo desde el último ciclo
-      if (elapsed <= 60000) {
-        const opacity = 1 - (elapsed / 60000) * 0.8;
-        countdownEl.style.opacity = opacity;
-      } else {
-        countdownEl.style.opacity = 0.2;
+        // --- LÓGICA DE TRASPASO DE BARRA ---
+        // Si esta carta que va a sonar es la que tiene la barra...
+        if (redLineAnchorId === cardId) {
+          // Buscamos la carta que tiene justo arriba en el HTML
+          const cardArriba = card.previousElementSibling;
+          
+          // Si hay una carta arriba y no es la propia barra roja...
+          if (cardArriba && cardArriba.classList.contains('card')) {
+            redLineAnchorId = cardArriba.dataset.id;
+          } else {
+            // Si no hay nada arriba (era la única), soltamos el ancla
+            // para que se asigne de nuevo al hacer el prepend
+            redLineAnchorId = null;
+          }
+        }
+
+        // 1. ROLLING: La carta se mueve al principio
+        cardsContainer.prepend(card);
+        card.dataset.startAt = start;
+        
+        // 2. ASIGNACIÓN INICIAL:
+        // Si no hay ancla (primera vez tras minimizar o tras el traspaso nulo),
+        // esta carta se convierte en el ancla.
+        if (redLineAnchorId === null) {
+          redLineAnchorId = card.dataset.id;
+        }
+
+        saveAllCards();
+
+        if (Notification.permission === "granted") {
+          const cardTitle = card.querySelector(".titleInput").value || "Sin título";
+          new Notification(`${cardTitle}`, {
+            body: "🚂",
+            // icon: "tu_icono.png" // Por si luego quieres añadirle un logo
+          });
+          new Audio("ding.mp3").play().catch(() => {});
+        }
       }
+      
+      // ... (resto de tu lógica de contador y transparencia) ...
+      const nextRing = start + delay;
+      const remaining = nextRing - now;
+      const h = Math.floor(remaining / 3600000);
+      const m = Math.floor(remaining / 60000) % 60;
+      const s = Math.floor(remaining / 1000) % 60;
+      countdownEl.textContent = `${h}h ${m}m ${s}s`;
+      const elapsed = now - start;
+      countdownEl.style.opacity = (elapsed <= 60000) ? (1 - (elapsed / 60000) * 0.8) : 0.2;
     }
   });
+
+  // 3. DIBUJAR LA BARRA (Igual que antes, pero ahora el ID puede haber cambiado)
+  if (redLineAnchorId && document.visibilityState === "visible") {
+    const anchorCard = document.querySelector(`.card[data-id="${redLineAnchorId}"]`);
+    if (anchorCard) {
+      anchorCard.after(redLine);
+      redLine.style.display = "block";
+    }
+  }
 }
 
 let wakeLock = null;
@@ -271,13 +345,22 @@ document.addEventListener("DOMContentLoaded", () => {
   requestWakeLock();
 });
 
-// Reintentar si la pestaña vuelve a estar visible
+// Variable para recordar a qué carta está pegada la barra
+let redLineAnchorId = null;
+
+// Creamos la barra una sola vez en memoria
+const redLine = document.createElement("div");
+redLine.id = "redLine";
+redLine.style.cssText = "display:none; border-top: 3px solid red; margin: 15px 0; width: 100%;";
+
+// AL MINIMIZAR: Soltamos el ancla (se desasigna)
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible" && !wakeLock) {
-    requestWakeLock();
+  if (document.visibilityState === "hidden") {
+    redLineAnchorId = null; // Se desasigna
+    redLine.style.display = "none";
+    if (redLine.parentNode) redLine.parentNode.removeChild(redLine);
   }
 });
-
     setInterval(checkRings, 1000);
   </script>
 </body>
