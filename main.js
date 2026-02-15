@@ -3,12 +3,13 @@ const path = require('path');
 
 let win;
 let tray;
+let isQuitting = false;
 
 function createWindow() {
   win = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: path.join(__dirname, 'icon.ico'), // tu ícono
+    icon: path.join(__dirname, 'icon.ico'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true
@@ -17,27 +18,46 @@ function createWindow() {
 
   win.loadFile('index.html');
 
-  // Cuando se cierra la ventana, no salir del todo
+  // Lógica para que la "X" oculte la ventana en lugar de cerrarla
   win.on('close', (event) => {
-    event.preventDefault();
-    win.hide(); // oculta la ventana
+    if (!isQuitting) {
+      event.preventDefault();
+      win.hide();
+    }
+    return false;
   });
 }
 
 app.whenReady().then(() => {
   createWindow();
 
-  tray = new Tray(path.join(__dirname, 'icon.ico')); // ícono en bandeja
+  // Configuración del Tray (Bandeja)
+  tray = new Tray(path.join(__dirname, 'icon.ico')); 
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Mostrar', click: () => win.show() },
-    { label: 'Salir', click: () => app.quit() }
+    { 
+      label: 'Mostrar', 
+      click: () => win.show() 
+    },
+    { 
+      label: 'Salir', 
+      click: () => {
+        isQuitting = true; // Ahora sí está definida
+        app.quit(); 
+      } 
+    }
   ]);
-  tray.setToolTip('Mi App');
+
+  tray.setToolTip('Remind-Station');
   tray.setContextMenu(contextMenu);
 
   tray.on('click', () => {
-    win.show(); // restaurar al hacer clic
-  })
-  //setInterval(checkRings, 1000);
+    win.show();
+  });
 });
 
+// Asegura que el proceso termine al cerrar todas las ventanas
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});

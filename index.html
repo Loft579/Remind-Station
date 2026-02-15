@@ -104,21 +104,18 @@
     }
 
 
-    function createCard(
-      id = nextAvailableId(),
-      delayStr = "",
-      startAt = Date.now(),
-      title = `pedido_${id}`,
-      description = ""
-    ) {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.dataset.id = id;
-      card.dataset.startAt = startAt;
-      card.dataset.delayStr = delayStr;
-      card.dataset.delay = parseDelay(delayStr);
+function createCard(id, delayStr, startAt, title, description, savedDelay) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.dataset.id = id;
+  
+  // AQUÍ ESTÁ LA CLAVE: Asignar los valores recuperados al dataset
+  card.dataset.delayStr = delayStr || "";
+  card.dataset.startAt = startAt || Date.now();
+  // Si tenemos el delay numérico guardado, lo usamos; si no, lo calculamos del string
+  card.dataset.delay = savedDelay || parseDelay(delayStr) || 0;
 
-      card.innerHTML = `
+  card.innerHTML = `
         <input type="text" class="titleInput"
               value="${title}"
               data-id="${id}" data-field="title">
@@ -132,10 +129,10 @@
         <button class="postpone">[➕⏲️]</button>
         <button class="delete">🗑️</button>
         <span class="countdown">--</span>
-      `;
+  `;
 
-      cardsContainer.appendChild(card);
-    }
+  cardsContainer.appendChild(card);
+}
 
 
 
@@ -173,13 +170,12 @@ function loadCards() {
       // Verificamos que los datos existan (por seguridad)
       if (data[id]) {
         const meta = data[id];
-        createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description);
+        createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description, meta.delay);
       }
     });
   } else {
-    // Fallback por si es la primera vez (carga desordenada antigua)
     for (const [id, meta] of Object.entries(data)) {
-      createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description);
+      createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description, meta.delay);
     }
   }
 }
@@ -300,7 +296,7 @@ function checkRings() {
             body: "🚂",
             // icon: "tu_icono.png" // Por si luego quieres añadirle un logo
           });
-          new Audio("ding.mp3").play().catch(() => {});
+          new Audio("horn.mp3").play().catch(() => {});
         }
       }
       

@@ -4,6 +4,7 @@
   "description": "Mi aplicación con Electron",
   "main": "main.js",
   "author": "Lus",
+  "icon": "icon.ico",
   "scripts": {
     "start": "electron ."
   },

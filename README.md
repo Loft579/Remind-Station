@@ -10,7 +10,7 @@ npm install --save-dev electron-packager
 npm install electron --save-dev
 
 # create app
-npx electron-packager . Remind-Station --platform=win32 --arch=x64 --out=dist
+npx electron-packager . Remind-Station --platform=win32 --arch=x64 --icon=icon.ico --out=dist
 
 # or run from source code
 npm start
