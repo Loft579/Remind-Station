@@ -164,7 +164,7 @@ _ date command usage
     }
 
 
-function createCard(id, delayStr, startAt, title, description, savedDelay) {
+function createCard(id, delayStr, startAt, title, description, savedDelay, isPaused = false) {
   const card = document.createElement("div");
   card.className = "card";
   card.dataset.id = id;
@@ -174,6 +174,7 @@ function createCard(id, delayStr, startAt, title, description, savedDelay) {
   card.dataset.startAt = startAt || Date.now();
   // Si tenemos el delay numérico guardado, lo usamos; si no, lo calculamos del string
   card.dataset.delay = savedDelay || parseDelay(delayStr) || 0;
+  card.dataset.isPaused = isPaused ? "true" : "false";
 
   card.innerHTML = `
         <input type="text" class="titleInput"
@@ -186,9 +187,10 @@ function createCard(id, delayStr, startAt, title, description, savedDelay) {
               placeholder="ej: 20s, 1h1d"
               value="${delayStr}"
               data-id="${id}" data-field="delayStr">
-        <button class="postpone">[➕⏲️]</button>
+        <button class="postpone">➕⏲️</button>
         <button class="delete">🗑️</button>
         <button class="track">track</button>
+        <button class="pause" style="border: 2px solid ${isPaused ? '#bbb' : '#ccc'}; box-shadow: ${isPaused ? 'inset 0 3px 6px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.1)'}">⏸️</button>
         <span class="countdown">--</span>
   `;
 
@@ -211,7 +213,8 @@ function createCard(id, delayStr, startAt, title, description, savedDelay) {
           description: card.querySelector(".descInput").value,
           delayStr: card.querySelector(".delayInput").value,
           delay: parseInt(card.dataset.delay || 0),
-          startAt: parseInt(card.dataset.startAt || Date.now())
+          startAt: parseInt(card.dataset.startAt || Date.now()),
+          isPaused: card.dataset.isPaused === "true"
         };
       });
 
@@ -231,12 +234,12 @@ function loadCards() {
       // Verificamos que los datos existan (por seguridad)
       if (data[id]) {
         const meta = data[id];
-        createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description, meta.delay);
+        createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description, meta.delay, meta.isPaused);
       }
     });
   } else {
     for (const [id, meta] of Object.entries(data)) {
-      createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description, meta.delay);
+      createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description, meta.delay, meta.isPaused);
     }
   }
 }
@@ -278,6 +281,15 @@ function loadCards() {
     cardsContainer.addEventListener("click", e => {
       const card = e.target.closest(".card");
       if (!card) return;
+
+    if (e.target.classList.contains("pause")) {
+      const isPaused = card.dataset.isPaused === "true";
+      card.dataset.isPaused = isPaused ? "false" : "true";
+      e.target.style.border = card.dataset.isPaused === "true" ? '2px solid #bbb' : '2px solid #ccc';
+      e.target.style.boxShadow = card.dataset.isPaused === "true" ? 'inset 0 3px 6px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.1)';
+      saveAllCards();
+      return;
+    }
 
     if (e.target.classList.contains("track")) {
       const cardTitle = card.querySelector(".titleInput").value || "Sin título";
@@ -354,6 +366,7 @@ function checkRings() {
   const now = Date.now();
   
   document.querySelectorAll(".card").forEach(card => {
+    const isPaused = card.dataset.isPaused === "true";
     let start = parseInt(card.dataset.startAt);
     const delay = parseInt(card.dataset.delay || 0);
     const countdownEl = card.querySelector(".countdown");
@@ -363,7 +376,7 @@ function checkRings() {
     }
     else if (delay > 0) {
       const start_old = start;
-      while (start + delay <= now) { start += delay; }
+      while (start + delay <= now && !isPaused) { start += delay; };
 
       if (start !== start_old) {
         const cardId = card.dataset.id;
@@ -410,10 +423,11 @@ function checkRings() {
       // ... (resto de tu lógica de contador y transparencia) ...
       const nextRing = start + delay;
       const remaining = nextRing - now;
-      const h = Math.floor(remaining / 3600000);
-      const m = Math.floor(remaining / 60000) % 60;
-      const s = Math.floor(remaining / 1000) % 60;
-      countdownEl.textContent = `${h}h ${m}m ${s}s`;
+      const sign = remaining < 0 ? "-" : "";
+      const h = Math.trunc(Math.abs(remaining) / 3600000);
+      const m = Math.trunc(Math.abs(remaining) / 60000) % 60;
+      const s = Math.trunc(Math.abs(remaining) / 1000) % 60;
+      countdownEl.textContent = `${sign}${h}h ${m}m ${s}s`;
       const elapsed = now - start;
       countdownEl.style.opacity = (elapsed <= 60000) ? (1 - (elapsed / 60000) * 0.8) : 0.2;
     }
