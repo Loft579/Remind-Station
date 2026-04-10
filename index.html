@@ -37,11 +37,53 @@
     font-weight: bold;
   }
 
+  #questionBtn {
+    position: fixed;
+    top: 20px;
+    right: 120px;
+    z-index: 9999;
+    padding: 8px 12px;
+    background: #90EE90;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  #undoBtn {
+    position: fixed;
+    top: 20px;
+    right: 220px;
+    z-index: 9999;
+    padding: 8px 12px;
+    background: #87CEEB;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  #exportImportBtn {
+    position: fixed;
+    top: 20px;
+    right: 340px;
+    z-index: 9999;
+    padding: 8px 12px;
+    background: #DDA0DD;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
   </style>
 </head>
 <body>
   <h1>Sesión</h1>
   <button id="notifBtn">🔔</button>
+  <button id="questionBtn">track fade</button>
+  <button id="undoBtn">↶ track</button>
+  <button id="exportImportBtn" onclick="openProgressFolder()">📤/📥</button>
   <div id="dropbox">Arrastra aquí para crear nueva carta</div>
   <div id="cards"></div>
 
@@ -51,17 +93,35 @@
     const dropbox = document.getElementById("dropbox");
     const cardsContainer = document.getElementById("cards");
 
+    const { logActivity, add_question_mark, undo_last_log } = require('./logger');
 
     document.getElementById("notifBtn").addEventListener("click", () => {
       Notification.requestPermission().then(permission => {
         if (permission === "granted") {
-          alert("Notificaciones activadas ✅ \n/dateMM:DD:HH:'' por ejemplo /date6 para 6 meses después del punto 0 del inicio del año");
+          alert(`[Notificaciones activadas ✅]
+
+_ negative time usage
+use negative counts to ring it, subtracting the last card ringed time point. Or use a negative date to ring it on an already-passed date.
+
+_ stop card
+use time to zero to stop the card.
+
+_ date command usage
+/date<month of the year>:<day>:<hour>:<minute>:<second>. Example: /date1:10`);
           // opcional: ocultar el botón después de aceptar
-          document.getElementById("notifBtn").style.display = "none";
+          // document.getElementById("notifBtn").style.display = "none";
         } else {
           alert("No se activaron las notificaciones ❌");
         }
       });
+    });
+
+    document.getElementById("questionBtn").addEventListener("click", () => {
+      add_question_mark();
+    });
+
+    document.getElementById("undoBtn").addEventListener("click", () => {
+      undo_last_log();
     });
 
     if (Notification.permission !== "granted") {
@@ -128,6 +188,7 @@ function createCard(id, delayStr, startAt, title, description, savedDelay) {
               data-id="${id}" data-field="delayStr">
         <button class="postpone">[➕⏲️]</button>
         <button class="delete">🗑️</button>
+        <button class="track">track</button>
         <span class="countdown">--</span>
   `;
 
@@ -188,16 +249,41 @@ function loadCards() {
     }
 
     dropbox.addEventListener("dragover", e => e.preventDefault());
+
     dropbox.addEventListener("drop", e => {
       e.preventDefault();
       counter++;
-      createCard(undefined, String(counter));
+
+      // obtener texto o nombre de archivo
+      let description = e.dataTransfer.getData("text/plain");
+      if (!description && e.dataTransfer.files.length > 0) {
+        description = e.dataTransfer.files[0].name;
+      }
+      let availableId = nextAvailableId();
+      // llamada completa con placeholders en los demás argumentos
+      createCard(
+        availableId,        // id
+        "",                 // delayStr
+        null,               // startAt (todavía no lo definís)
+        availableId,        // title
+        description,        // descripción tomada del drop
+        28800000            // savedDelay
+      );
     });
+
+
+
 
 
     cardsContainer.addEventListener("click", e => {
       const card = e.target.closest(".card");
       if (!card) return;
+
+    if (e.target.classList.contains("track")) {
+      const cardTitle = card.querySelector(".titleInput").value || "Sin título";
+      logActivity(cardTitle);
+      return;
+    }
 
     if (e.target.classList.contains("postpone")) {
       const delayInput = card.querySelector(".delayInput");
@@ -222,22 +308,40 @@ function loadCards() {
         const inputMs = parseDelay(isNegative ? rawValue.substring(1) : rawValue);
         if (isNegative) {
           card.dataset.startAt = currentStartAt - inputMs - currentDelay;
-        } else if (inputMs > 0) {
-          card.dataset.delay = inputMs;
-          card.dataset.delayStr = rawValue;
-          card.dataset.startAt = now;
+        } else if (inputMs >= 0) {
+          if (inputMs === 0) {
+            card.dataset.delay = null;
+            } else {
+            card.dataset.delay = inputMs;
+            card.dataset.delayStr = rawValue;
+            card.dataset.startAt = now;
+            }
+
         }
-      }
 
       saveAllCards();
+      
+      // --- LÓGICA DE TRASPASO DE BARRA (al postpone) ---
+      // Si esta carta que está siendo pospuesta es la que tiene la barra...
+      if (redLineAnchorId === card.dataset.id) {
+        // Buscamos la carta que tiene justo arriba en el HTML
+        const cardArriba = card.previousElementSibling;
+        
+        // Si hay una carta arriba y es una carta (no la barra roja)...
+        if (cardArriba && cardArriba.classList.contains('card')) {
+          redLineAnchorId = cardArriba.dataset.id;
+        } else {
+          // Si no hay nada arriba, desaparece la barra
+          redLineAnchorId = null;
+          redLine.style.display = "none";
+          if (redLine.parentNode) redLine.parentNode.removeChild(redLine);
+        }
+      }
       
       // MANDAR AL FINAL: Así sale de la zona roja
       const cardsContainer = document.getElementById("cards");
       cardsContainer.appendChild(card);
-
-      // Si la línea se quedó sola al final o no hay nada arriba, podrías ocultarla,
-      // pero con 'after' la línea siempre se mantiene pegada a la última que sonó.
-    }
+    }};
 
           if (e.target.classList.contains("delete")) {
             card.remove();
@@ -253,8 +357,11 @@ function checkRings() {
     let start = parseInt(card.dataset.startAt);
     const delay = parseInt(card.dataset.delay || 0);
     const countdownEl = card.querySelector(".countdown");
-
-    if (delay > 0) {
+    if (delay == null || Number.isNaN(delay)) {
+      countdownEl.innerHTML = "--";
+      countdownEl.style.opacity = 0.2;
+    }
+    else if (delay > 0) {
       const start_old = start;
       while (start + delay <= now) { start += delay; }
 
@@ -293,10 +400,10 @@ function checkRings() {
         if (Notification.permission === "granted") {
           const cardTitle = card.querySelector(".titleInput").value || "Sin título";
           new Notification(`${cardTitle}`, {
-            body: "🚂",
+            body: "R-S 🚂",
             // icon: "tu_icono.png" // Por si luego quieres añadirle un logo
           });
-          new Audio("horn.mp3").play().catch(() => {});
+          new Audio("horn.m4a").play().catch(() => {});
         }
       }
       
@@ -357,6 +464,22 @@ document.addEventListener("visibilitychange", () => {
     if (redLine.parentNode) redLine.parentNode.removeChild(redLine);
   }
 });
+
+  const { shell } = require('electron');
+  const path = require('path');
+  const os = require('os');
+
+  function openProgressFolder() {
+    const progressFolder = path.join(
+      os.homedir(),
+      "AppData",
+      "Roaming",
+      "Remind-Station",
+      "Local Storage"
+    );
+    shell.openPath(progressFolder);
+  }
+
     setInterval(checkRings, 1000);
   </script>
 </body>

@@ -12,7 +12,7 @@ function createWindow() {
     icon: path.join(__dirname, 'icon.ico'),
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: true
+      contextIsolation: false
     }
   });
 
