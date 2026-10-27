@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>R-S Game Beta — Remind Station</title>
+  <style>
+    @font-face {
+      font-family: 'Noto Color Emoji';
+      src: url('NotoColorEmoji.ttf') format('truetype');
+      font-display: swap;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, 'Noto Color Emoji', sans-serif; background: #0d0d1a; color: #e0e0ff; padding: 24px; user-select: none; }
+
+    h1 { text-align: center; font-size: 1.1em; letter-spacing: 5px; color: #555588; text-transform: uppercase; margin-bottom: 28px; }
+
+    .section-title { font-size: 0.7em; letter-spacing: 3px; color: #444466; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid #1c1c38; margin: 24px 0 12px; }
+
+    .empty-msg { text-align: center; color: #333355; font-size: 0.85em; padding: 20px 0; }
+
+    /* ── Recursos por tipo ── */
+    .type-resource { background: #0c0c20; border: 1px solid #1c1c3c; border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; }
+    .type-head { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+    .type-icon { font-size: 1.3em; }
+    .type-label { flex: 1; font-size: 0.72em; letter-spacing: 2px; color: #5a5a88; text-transform: uppercase; }
+    .type-total { font-size: 1.25em; font-weight: bold; color: #aaaaff; font-variant-numeric: tabular-nums; }
+    .inv-empty { font-size: 0.72em; color: #252540; }
+
+    .inv-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .inv-chip { display: flex; align-items: center; gap: 4px; background: #0e0e28; border: 1px solid #22224a; border-radius: 8px; padding: 4px 9px; font-size: 0.9em; }
+    .inv-chip .res-emoji { font-size: 1.1em; }
+    .inv-chip .chip-tick { font-size: 0.65em; color: #4a4a80; font-weight: bold; }
+    .inv-chip .res-count { font-size: 0.74em; color: #6666aa; font-weight: bold; font-variant-numeric: tabular-nums; }
+
+    /* ── Cartas trackeadas ── */
+    .task-card { background: #0e0e24; border: 1px solid #22224a; border-radius: 12px; padding: 10px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+    .task-name { flex: 1; font-size: 0.88em; color: #aaaacc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .task-yields { display: flex; gap: 8px; flex-shrink: 0; }
+    .task-yields .yield { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+    .task-yields .res-emoji { font-size: 1.2em; }
+    .task-yields .chip-tick { font-size: 0.6em; color: #4a4a80; font-weight: bold; margin-top: 2px; }
+    .task-hp { font-size: 0.72em; color: #aa5577; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+    .task-mins { font-size: 0.7em; color: #333358; flex-shrink: 0; }
+    .task-reset { background: none; border: none; color: #2a2a50; cursor: pointer; font-size: 0.9em; padding: 2px 4px; flex-shrink: 0; transition: color 0.15s; }
+    .task-reset:hover { color: #aa4444; }
+
+    /* ── Formulario de perfil ── */
+    .profile-card { background: #0c0c20; border: 1px solid #1e1e40; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+    .profile-header { display: flex; align-items: center; padding: 9px 13px; gap: 10px; }
+    .profile-name { flex: 1; font-size: 0.88em; color: #7777aa; }
+    .profile-open-btn { background: #1a1a44; color: #6666aa; border: 1px solid #2a2a60; border-radius: 6px; padding: 4px 11px; cursor: pointer; font-size: 0.78em; transition: background 0.15s; }
+    .profile-open-btn:hover { background: #252560; color: #aaaacc; }
+    .profile-form { display: none; padding: 12px 14px; border-top: 1px solid #181838; }
+
+    .q-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+    .q-lbl { flex: 1; font-size: 0.76em; color: #666688; line-height: 1.3; }
+    .q-ctrl { display: flex; gap: 3px; flex-shrink: 0; }
+    .qbtn { padding: 3px 9px; border-radius: 5px; border: 1px solid #222250; background: #0c0c2a; color: #444466; cursor: pointer; font-size: 0.78em; transition: background 0.1s, color 0.1s; white-space: nowrap; }
+    .qbtn.active { background: #252566; color: #aaaaff; border-color: #4444aa; }
+    .q-range { -webkit-appearance: none; width: 80px; height: 4px; border-radius: 2px; background: #222250; outline: none; cursor: pointer; }
+    .q-range::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%; background: #5555cc; cursor: pointer; }
+    .q-range-val { font-size: 0.78em; color: #555588; width: 22px; text-align: center; flex-shrink: 0; }
+    .save-profile-btn { margin-top: 10px; background: #1a1a55; color: #7777ff; border: 1px solid #333399; border-radius: 7px; padding: 5px 16px; cursor: pointer; font-size: 0.82em; transition: background 0.15s; }
+    .save-profile-btn:hover { background: #252577; }
+
+    #refreshBtn { display: block; margin: 28px auto 0; background: #1a1a38; color: #666699; border: 1px solid #2a2a50; border-radius: 8px; padding: 7px 20px; cursor: pointer; font-size: 0.82em; letter-spacing: 1px; transition: background 0.15s, color 0.15s; }
+    #refreshBtn:hover { background: #22224a; color: #aaaacc; }
+    #refreshStatus { text-align: center; font-size: 0.68em; color: #333358; margin-top: 8px; letter-spacing: 0.5px; }
+  </style>
+</head>
+<body>
+
+<h1>⚡ Remind Station — R-S Game</h1>
+
+<div class="section-title">Recursos</div>
+<div id="inventory">
+  <div class="type-resource">
+    <div class="type-head"><span class="type-icon">🌿</span><span class="type-label">Flora</span><span class="type-total" id="totalA">0</span></div>
+    <div class="inv-chips" id="invFlora"></div>
+  </div>
+  <div class="type-resource">
+    <div class="type-head"><span class="type-icon">🐾</span><span class="type-label">Fauna</span><span class="type-total" id="totalB">0</span></div>
+    <div class="inv-chips" id="invFauna"></div>
+  </div>
+  <div class="type-resource">
+    <div class="type-head"><span class="type-icon">💎</span><span class="type-label">No renovables</span><span class="type-total" id="totalC">0</span></div>
+    <div class="inv-chips" id="invNR"></div>
+  </div>
+  <div class="type-resource">
+    <div class="type-head"><span class="type-icon">⚔️</span><span class="type-label">Población y milicia</span><span class="type-total" id="totalD">0</span></div>
+    <div class="inv-chips" id="invMil"></div>
+  </div>
+</div>
+
+<div class="section-title">Cartas</div>
+<div id="taskCards"></div>
+
+<div id="unprofiledSection" style="display:none">
+  <div class="section-title">Sin perfil — respondé las preguntas</div>
+  <div id="unprofiledList"></div>
+</div>
+
+<button id="refreshBtn">↺ Actualizar</button>
+<div id="refreshStatus"></div>
+
+<script>
+const fs   = require('fs');
+const path = require('path');
+const os   = require('os');
+
+const LOG_FILE = path.join(__dirname, 'tracking.log');
+
+const APP_DATA_DIR = path.join(process.env.APPDATA || path.join(os.homedir(), '.config'), 'Remind-Station');
+if (!fs.existsSync(APP_DATA_DIR)) fs.mkdirSync(APP_DATA_DIR, { recursive: true });
+// Un solo archivo: el replay (grabación de la partida) contiene TODO —
+// perfiles, HP, fecha del último corte y las jugadas, como una cadena { entries }.
+const REPLAY_FILE = path.join(APP_DATA_DIR, 'gamification-replay.json');
+
+// ── Emojis de los 34 ítems ────────────────────────────────────
+// Lo más bajo de cada tipo no da ítem: Flora LN0, Fauna todo "No", No renovables 0_1, Milicia "No".
+const ITEM_EMOJI = {
+  // A — Flora (12)
+                    'A_LNA':'🌱', 'A_LNM':'🌿',
+  'A_MN0':'🍀', 'A_MNA':'🌾', 'A_MNM':'🌻',
+  'A_MSA':'🌺', 'A_MSM':'🌸',
+  'A_HN0':'🌴', 'A_HNA':'🌳', 'A_HNM':'🌲',
+  'A_HSA':'🎋', 'A_HSM':'🌵',
+  // B — Fauna (15) — B_<Q1 Q5 Q7 Q8>; todo "No" no es recurso
+  'B_0100':'🐝', 'B_0001':'🦋', 'B_0010':'🐟',
+  'B_0101':'🐢', 'B_0110':'🦎', 'B_0011':'🦊', 'B_0111':'🐺',
+  'B_1000':'🐘', 'B_1100':'🦏', 'B_1001':'🦓', 'B_1010':'🦁',
+  'B_1101':'🦅', 'B_1110':'🦜', 'B_1011':'🦌', 'B_1111':'🐉',
+  // C — No renovables (5) — Q3 × urgencia(1/2/3)
+                 'C_0_2':'🪨', 'C_0_3':'🏺',
+  'C_1_1':'🪙', 'C_1_2':'💎', 'C_1_3':'🔮',
+  // D — Población y milicia (2)
+  'D_si':'⚔️', 'D_puede':'🧙',
+};
+
+// ── Tick (valor / rendimiento por minuto) de cada ítem ─────────
+// Escala 0–15 compartida por los 4 tipos: tick más alto = rinde más; tope 15.
+const ITEM_TICK = {
+  // A — Flora
+              'A_LNA':1,  'A_LNM':2,
+  'A_MN0':3,  'A_MNA':4,  'A_MNM':5,
+  'A_MSA':6,  'A_MSM':7,
+  'A_HN0':8,  'A_HNA':10, 'A_HNM':11,
+  'A_HSA':12, 'A_HSM':15,
+  // C — No renovables · urgencia(Q10) > Q3
+              'C_1_1':5,
+  'C_0_2':7,  'C_1_2':10,
+  'C_0_3':12, 'C_1_3':15,
+  // D — Población y milicia · Q9
+  'D_puede':7, 'D_si':15,
+  // B — Fauna · B_<Q1 Q5 Q7 Q8>. Q1 manda; después cuántos "Sí" hay en
+  // Q5/Q7/Q8; a igual cantidad, Q7 > Q8 > Q5.
+  'B_0100':1,  'B_0001':2,  'B_0010':3,
+  'B_0101':4,  'B_0110':5,  'B_0011':6,  'B_0111':7,
+  'B_1000':8,  'B_1100':9,  'B_1001':10, 'B_1010':11,
+  'B_1101':12, 'B_1110':13, 'B_1011':14, 'B_1111':15,
+};
+function itemTick(id) {
+  return ITEM_TICK[id] || 0;
+}
+
+const TYPE_GROUP  = { A: 'invFlora', B: 'invFauna', C: 'invNR',   D: 'invMil'  };
+const TYPE_TOTAL  = { A: 'totalA',   B: 'totalB',   C: 'totalC',  D: 'totalD'  };
+
+const fmt = n => n.toLocaleString('es');
+
+// ── Datos: cadena de eventos (estilo blockchain) ──────────────
+// El archivo es UNA sola cadena append-only de eventos cronológicos. No hay
+// estado mutable: perfiles, HP, recursos y el corte se DERIVAN sumando los
+// eventos en orden. Nada se pisa → no se puede "viajar en el tiempo".
+// Eventos: { type:'profile', date, name, answers, hp }
+//          { type:'unprofile', date, name }
+//          { type:'hp', date, name, delta }
+//          { type:'retime', date, name }            (cambio de cuándo suena; protege 15 s)
+//          { type:'hp', date, name, delta:0, shielded:true }  (sonó protegida)
+//          { type:'track', date, since, minutes, gains, perItem }
+function loadReplay() {
+  let h;
+  try { h = JSON.parse(fs.readFileSync(REPLAY_FILE, 'utf-8')); }
+  catch { h = {}; }
+  return { entries: Array.isArray(h.entries) ? h.entries : [] };
+}
+function saveReplay(data) {
+  fs.writeFileSync(REPLAY_FILE, JSON.stringify(data, null, 2));
+}
+function appendEvent(ev) {
+  const replay = loadReplay();
+  replay.entries.push({ date: Math.floor(Date.now() / 1000), ...ev });
+  saveReplay(replay);
+}
+
+// Estado actual = resultado de reproducir la cadena en orden.
+function deriveState(replay) {
+  const profiles   = {};                              // respuestas vigentes por carta
+  const hp         = {};                              // vida vigente por carta
+  const perItem    = {};                              // recursos acumulados
+  const typeTotals = { A: 0, B: 0, C: 0, D: 0 };
+  let lastUpdate = 0;                                 // corte = fecha del último 'track'
+  for (const e of replay.entries) {
+    if (e.type === 'profile') {
+      profiles[e.name] = e.answers;                   // re-perfilar pisa nada: es un evento nuevo
+      hp[e.name] = e.hp != null ? e.hp : 1;
+    } else if (e.type === 'unprofile') {
+      delete profiles[e.name]; delete hp[e.name];
+    } else if (e.type === 'hp') {
+      if (profiles[e.name]) {                         // sólo si está perfilada ahora
+        hp[e.name] += e.delta || 0;
+        if (hp[e.name] <= 0) { delete profiles[e.name]; delete hp[e.name]; }  // desperfila a 0
+      }
+    } else if (e.type === 'track') {
+      lastUpdate = e.date || lastUpdate;
+      if (e.perItem) for (const [id, amt] of Object.entries(e.perItem)) perItem[id] = (perItem[id] || 0) + amt;
+      if (e.gains)   for (const t of ['A','B','C','D']) typeTotals[t] += e.gains[t] || 0;
+    }
+  }
+  // adjunta la vida vigente a cada perfil
+  const profOut = {};
+  for (const n in profiles) profOut[n] = { ...profiles[n], hp: hp[n] };
+  return { profiles: profOut, lastUpdate, inventory: { perItem, typeTotals } };
+}
+
+function parseLog() {
+  let raw;
+  try { raw = fs.readFileSync(LOG_FILE, 'utf-8'); }
+  catch { return { intervals: [], names: [] }; }
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const tracks = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^(\d+) at epoch: (.+)$/);
+    if (m) tracks.push({ epoch: parseInt(m[1]), name: m[2], faded: lines[i + 1] === '?' });
+  }
+  const intervals = [];
+  for (let i = 0; i < tracks.length - 1; i++) {
+    intervals.push({ name: tracks[i].name, start: tracks[i].epoch, duration: tracks[i+1].epoch - tracks[i].epoch, faded: tracks[i].faded });
+  }
+  // incluye el último track "abierto" (todavía sin intervalo cerrado)
+  const names = [...new Set(tracks.map(t => t.name))];
+  return { intervals, names };
+}
+
+// ── Clasificación: una carta → 1 ítem de cada tipo (A,B,C,D) ───
+function classifyCard(p) {
+  const q2 = +p.Q2 <= 3 ? 'L' : +p.Q2 <= 6 ? 'M' : 'H';   // Bajo 1–3 · Medio 4–6 · Alto 7–10
+  // Q4: Bajo → N · Medio/Alto → S (perfiles viejos guardaban true/false)
+  const q4 = p.Q4 === true || p.Q4 === 'medio' || p.Q4 === 'alto' ? 'S' : 'N';
+  const q6r = +p.Q6;
+  const q6 = q6r === 0 ? '0' : q6r <= 50 ? 'A' : 'M';
+
+  // A — bloqueos: Q4=Sí⇒Q2≠Bajo  ·  Q4=Sí y Q2≠Bajo ⇒ Q6≠Nada
+  let aItem = null;
+  if (!(q4 === 'S' && q2 === 'L') && !(q4 === 'S' && q2 !== 'L' && q6 === '0')) {
+    aItem = `A_${q2}${q4}${q6}`;
+  }
+  if (aItem === 'A_LN0') {
+    aItem = null;                       // todo bajo = sin flora (como B todo "No")
+  }
+  const bits  = [p.Q1?1:0, p.Q5?1:0, +p.Q7>=3?1:0, p.Q8?1:0].join('');
+  const bItem = bits === '0000' ? null : `B_${bits}`;   // todo "No" = sin fauna
+  let cItem = `C_${p.Q3?1:0}_${p.Q10 || 1}`;     // Q3 × urgencia(Q10: 1/2/3)
+  if (cItem === 'C_0_1') cItem = null;            // no cuesta + sin prisa = sin no renovables
+  const dItem = p.Q9 === 'si' ? 'D_si' : p.Q9 === 'puede' ? 'D_puede' : null;
+  return { aItem, bItem, cItem, dItem };
+}
+
+// ── Totalización: recurso = tick × minutos, sumado por tipo ────
+// `since` = epoch del último corte; sólo cuenta el tramo posterior de cada
+// intervalo (lo que straddlea el corte aporta sólo su parte nueva).
+function computeGains(intervals, profiles, since = 0) {
+  const perItem    = {};
+  const typeTotals = { A: 0, B: 0, C: 0, D: 0 };
+  let minutes = 0;
+  for (const iv of intervals) {
+    if (iv.faded) continue;
+    const p = profiles[iv.name];
+    if (!p) continue;
+    const end = iv.start + iv.duration;
+    if (end <= since) continue;                       // ya cobrado en un corte previo
+    const effStart = Math.max(iv.start, since);
+    const mins = Math.floor((end - effStart) / 60);
+    if (mins <= 0) continue;
+    minutes += mins;
+    const { aItem, bItem, cItem, dItem } = classifyCard(p);
+    for (const id of [aItem, bItem, cItem, dItem]) {
+      if (!id || itemTick(id) === 0) continue;         // valor 0 ⇒ no es recurso
+      const gain = itemTick(id) * mins;               // mismo sistema: tick × minutos
+      perItem[id] = (perItem[id] || 0) + gain;
+      typeTotals[id[0]] += gain;
+    }
+  }
+  return { perItem, typeTotals, minutes };
+}
+
+// "Actualizar": substrae el tramo nuevo de tracking.log usando los perfiles
+// VIGENTES (derivados) y agrega un evento 'track' a la cadena. Los recursos
+// quedan congelados en ese evento — re-perfilar después no los cambia.
+function commitUpdate() {
+  const now    = Math.floor(Date.now() / 1000);
+  const { profiles, lastUpdate } = deriveState(loadReplay());
+  const { intervals } = parseLog();
+  const gains = computeGains(intervals, profiles, lastUpdate);
+
+  if (gains.minutes <= 0) { render(); return; }       // nada nuevo: no graba evento vacío
+
+  appendEvent({
+    type:    'track',
+    since:   lastUpdate,   // corte anterior (el date del evento es el nuevo corte)
+    minutes: gains.minutes,
+    gains:   gains.typeTotals,
+    perItem: gains.perItem,
+  });
+  render();
+}
+
+function renderInventory({ perItem, typeTotals }, produced = new Set()) {
+  // mostrá también los recursos que producen las cartas perfiladas, en 0/<tick>
+  const amounts = { ...perItem };
+  for (const id of produced) if (!(id in amounts)) amounts[id] = 0;
+  for (const type of ['A','B','C','D']) {
+    document.getElementById(TYPE_TOTAL[type]).textContent = fmt(typeTotals[type]);
+    const el = document.getElementById(TYPE_GROUP[type]);
+    el.innerHTML = '';
+    const items = Object.entries(amounts).filter(([id]) => id[0] === type).sort((a,b) => b[1]-a[1]);
+    if (!items.length) { el.innerHTML = '<span class="inv-empty">vacío</span>'; continue; }
+    for (const [id, ganado] of items) {
+      const tick = itemTick(id);
+      const chip = document.createElement('div');
+      chip.className = 'inv-chip';
+      chip.title = `${fmt(ganado)} ganado · tick ${tick}`;
+      chip.innerHTML =
+        `<span class="res-count">${fmt(ganado)}/${tick}</span>` +
+        `<span class="res-emoji">${ITEM_EMOJI[id] || '?'}</span>`;
+      el.appendChild(chip);
+    }
+  }
+}
+
+// ── Cartas trackeadas ─────────────────────────────────────────
+function renderTaskCards(intervals, allNames, profiles) {
+  const container = document.getElementById('taskCards');
+  container.innerHTML = '';
+
+  const mins = {};
+  for (const iv of intervals) {
+    if (iv.faded) continue;
+    const m = Math.floor(iv.duration / 60);
+    if (m > 0) mins[iv.name] = (mins[iv.name] || 0) + m;
+  }
+
+  // una carta se perfila al guardar su perfil, tenga o no minutos trackeados
+  const profiled = allNames.filter(n => profiles[n]).sort((a,b) => (mins[b]||0) - (mins[a]||0));
+
+  if (!profiled.length) {
+    container.innerHTML = '<div class="empty-msg">Sin cartas perfiladas todavía.</div>';
+    return;
+  }
+
+  for (const name of profiled) {
+    const { aItem, bItem, cItem, dItem } = classifyCard(profiles[name]);
+    const items  = [aItem, bItem, cItem, dItem].filter(id => id && itemTick(id) > 0);
+    // la carta sólo muestra QUÉ recursos produce (emojis); la fracción va en el inventario
+    const yieldsHtml = items.map(id =>
+      `<span class="yield"><span class="res-emoji">${ITEM_EMOJI[id] || '?'}</span></span>`
+    ).join('');
+
+    const card = document.createElement('div');
+    card.className = 'task-card';
+    card.innerHTML = `
+      <div class="task-name">${name}</div>
+      <div class="task-yields">${yieldsHtml}</div>
+      <div class="task-hp">HP ${profiles[name].hp != null ? profiles[name].hp : (profiles[name].Q10_hp || 0)}</div>
+      <div class="task-mins">${mins[name] || 0}'</div>
+      <button class="task-reset" title="Borrar perfil">×</button>
+    `;
+    card.querySelector('.task-reset').addEventListener('click', () => {
+      appendEvent({ type: 'unprofile', name });        // evento, no borrado mutable
+      render();
+    });
+    container.appendChild(card);
+  }
+}
+
+// ── Formulario de perfil ──────────────────────────────────────
+function makeQBtn(label) {
+  const btn = document.createElement('button');
+  btn.className = 'qbtn';
+  btn.textContent = label;
+  return btn;
+}
+
+function buildProfileCard(name) {
+  const card = document.createElement('div');
+  card.className = 'profile-card';
+
+  const header = document.createElement('div');
+  header.className = 'profile-header';
+  const nameEl = document.createElement('span');
+  nameEl.className = 'profile-name';
+  nameEl.textContent = `"${name}"`;
+  const openBtn = document.createElement('button');
+  openBtn.className = 'profile-open-btn';
+  openBtn.textContent = 'Responder ▾';
+  header.append(nameEl, openBtn);
+
+  const form = document.createElement('div');
+  form.className = 'profile-form';
+  openBtn.addEventListener('click', () => {
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+  });
+
+  const QUESTIONS = [
+    { id:'Q1',      label:'¿5 min/día los 5–7 días resuelve algo importante?', type:'bool' },
+    { id:'Q2',      label:'¿Mejora tu capacidad cognitiva? (1–10)',            type:'range', min:1, max:10, def:1 },
+    { id:'Q3',      label:'¿Es del tipo que más te cuesta hacer?',             type:'bool' },
+    { id:'Q4',      label:'¿Mejora tu salud física?',                         type:'pick3', defIdx:0, options:[{v:'bajo',l:'Bajo'},{v:'medio',l:'Medio'},{v:'alto',l:'Alto'}] },
+    { id:'Q5',      label:'¿Te abre la brecha para más tipos de tareas?',     type:'bool' },
+    { id:'Q6',      label:'¿Ayuda a cerrar otras tareas más rápido? (0–100%)',type:'range', min:0, max:100, step:5, def:0 },
+    { id:'Q7',      label:'¿Trae felicidad a tu vida? (0–4)',                 type:'pick',  options:[0,1,2,3,4] },
+    { id:'Q8',      label:'¿Tiene complejidad social?',                       type:'bool' },
+    { id:'Q9',      label:'¿Debe hacerse con cautela?',                       type:'pick3', defIdx:0, options:[{v:'no',l:'No'},{v:'puede',l:'Puede ser'},{v:'si',l:'Sí'}] },
+    { id:'Q10',     label:'¿Qué tan rápido hay que hacerla?',                 type:'pick3', defIdx:0, options:[{v:1,l:'Sin prisa'},{v:2,l:'Cuenta atrás'},{v:3,l:'Urgente/inmediato'}] },
+    { id:'hp',      label:'Vida (HP) — insertá créditos',                      type:'credit', def:1 },
+  ];
+
+  const inputs = {};
+
+  for (const q of QUESTIONS) {
+    const row = document.createElement('div');
+    row.className = 'q-row';
+    const lbl = document.createElement('div');
+    lbl.className = 'q-lbl';
+    lbl.textContent = q.label;
+    row.appendChild(lbl);
+    const ctrl = document.createElement('div');
+    ctrl.className = 'q-ctrl';
+
+    if (q.type === 'bool') {
+      const no = makeQBtn('No'), si = makeQBtn('Sí');
+      no.classList.add('active');
+      si.addEventListener('click', () => { si.classList.add('active'); no.classList.remove('active'); });
+      no.addEventListener('click', () => { no.classList.add('active'); si.classList.remove('active'); });
+      inputs[q.id] = () => si.classList.contains('active');
+      ctrl.append(no, si);
+    }
+    else if (q.type === 'range') {
+      const range = document.createElement('input');
+      range.type = 'range'; range.className = 'q-range';
+      range.min = q.min; range.max = q.max; range.value = q.def;
+      if (q.step) range.step = q.step;
+      const val = document.createElement('span');
+      val.className = 'q-range-val'; val.textContent = q.def;
+      range.addEventListener('input', () => { val.textContent = range.value; });
+      inputs[q.id] = () => parseInt(range.value);
+      ctrl.append(range, val);
+    }
+    else if (q.type === 'pick') {
+      const btns = q.options.map((v, i) => {
+        const btn = makeQBtn(String(v));
+        if (i === 0) btn.classList.add('active');
+        btn.addEventListener('click', () => { btns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); });
+        return btn;
+      });
+      inputs[q.id] = () => q.options[btns.findIndex(b => b.classList.contains('active'))];
+      btns.forEach(b => ctrl.appendChild(b));
+    }
+    else if (q.type === 'pick3') {
+      const btns = q.options.map((opt, i) => {
+        const btn = makeQBtn(opt.l);
+        if (i === (q.defIdx != null ? q.defIdx : q.options.length - 1)) btn.classList.add('active');
+        btn.addEventListener('click', () => { btns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); });
+        return btn;
+      });
+      inputs[q.id] = () => q.options[btns.findIndex(b => b.classList.contains('active'))].v;
+      btns.forEach(b => ctrl.appendChild(b));
+    }
+    else if (q.type === 'credit') {
+      let hp = q.def || 1;
+      const btn = makeQBtn('insert credit');
+      const disp = document.createElement('span');
+      disp.className = 'q-range-val';
+      disp.style.width = 'auto';
+      disp.textContent = 'HP ' + hp;
+      btn.addEventListener('click', () => { hp++; disp.textContent = 'HP ' + hp; });
+      inputs[q.id] = () => hp;
+      ctrl.append(btn, disp);
+    }
+
+    row.appendChild(ctrl);
+    form.appendChild(row);
+  }
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'save-profile-btn';
+  saveBtn.textContent = '✓ Guardar perfil';
+  saveBtn.addEventListener('click', () => {
+    appendEvent({                          // perfilar = evento nuevo en la cadena
+      type: 'profile',
+      name,
+      answers: {
+        Q1:inputs.Q1(), Q2:inputs.Q2(), Q3:inputs.Q3(), Q4:inputs.Q4(),
+        Q5:inputs.Q5(), Q6:inputs.Q6(), Q7:inputs.Q7(), Q8:inputs.Q8(),
+        Q9:inputs.Q9(), Q10:inputs.Q10(),  // urgencia (1/2/3) → clasifica C
+      },
+      hp: inputs.hp(),                     // créditos iniciales de vida
+    });
+    card.remove();
+    render();
+  });
+
+  form.appendChild(saveBtn);
+  card.append(header, form);
+  return card;
+}
+
+// ── Render ────────────────────────────────────────────────────
+function renderRefresh(lastUpdate, pending) {
+  const total = pending.typeTotals.A + pending.typeTotals.B + pending.typeTotals.C + pending.typeTotals.D;
+  document.getElementById('refreshBtn').textContent = total > 0 ? `↺ Actualizar  (+${fmt(total)})` : '↺ Actualizar';
+  const last = lastUpdate ? new Date(lastUpdate * 1000).toLocaleString('es') : 'nunca';
+  document.getElementById('refreshStatus').textContent =
+    `Último corte: ${last}` + (pending.minutes ? ` · ${pending.minutes}' sin cobrar` : '');
+}
+
+function render() {
+  const { profiles, lastUpdate, inventory } = deriveState(loadReplay());
+  const { intervals, names } = parseLog();
+
+  // recursos que producen las cartas perfiladas (para mostrarlos aunque tengas 0)
+  const produced = new Set();
+  for (const name in profiles) {
+    const { aItem, bItem, cItem, dItem } = classifyCard(profiles[name]);
+    for (const id of [aItem, bItem, cItem, dItem]) if (id && itemTick(id) > 0) produced.add(id);
+  }
+
+  // Todo es el resultado de reproducir la cadena de eventos (nada mutable).
+  renderInventory(inventory, produced);
+  renderTaskCards(intervals, names, profiles);
+  renderRefresh(lastUpdate, computeGains(intervals, profiles, lastUpdate));
+
+  const unprofiledNames   = names.filter(n => !profiles[n]);
+  const unprofiledSection = document.getElementById('unprofiledSection');
+  const unprofiledList    = document.getElementById('unprofiledList');
+  unprofiledList.innerHTML = '';
+  unprofiledSection.style.display = unprofiledNames.length ? 'block' : 'none';
+  for (const name of unprofiledNames) unprofiledList.appendChild(buildProfileCard(name));
+}
+
+document.getElementById('refreshBtn').addEventListener('click', commitUpdate);
+render();
+require('./linker').enableLinks();   // links y paths clickeables en todo texto
+</script>
+</body>
+</html>

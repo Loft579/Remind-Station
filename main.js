@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu } = require('electron');
+const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron');
 const path = require('path');
 
 let win;
@@ -52,6 +52,21 @@ app.whenReady().then(() => {
 
   tray.on('click', () => {
     win.show();
+  });
+
+  ipcMain.on('open-game', () => {
+    const gameWin = new BrowserWindow({
+      width: 680,
+      height: 780,
+      title: 'R-S Game Beta — Remind Station',
+      icon: path.join(__dirname, 'icon.ico'),
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false
+      }
+    });
+    gameWin.loadFile('game.html');
+    gameWin.setMenuBarVisibility(false);
   });
 });
 

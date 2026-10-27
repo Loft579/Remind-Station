@@ -16,6 +16,9 @@ npx electron-packager . Remind-Station --platform=win32 --arch=x64 --icon=icon.i
 
 open `add_executable_to_startup.bat`
 
+# emoji font
+`NotoColorEmoji.ttf` (Google Noto Color Emoji, COLRv1) is included in the repo so emojis look the same everywhere. Source: https://github.com/googlefonts/noto-emoji
+
 # or run from source code
 npm start
 
@@ -28,8 +31,8 @@ use negative counts to ring it, subtracting the last card ringed time point. Or 
 # stop card
 use time to zero to stop the card.
 
-# date command usage
-/date<month of the year>:<day>:<hour>:<minute>:<second>. Example: /date1:10
+# fixed date command usage
+<month of the year>:<optinal: day>:<hour>:<minute>:<second>. Example: 1:10
 
 # import/export
 

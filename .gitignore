@@ -2,3 +2,7 @@ node_modules
 changesV3
 dist
 dist*
+task-profiles.json
+*clean✳*
+*✳*
+tracking.log

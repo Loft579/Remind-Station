@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <title>Remind-Station</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
+    @font-face {
+      font-family: 'Noto Color Emoji';
+      src: url('NotoColorEmoji.ttf') format('truetype');
+      font-display: swap;
+    }
+    body { font-family: Arial, 'Noto Color Emoji', sans-serif; margin: 20px; }
     #dropbox {
       position: fixed;
       top: 20px;
@@ -22,6 +27,9 @@
       background: #f0f0f0;
     }
     .countdown { font-weight: bold; margin-left: 10px; color: darkred; }
+    #pasteMenu { position: fixed; display: none; z-index: 10001; background: #fff; border: 1px solid #999; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    #pasteMenu div { padding: 6px 16px; cursor: pointer; }
+    #pasteMenu div:hover { background: #e8f0ff; }
     #cards { margin-top: 160px; }
 
     #notifBtn {
@@ -76,6 +84,19 @@
     font-weight: bold;
   }
 
+  #gameBtn {
+    position: fixed;
+    top: 20px;
+    right: 470px;
+    z-index: 9999;
+    padding: 8px 12px;
+    background: #FFD700;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
   </style>
 </head>
 <body>
@@ -84,7 +105,9 @@
   <button id="questionBtn">track fade</button>
   <button id="undoBtn">↶ track</button>
   <button id="exportImportBtn" onclick="openProgressFolder()">📤/📥</button>
+  <button id="gameBtn">⭐ R-S Game</button>
   <div id="dropbox">Arrastra aquí para crear nueva carta</div>
+  <div id="pasteMenu"><div id="pasteItem">Pegar</div></div>
   <div id="cards"></div>
 
   <script>
@@ -94,6 +117,11 @@
     const cardsContainer = document.getElementById("cards");
 
     const { logActivity, add_question_mark, undo_last_log } = require('./logger');
+    const { ipcRenderer } = require('electron');
+
+    document.getElementById("gameBtn").addEventListener("click", () => {
+      ipcRenderer.send('open-game');
+    });
 
     document.getElementById("notifBtn").addEventListener("click", () => {
       Notification.requestPermission().then(permission => {
@@ -106,8 +134,8 @@ use negative counts to ring it, subtracting the last card ringed time point. Or 
 _ stop card
 use time to zero to stop the card.
 
-_ date command usage
-/date<month of the year>:<day>:<hour>:<minute>:<second>. Example: /date1:10`);
+_ fixed date command usage
+<month of the year>:<optional: day>:<hour>:<minute>:<second>. Example: 1:10`);
           // opcional: ocultar el botón después de aceptar
           // document.getElementById("notifBtn").style.display = "none";
         } else {
@@ -130,6 +158,7 @@ _ date command usage
 
     window.addEventListener("load", () => {
       loadCards();
+      require('./linker').enableLinks();   // links y paths clickeables en todo texto
     });
 
     document.addEventListener("input", e => {
@@ -164,7 +193,7 @@ _ date command usage
     }
 
 
-function createCard(id, delayStr, startAt, title, description, savedDelay, isPaused = false) {
+function createCard(id, delayStr, startAt, title, description, savedDelay, isMuted = false) {
   const card = document.createElement("div");
   card.className = "card";
   card.dataset.id = id;
@@ -174,25 +203,26 @@ function createCard(id, delayStr, startAt, title, description, savedDelay, isPau
   card.dataset.startAt = startAt || Date.now();
   // Si tenemos el delay numérico guardado, lo usamos; si no, lo calculamos del string
   card.dataset.delay = savedDelay || parseDelay(delayStr) || 0;
-  card.dataset.isPaused = isPaused ? "true" : "false";
+  card.dataset.isMuted = isMuted ? "true" : "false";
 
   card.innerHTML = `
         <input type="text" class="titleInput"
-              value="${title}"
               data-id="${id}" data-field="title">
         <textarea class="descInput"
               placeholder="Descripción"
-              data-id="${id}" data-field="description">${description}</textarea>
+              data-id="${id}" data-field="description"></textarea>
         <input type="text" class="delayInput"
               placeholder="ej: 20s, 1h1d"
-              value="${delayStr}"
               data-id="${id}" data-field="delayStr">
         <button class="postpone">➕⏲️</button>
         <button class="delete">🗑️</button>
         <button class="track">track</button>
-        <button class="pause" style="border: 2px solid ${isPaused ? '#bbb' : '#ccc'}; box-shadow: ${isPaused ? 'inset 0 3px 6px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.1)'}">⏸️</button>
+        <button class="pause" style="border: 2px solid ${isMuted ? '#bbb' : '#ccc'}; box-shadow: ${isMuted ? 'inset 0 3px 6px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.1)'}">🔇</button>
         <span class="countdown">--</span>
   `;
+  card.querySelector(".titleInput").value = title ?? "";
+  card.querySelector(".descInput").value = description ?? "";
+  card.querySelector(".delayInput").value = delayStr ?? "";
 
   cardsContainer.appendChild(card);
 }
@@ -214,7 +244,7 @@ function createCard(id, delayStr, startAt, title, description, savedDelay, isPau
           delayStr: card.querySelector(".delayInput").value,
           delay: parseInt(card.dataset.delay || 0),
           startAt: parseInt(card.dataset.startAt || Date.now()),
-          isPaused: card.dataset.isPaused === "true"
+          isMuted: card.dataset.isMuted === "true"
         };
       });
 
@@ -234,12 +264,12 @@ function loadCards() {
       // Verificamos que los datos existan (por seguridad)
       if (data[id]) {
         const meta = data[id];
-        createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description, meta.delay, meta.isPaused);
+        createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description, meta.delay, meta.isMuted ?? meta.isPaused);
       }
     });
   } else {
     for (const [id, meta] of Object.entries(data)) {
-      createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description, meta.delay, meta.isPaused);
+      createCard(id, meta.delayStr, meta.startAt, meta.title, meta.description, meta.delay, meta.isMuted ?? meta.isPaused);
     }
   }
 }
@@ -253,15 +283,9 @@ function loadCards() {
 
     dropbox.addEventListener("dragover", e => e.preventDefault());
 
-    dropbox.addEventListener("drop", e => {
-      e.preventDefault();
+    // nueva carta con la descripción dada (soltar o pegar en la caja)
+    function createNewCard(description) {
       counter++;
-
-      // obtener texto o nombre de archivo
-      let description = e.dataTransfer.getData("text/plain");
-      if (!description && e.dataTransfer.files.length > 0) {
-        description = e.dataTransfer.files[0].name;
-      }
       let availableId = nextAvailableId();
       // llamada completa con placeholders en los demás argumentos
       createCard(
@@ -269,9 +293,49 @@ function loadCards() {
         "",                 // delayStr
         null,               // startAt (todavía no lo definís)
         availableId,        // title
-        description,        // descripción tomada del drop
+        description,        // descripción tomada del drop o del clipboard
         28800000            // savedDelay
       );
+      saveAllCards();
+    }
+
+    dropbox.addEventListener("drop", e => {
+      e.preventDefault();
+
+      // obtener texto o la ruta completa de los archivos (uno por línea)
+      let description = e.dataTransfer.getData("text/plain");
+      if (!description && e.dataTransfer.files.length > 0) {
+        const { webUtils } = require('electron');
+        description = [...e.dataTransfer.files]
+          .map(f => (webUtils && webUtils.getPathForFile ? webUtils.getPathForFile(f) : f.path) || f.name)
+          .join("\n");
+      }
+      createNewCard(description);
+    });
+
+    // right-click en la caja → "Pegar" crea una carta con lo que hay en el clipboard
+    const pasteMenu = document.getElementById("pasteMenu");
+    dropbox.addEventListener("contextmenu", e => {
+      e.preventDefault();
+      pasteMenu.style.left = `${e.clientX}px`;
+      pasteMenu.style.top = `${e.clientY}px`;
+      pasteMenu.style.display = "block";
+    });
+    document.addEventListener("mousedown", e => {
+      if (!pasteMenu.contains(e.target)) pasteMenu.style.display = "none";
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") pasteMenu.style.display = "none";
+    });
+    document.getElementById("pasteItem").addEventListener("click", () => {
+      pasteMenu.style.display = "none";
+      const { clipboard } = require('electron');
+      let description = clipboard.readText();
+      if (!description) {
+        // archivo copiado en el Explorador → su ruta completa
+        description = clipboard.readBuffer("FileNameW").toString("utf16le").replace(/\0.*$/s, "");
+      }
+      createNewCard(description);   // clipboard vacío → carta con descripción vacía
     });
 
 
@@ -283,10 +347,10 @@ function loadCards() {
       if (!card) return;
 
     if (e.target.classList.contains("pause")) {
-      const isPaused = card.dataset.isPaused === "true";
-      card.dataset.isPaused = isPaused ? "false" : "true";
-      e.target.style.border = card.dataset.isPaused === "true" ? '2px solid #bbb' : '2px solid #ccc';
-      e.target.style.boxShadow = card.dataset.isPaused === "true" ? 'inset 0 3px 6px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.1)';
+      const isMuted = card.dataset.isMuted === "true";
+      card.dataset.isMuted = isMuted ? "false" : "true";
+      e.target.style.border = card.dataset.isMuted === "true" ? '2px solid #bbb' : '2px solid #ccc';
+      e.target.style.boxShadow = card.dataset.isMuted === "true" ? 'inset 0 3px 6px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.1)';
       saveAllCards();
       return;
     }
@@ -305,8 +369,12 @@ function loadCards() {
       const currentDelay = parseInt(card.dataset.delay) || 0;
       let currentStartAt = parseInt(card.dataset.startAt) || now;
 
-      if (rawValue.startsWith("/date")) {
-        const parts = rawValue.replace("/date", "").split(":").map(p => parseInt(p) || 0);
+      // se cambió cuándo suena → 15 s sin perder HP si suena
+      markRetimed(card.querySelector(".titleInput").value || "Sin título");
+
+      // Detecta una fecha por el atajo "<número>:" (ej. "6:", "4:2")
+      if (/^\d+:/.test(rawValue)) {
+        const parts = rawValue.split(":").map(p => parseInt(p) || 0);
         const targetDate = new Date(currentYear, (parts[0] || 1) - 1, parts[1] || 1, parts[2] || 0, parts[3] || 0, parts[4] || 0);
         const targetMs = targetDate.getTime();
         if (targetMs > now) {
@@ -330,6 +398,7 @@ function loadCards() {
             }
 
         }
+      }
 
       saveAllCards();
       
@@ -353,7 +422,7 @@ function loadCards() {
       // MANDAR AL FINAL: Así sale de la zona roja
       const cardsContainer = document.getElementById("cards");
       cardsContainer.appendChild(card);
-    }};
+    }
 
           if (e.target.classList.contains("delete")) {
             card.remove();
@@ -366,7 +435,7 @@ function checkRings() {
   const now = Date.now();
   
   document.querySelectorAll(".card").forEach(card => {
-    const isPaused = card.dataset.isPaused === "true";
+    const isMuted = card.dataset.isMuted === "true";
     let start = parseInt(card.dataset.startAt);
     const delay = parseInt(card.dataset.delay || 0);
     const countdownEl = card.querySelector(".countdown");
@@ -376,7 +445,7 @@ function checkRings() {
     }
     else if (delay > 0) {
       const start_old = start;
-      while (start + delay <= now && !isPaused) { start += delay; };
+      while (start + delay <= now && !isMuted) { start += delay; };
 
       if (start !== start_old) {
         const cardId = card.dataset.id;
@@ -418,8 +487,11 @@ function checkRings() {
           });
           new Audio("horn.m4a").play().catch(() => {});
         }
+
+        // cada vez que suena, pierde 1 HP (salvo protección por 'retime'); si llega a 0 se desperfila
+        ringLoseHp(card.querySelector(".titleInput").value || "Sin título");
       }
-      
+
       // ... (resto de tu lógica de contador y transparencia) ...
       const nextRing = start + delay;
       const remaining = nextRing - now;
@@ -482,6 +554,50 @@ document.addEventListener("visibilitychange", () => {
   const { shell } = require('electron');
   const path = require('path');
   const os = require('os');
+  const fs = require('fs');
+
+  // ── HP: cadena de eventos en gamification-replay.json (estilo blockchain) ──
+  // No muta estado: sólo agrega eventos. game.html deriva el HP y desperfila al llegar a 0.
+  //   { type:'retime', name }                    → se cambió cuándo suena (protege 15 s)
+  //   { type:'hp', name, delta:-1 }              → sonó y perdió vida
+  //   { type:'hp', name, delta:0, shielded:true } → sonó dentro de la protección
+  const REPLAY_FILE = path.join(process.env.APPDATA || path.join(os.homedir(), '.config'), 'Remind-Station', 'gamification-replay.json');
+  const RETIME_SHIELD_SECS = 15;
+
+  // Lee la cadena y deriva qué cartas están perfiladas AHORA y su último 'retime'
+  function loadChain() {
+    let data;
+    try { data = JSON.parse(fs.readFileSync(REPLAY_FILE, 'utf-8')); } catch { return null; }
+    const entries = Array.isArray(data.entries) ? data.entries : [];
+    const hp = {}, prof = {}, retime = {};
+    for (const e of entries) {
+      if (e.type === 'profile') { prof[e.name] = 1; hp[e.name] = e.hp != null ? e.hp : 1; }
+      else if (e.type === 'unprofile') { delete prof[e.name]; delete hp[e.name]; }
+      else if (e.type === 'hp' && prof[e.name]) { hp[e.name] += e.delta || 0; if (hp[e.name] <= 0) { delete prof[e.name]; delete hp[e.name]; } }
+      else if (e.type === 'retime') { retime[e.name] = e.date; }
+    }
+    return { data, entries, prof, retime };
+  }
+
+  function appendToChain(chain, event) {
+    chain.entries.push({ ...event, date: Math.floor(Date.now() / 1000) });
+    try { fs.writeFileSync(REPLAY_FILE, JSON.stringify({ ...chain.data, entries: chain.entries }, null, 2)); } catch {}
+  }
+
+  // Al cambiar cuándo suena una carta perfilada: abre 15 s de protección de HP
+  function markRetimed(name) {
+    const chain = loadChain();
+    if (!chain || !chain.prof[name]) return;
+    appendToChain(chain, { type: 'retime', name });
+  }
+
+  function ringLoseHp(name) {
+    const chain = loadChain();
+    if (!chain || !chain.prof[name]) return;     // no perfilada → no hay vida que bajar
+    const since = chain.retime[name];
+    const shielded = since != null && Math.floor(Date.now() / 1000) - since <= RETIME_SHIELD_SECS;
+    appendToChain(chain, shielded ? { type: 'hp', name, delta: 0, shielded: true } : { type: 'hp', name, delta: -1 });
+  }
 
   function openProgressFolder() {
     const progressFolder = path.join(
