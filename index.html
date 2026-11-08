@@ -97,6 +97,14 @@
     font-weight: bold;
   }
 
+  /* Botones de track: se hunden 0,3 s cuando la acción se registró.
+     .active: botón que queda hundido mientras está encendido (🔔) */
+  .pressed, .active {
+    transform: translateY(2px);
+    box-shadow: inset 0 3px 6px rgba(0,0,0,0.3) !important;
+    filter: brightness(0.9);
+  }
+
   </style>
 </head>
 <body>
@@ -123,38 +131,39 @@
       ipcRenderer.send('open-game');
     });
 
-    document.getElementById("notifBtn").addEventListener("click", () => {
-      Notification.requestPermission().then(permission => {
-        if (permission === "granted") {
-          alert(`[Notificaciones activadas ✅]
+    // 🔔 refleja el permiso nativo de notificaciones (hundido = concedido).
+    // Se actualiza al iniciar la sesión y con cada click.
+    // Sin permiso, las cartas suenan igual pero sin notificación del sistema.
+    const notifBtn = document.getElementById("notifBtn");
 
-_ negative time usage
-use negative counts to ring it, subtracting the last card ringed time point. Or use a negative date to ring it on an already-passed date.
-
-_ stop card
-use time to zero to stop the card.
-
-_ fixed date command usage
-<month of the year>:<optional: day>:<hour>:<minute>:<second>. Example: 1:10`);
-          // opcional: ocultar el botón después de aceptar
-          // document.getElementById("notifBtn").style.display = "none";
-        } else {
-          alert("No se activaron las notificaciones ❌");
-        }
-      });
-    });
-
-    document.getElementById("questionBtn").addEventListener("click", () => {
-      add_question_mark();
-    });
-
-    document.getElementById("undoBtn").addEventListener("click", () => {
-      undo_last_log();
-    });
-
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission();
+    function refreshNotifBtn() {
+      notifBtn.classList.toggle("active", Notification.permission === "granted");
     }
+
+    notifBtn.addEventListener("click", async () => {
+      if (Notification.permission === "granted") ipcRenderer.sendSync('revoke-notifications-permission');
+      else await Notification.requestPermission();
+      refreshNotifBtn();
+    });
+
+    refreshNotifBtn();
+
+    // Hunde el botón 0,3 s y lo devuelve a la normalidad
+    function pressFeedback(btn) {
+      btn.classList.remove("pressed");
+      void btn.offsetWidth;               // reinicia si se clickea de nuevo antes de los 0,3 s
+      btn.classList.add("pressed");
+      clearTimeout(btn._pressTimer);
+      btn._pressTimer = setTimeout(() => btn.classList.remove("pressed"), 300);
+    }
+
+    document.getElementById("questionBtn").addEventListener("click", (e) => {
+      if (add_question_mark()) pressFeedback(e.currentTarget);
+    });
+
+    document.getElementById("undoBtn").addEventListener("click", (e) => {
+      if (undo_last_log()) pressFeedback(e.currentTarget);
+    });
 
     window.addEventListener("load", () => {
       loadCards();
@@ -357,7 +366,7 @@ function loadCards() {
 
     if (e.target.classList.contains("track")) {
       const cardTitle = card.querySelector(".titleInput").value || "Sin título";
-      logActivity(cardTitle);
+      if (logActivity(cardTitle)) pressFeedback(e.target);
       return;
     }
 
@@ -479,13 +488,14 @@ function checkRings() {
 
         saveAllCards();
 
+        // el ring suena siempre; la notificación del sistema sólo con permiso (🔔)
+        new Audio("horn.m4a").play().catch(() => {});
         if (Notification.permission === "granted") {
           const cardTitle = card.querySelector(".titleInput").value || "Sin título";
           new Notification(`${cardTitle}`, {
             body: "R-S 🚂",
             // icon: "tu_icono.png" // Por si luego quieres añadirle un logo
           });
-          new Audio("horn.m4a").play().catch(() => {});
         }
 
         // cada vez que suena, pierde 1 HP (salvo protección por 'retime'); si llega a 0 se desperfila
@@ -561,7 +571,7 @@ document.addEventListener("visibilitychange", () => {
   //   { type:'retime', name }                    → se cambió cuándo suena (protege 15 s)
   //   { type:'hp', name, delta:-1 }              → sonó y perdió vida
   //   { type:'hp', name, delta:0, shielded:true } → sonó dentro de la protección
-  const REPLAY_FILE = path.join(process.env.APPDATA || path.join(os.homedir(), '.config'), 'Remind-Station', 'gamification-replay.json');
+  const { REPLAY_FILE } = require('./paths');
   const RETIME_SHIELD_SECS = 15;
 
   // Lee la cadena y deriva qué cartas están perfiladas AHORA y su último 'retime'
@@ -600,14 +610,7 @@ document.addEventListener("visibilitychange", () => {
   }
 
   function openProgressFolder() {
-    const progressFolder = path.join(
-      os.homedir(),
-      "AppData",
-      "Roaming",
-      "Remind-Station",
-      "Local Storage"
-    );
-    shell.openPath(progressFolder);
+    shell.openPath(require('./paths').LOCAL_STORAGE_DIR);
   }
 
     setInterval(checkRings, 1000);

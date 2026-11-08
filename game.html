@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>R-S Game Beta — Remind Station</title>
+  <title>R-S Game Beta</title>
   <style>
     @font-face {
       font-family: 'Noto Color Emoji';
@@ -70,7 +70,7 @@
 </head>
 <body>
 
-<h1>⚡ Remind Station — R-S Game</h1>
+<h1>⚡ Remind-Station Game (Beta)</h1>
 
 <div class="section-title">Recursos</div>
 <div id="inventory">
@@ -108,13 +108,11 @@ const fs   = require('fs');
 const path = require('path');
 const os   = require('os');
 
-const LOG_FILE = path.join(__dirname, 'tracking.log');
+const { TRACKING_LOG: LOG_FILE } = require('./paths');
 
-const APP_DATA_DIR = path.join(process.env.APPDATA || path.join(os.homedir(), '.config'), 'Remind-Station');
-if (!fs.existsSync(APP_DATA_DIR)) fs.mkdirSync(APP_DATA_DIR, { recursive: true });
 // Un solo archivo: el replay (grabación de la partida) contiene TODO —
 // perfiles, HP, fecha del último corte y las jugadas, como una cadena { entries }.
-const REPLAY_FILE = path.join(APP_DATA_DIR, 'gamification-replay.json');
+const { REPLAY_FILE } = require('./paths');
 
 // ── Emojis de los 34 ítems ────────────────────────────────────
 // Lo más bajo de cada tipo no da ítem: Flora LN0, Fauna todo "No", No renovables 0_1, Milicia "No".
